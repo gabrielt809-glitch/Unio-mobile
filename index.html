@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+<title>Unio</title>
+<!-- Unio Base Organizada v1: HTML separado de CSS e JS por módulos. -->
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- TOAST CONTAINER -->
+<div id="toastContainer"></div>
+
+<!-- ONBOARDING -->
+<div id="onboarding" style="display:none;">
+  <div class="ob-prog" id="obProg"></div>
+  <div class="ob-step active" id="ob0">
+    <div class="ob-ico">👋</div>
+    <div class="ob-title">Olá! Bem-vindo ao Unio.</div>
+    <div class="ob-sub">Vamos configurar tudo em menos de 1 minuto para personalizar sua experiência.</div>
+    <button class="ob-btn" onclick="obNext()">Vamos lá →</button>
+    <button class="ob-skip" onclick="finishOnboarding()">Pular configuração</button>
+  </div>
+  <div class="ob-step" id="ob1">
+    <div class="ob-ico">🙂</div>
+    <div class="ob-title">Como posso te chamar?</div>
+    <div class="ob-sub">Seu nome aparecerá na tela inicial.</div>
+    <input class="ob-field" id="obName" type="text" placeholder="Seu nome" autocomplete="off" onkeydown="if(event.key==='Enter')obNext()">
+    <button class="ob-btn" onclick="obNext()">Continuar →</button>
+    <button class="ob-skip" onclick="finishOnboarding()">Pular</button>
+  </div>
+  <div class="ob-step" id="ob2">
+    <div class="ob-ico">⚖️</div>
+    <div class="ob-title">Qual é o seu peso?</div>
+    <div class="ob-sub">Usado para calcular calorias gastas nas atividades físicas.</div>
+    <input class="ob-field" id="obWeight" type="number" placeholder="Ex: 70 kg" inputmode="numeric" onkeydown="if(event.key==='Enter')obNext()">
+    <button class="ob-btn" onclick="obNext()">Continuar →</button>
+    <button class="ob-skip" onclick="finishOnboarding()">Pular</button>
+  </div>
+  <div class="ob-step" id="ob3">
+    <div class="ob-ico">💧</div>
+    <div class="ob-title">Qual sua meta de água diária?</div>
+    <div class="ob-sub">A recomendação geral é de 35ml por kg de peso. Para 70kg: ~2450ml.</div>
+    <input class="ob-field" id="obWater" type="number" placeholder="Ex: 2000 ml" inputmode="numeric" onkeydown="if(event.key==='Enter')obNext()">
+    <button class="ob-btn" onclick="obNext()">Continuar →</button>
+    <button class="ob-skip" onclick="finishOnboarding()">Pular</button>
+  </div>
+  <div class="ob-step" id="ob4">
+    <div class="ob-ico">🔥</div>
+    <div class="ob-title">Quais hábitos quer criar?</div>
+    <div class="ob-sub">Selecione os que te interessam. Você pode editar depois.</div>
+    <div class="ob-hab-grid" id="obHabGrid"></div>
+    <button class="ob-btn" onclick="obNext()">Criar hábitos →</button>
+    <button class="ob-skip" onclick="finishOnboarding()">Pular</button>
+  </div>
+  <div class="ob-step" id="ob5">
+    <div class="ob-ico">🎉</div>
+    <div class="ob-title" id="obReadyTitle">Tudo pronto!</div>
+    <div class="ob-sub">Seu Unio está configurado e pronto para usar.</div>
+    <button class="ob-btn" onclick="finishOnboarding()">Começar a usar →</button>
+  </div>
+</div>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="sp-logo">Unio<span class="sp-dot">.</span></div>
+  <div class="sp-tag">Saúde, rotina e equilíbrio</div>
+  <div class="sp-grid">
+    <div class="sp-pill">🏠 Início</div>
+    <div class="sp-pill">💧 Hidratação</div>
+    <div class="sp-pill">✅ Tarefas</div>
+    <div class="sp-pill">🌙 Sono</div>
+    <div class="sp-pill">🥗 Nutrição</div>
+    <div class="sp-pill">🏃 Saúde</div>
+    <div class="sp-pill">🔥 Hábitos</div>
+    <div class="sp-pill">🎯 Foco</div>
+  </div>
+  <button class="sp-btn" onclick="startApp()">Começar</button>
+  <div class="sp-hint">Tudo em um só lugar</div>
+</div>
+
+<!-- SIDE MENU -->
+<div id="menuOverlay" onclick="closeMenu()"></div>
+<div id="sideMenu">
+  <div class="menu-head">
+    <div class="menu-logo">Unio<span>.</span></div>
+    <div class="menu-sub">Seu app de bem-estar</div>
+  </div>
+  <div class="menu-scroll" id="menuItems"></div>
+  <div class="menu-sep"></div>
+  <div class="menu-foot">
+    <div class="menu-cfg" onclick="closeMenu();openModal('settingsModal')">
+      <div class="mi-ico" style="background:var(--bg3);">⚙️</div>
+      <span style="font-size:15px;font-weight:500;">Configurações</span>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" style="opacity:0;transition:opacity .4s ease .1s;">
+  <div class="hdr">
+    <div class="hdr-top">
+      <button class="hbg" onclick="openMenu()"><span></span><span></span><span></span></button>
+      <div class="hdr-clock" id="clock"></div>
+    </div>
+    <div class="hdr-title" id="pgTitle">Início</div>
+    <div class="hdr-sub" id="pgSub"></div>
+  </div>
+
+  <div class="content">
+    <!-- ▓ HOME ▓ -->
+    <div class="panel active" id="tab-home">
+      <div class="home-greeting" id="homeGreeting">Bom dia 👋</div>
+      <div class="home-date" id="homeDate"></div>
+      <div class="home-habits-row" id="homeHabitsRow" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span class="sec-lbl" style="margin-bottom:0;">Hábitos de hoje</span>
+          <span id="homeHabPct" style="font-size:12px;color:var(--lbl2);"></span>
+        </div>
+        <div class="hhab-strip" id="homeHabStrip"></div>
+      </div>
+      <div class="home-grid" id="homeGrid"></div>
+      <div class="home-focus-banner" onclick="switchTabById('focus')">
+        <div class="hfb-left">
+          <div class="hfb-title">🎯 Sessão de Foco</div>
+          <div class="hfb-sub" id="homeFocusSub">25 min · 0 sessões hoje</div>
+        </div>
+        <button class="hfb-btn">Iniciar</button>
+      </div>
+      <div id="homeWeekSummary" style="display:none;background:var(--bg2);border-radius:16px;padding:14px 16px;margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <span id="wsBadge" style="font-size:13px;font-weight:700;color:var(--blue);">📊 Esta semana</span>
+        </div>
+        <div id="wsContent"></div>
+      </div>
+    </div>
+
+    <!-- ▓ ÁGUA ▓ -->
+    <div class="panel" id="tab-water">
+      <div class="card" style="padding-bottom:16px;">
+        <div class="ring-wrap">
+          <svg width="184" height="184" viewBox="0 0 184 184">
+            <circle cx="92" cy="92" r="78" fill="none" stroke="#2C2C2E" stroke-width="11"/>
+            <circle id="wRing" cx="92" cy="92" r="78" fill="none" stroke="#5AC8FA" stroke-width="11"
+              stroke-linecap="round" stroke-dasharray="490" stroke-dashoffset="490"
+              transform="rotate(-90 92 92)" style="transition:stroke-dashoffset .55s cubic-bezier(.34,1.2,.64,1),stroke .3s;"/>
+          </svg>
+          <div class="ring-text">
+            <div class="ring-val" id="wAmt" style="color:var(--teal)">0</div>
+            <div class="ring-unit">ml</div>
+            <div class="ring-gt" id="wGoalT">de 2000ml</div>
+          </div>
+        </div>
+        <div class="qa-row water-preset-row" id="waterPresetRow"></div>
+        <button class="w-custom-btn" onclick="openModal('customWater')">✏️ Adicionar copo personalizado</button>
+        <div class="w-cups-hint">Os copos personalizados salvos aparecem como botões rápidos.</div>
+      </div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div><div style="font-size:14px;font-weight:600;">Meta diária</div><div style="font-size:12px;color:var(--lbl2);margin-top:2px;" id="wGoalD">2000 ml</div></div>
+          <button onclick="openModal('goalModal')" style="background:var(--bg3);border:none;color:var(--teal);font-family:var(--font);font-size:13px;font-weight:500;padding:7px 14px;border-radius:16px;cursor:pointer;">Editar</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="sec-lbl">Registro de hoje</div>
+        <div id="wLog"><div class="empty" id="wEmpty"><em>💧</em>Nenhum registro ainda</div></div>
+      </div>
+    </div>
+
+    <!-- ▓ TAREFAS ▓ -->
+    <div class="panel" id="tab-tasks">
+      <div class="week-strip" id="weekStrip"></div>
+      <div class="t-row">
+        <input class="field" id="tInput" type="text" placeholder="Nova tarefa…" onkeydown="if(event.key==='Enter')addTask()" style="flex:1;">
+        <button class="t-add-btn" onclick="addTask()">+</button>
+      </div>
+      <button class="t-nodate-btn" id="tNodateBtn" onclick="toggleNoDate(this)">
+        <span id="tNodateIco">📅</span><span id="tNodateTxt">Vinculada ao dia selecionado</span>
+      </button>
+      <div id="tPinnedSec" style="display:none;"><div class="t-sec">📌 Sem data</div><div id="tPinned"></div></div>
+      <div id="tPendSec" style="display:none;"><div class="t-sec" id="tPendLbl">Pendentes</div><div id="tPend"></div></div>
+      <div id="tDoneSec" style="display:none;"><div class="t-sec">Concluídas</div><div id="tDone"></div></div>
+      <div class="empty" id="tEmpty" style="margin-top:22px;"><em>✓</em>Nenhuma tarefa para este dia</div>
+    </div>
+
+    <!-- ▓ SONO ▓ -->
+    <div class="panel" id="tab-sleep">
+      <div class="stat-row">
+        <div class="stat-card"><div class="stat-v" id="sAvg" style="color:var(--purple)">—</div><div class="stat-l">Média 7 dias</div></div>
+        <div class="stat-card"><div class="stat-v" id="sLast" style="color:var(--purple)">—</div><div class="stat-l">Última noite</div></div>
+        <div class="stat-card"><div class="stat-v" id="sGood" style="color:var(--green)">0</div><div class="stat-l">Noites ≥7h</div></div>
+        <div class="stat-card"><div class="stat-v" id="sQualAvg" style="color:var(--yellow)">—</div><div class="stat-l">Qualidade média</div></div>
+      </div>
+      <div class="s-form">
+        <div class="sec-lbl">Registrar sono</div>
+        <div class="s-row">
+          <div class="s-grp"><label class="s-lbl">Dormi às</label><input class="s-inp" type="time" id="sStart" value="23:00"></div>
+          <div class="s-grp"><label class="s-lbl">Acordei às</label><input class="s-inp" type="time" id="sEnd" value="07:00"></div>
+        </div>
+        <label class="s-lbl" style="margin-bottom:8px;">Como foi sua noite?</label>
+        <div class="s-qual-row">
+          <button class="s-qual-btn" id="sq1" onclick="pickQual(1,this)">😩<span class="s-qual-lbl">Péssima</span></button>
+          <button class="s-qual-btn" id="sq2" onclick="pickQual(2,this)">😕<span class="s-qual-lbl">Ruim</span></button>
+          <button class="s-qual-btn" id="sq3" onclick="pickQual(3,this)">😐<span class="s-qual-lbl">Regular</span></button>
+          <button class="s-qual-btn" id="sq4" onclick="pickQual(4,this)">😊<span class="s-qual-lbl">Boa</span></button>
+          <button class="s-qual-btn" id="sq5" onclick="pickQual(5,this)">😴<span class="s-qual-lbl">Ótima</span></button>
+        </div>
+        <button id="sBtn" class="action-btn" style="background:var(--purple);" onclick="logSleep()">Registrar</button>
+      </div>
+      <div class="card"><div class="sec-lbl">Últimas 7 noites</div><div class="bar-chart" id="sChart"></div></div>
+      <div class="card" id="sCorrCard" style="display:none;">
+        <div class="sec-lbl" style="margin-bottom:8px;">Qualidade × Duração</div>
+        <div class="s-corr-row" id="sCorrRow"></div>
+      </div>
+      <div class="card"><div class="sec-lbl">Histórico</div><div id="sHist"><div class="empty" id="sEmpty"><em>🌙</em>Nenhum registro ainda</div></div></div>
+    </div>
+
+    <!-- ▓ NUTRIÇÃO ▓ -->
+    <div class="panel" id="tab-nutrition">
+      <div class="n-diary-card">
+        <div class="n-diary-head">
+          <div>
+            <div class="n-diary-count" id="nFoodCount">0</div>
+            <div class="n-diary-sub">registros hoje</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:13px;font-weight:700;color:var(--green);">Diário alimentar</div>
+            <div style="font-size:12px;color:var(--lbl2);margin-top:3px;">Registre o que comeu, sem depender de biblioteca interna.</div>
+          </div>
+        </div>
+        <div class="m-grp">
+          <label class="m-lbl">O que você comeu?</label>
+          <input class="field" id="foodNameInp" type="text" placeholder="Ex: arroz, feijão, frango e salada" autocomplete="off" onkeydown="if(event.key==='Enter')addDiaryFood()">
+        </div>
+        <div class="m-grp">
+          <label class="m-lbl">Observação opcional</label>
+          <textarea class="n-note" id="foodNoteInp" placeholder="Ex: prato médio, comi fora, pouca quantidade, sem açúcar..."></textarea>
+        </div>
+        <div class="n-meal-pick">
+          <button class="n-meal-btn on" onclick="pickMeal('b',this)">☀️ Café</button>
+          <button class="n-meal-btn" onclick="pickMeal('l',this)">🌤 Almoço</button>
+          <button class="n-meal-btn" onclick="pickMeal('d',this)">🌙 Jantar</button>
+          <button class="n-meal-btn" onclick="pickMeal('s',this)">🍎 Lanche</button>
+        </div>
+        <div class="n-time-row">
+          <input class="field" id="foodTimeInp" type="time">
+          <button class="action-btn" style="background:var(--green);width:auto;padding:12px 18px;" onclick="addDiaryFood()">Adicionar</button>
+        </div>
+      </div>
+      <div class="meal-sec"><div class="meal-hdr"><span class="meal-nm">☀️ Café da manhã</span><span class="meal-kc" id="kcB">0 itens</span></div><div id="mB"><div class="empty" style="padding:13px;font-size:12px;">Vazio</div></div></div>
+      <div class="meal-sec"><div class="meal-hdr"><span class="meal-nm">🌤 Almoço</span><span class="meal-kc" id="kcL">0 itens</span></div><div id="mL"><div class="empty" style="padding:13px;font-size:12px;">Vazio</div></div></div>
+      <div class="meal-sec"><div class="meal-hdr"><span class="meal-nm">🌙 Jantar</span><span class="meal-kc" id="kcD">0 itens</span></div><div id="mD"><div class="empty" style="padding:13px;font-size:12px;">Vazio</div></div></div>
+      <div class="meal-sec"><div class="meal-hdr"><span class="meal-nm">🍎 Lanches</span><span class="meal-kc" id="kcS">0 itens</span></div><div id="mS"><div class="empty" style="padding:13px;font-size:12px;">Vazio</div></div></div>
+    </div>
+
+    <!-- ▓ SAÚDE ▓ -->
+    <div class="panel" id="tab-health">
+      <div class="h-stats">
+        <div class="hst"><div class="hst-val" id="hSteps" style="color:var(--green)">0</div><div class="hst-lbl">👟 Passos</div></div>
+        <div class="hst"><div class="hst-val" id="hCalB" style="color:var(--orange)">0</div><div class="hst-lbl">🔥 kcal gastas</div></div>
+        <div class="hst"><div class="hst-val" id="hActN" style="color:var(--blue)">0</div><div class="hst-lbl">⚡ Atividades</div></div>
+        <div class="hst"><div class="hst-val" id="hActMin" style="color:var(--purple)">0</div><div class="hst-lbl">⏱ Minutos</div></div>
+      </div>
+      <div class="card">
+        <div class="sec-lbl">Passos</div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <input class="field" id="stepsInp" type="number" placeholder="0" inputmode="numeric" style="flex:1;font-size:20px;font-weight:700;color:var(--green);">
+          <button onclick="saveSteps()" style="background:var(--green);border:none;border-radius:10px;color:#fff;font-family:var(--font);font-size:13px;font-weight:600;padding:12px 15px;cursor:pointer;">Salvar</button>
+        </div>
+        <div class="step-btns">
+          <button class="step-btn" onclick="addSteps(1000)">+1k</button>
+          <button class="step-btn" onclick="addSteps(2000)">+2k</button>
+          <button class="step-btn" onclick="addSteps(5000)">+5k</button>
+          <button class="step-btn" onclick="addSteps(10000)">+10k</button>
+        </div>
+      </div>
+      <div class="search-wrap"><span class="search-ico">🔍</span><input class="s-field" id="actQ" type="text" placeholder="Buscar atividade ou esporte…" oninput="searchAct(this.value)" onfocus="showActList()" onclick="showActList()" autocomplete="off" autocorrect="off" style="border-color:transparent;"></div>
+      <div class="drop-res" id="actRes"></div>
+      <div class="card">
+        <div class="sec-lbl">Atividades de hoje</div>
+        <div id="actLog"><div class="empty" id="actEmpty"><em>🏃</em>Nenhuma atividade registrada</div></div>
+      </div>
+      <div class="breath-card">
+        <div class="sec-lbl" style="margin-bottom:4px;">Respiração guiada</div>
+        <div class="breath-desc" id="breathDesc">Escolha uma técnica de respiração para começar.</div>
+        <div class="breath-mode-row" id="breathModes"></div>
+        <div class="breath-mini" id="breathMini"></div>
+        <div class="breath-ring" id="breathRing"><span id="breathTxt">Toque para iniciar</span></div>
+        <div id="breathPhase" style="font-size:12px;color:var(--lbl2);min-height:18px;margin-bottom:8px;"></div>
+        <button onclick="toggleBreath()" id="breathBtn" style="background:rgba(0,122,255,.12);border:none;border-radius:10px;color:var(--blue);font-family:var(--font);font-size:13px;font-weight:600;padding:9px 22px;cursor:pointer;">Iniciar</button>
+      </div>
+
+    </div>
+
+    <!-- ▓ HÁBITOS ▓ -->
+    <div class="panel" id="tab-habits">
+      <div class="hab-header-row">
+        <div>
+          <div style="font-size:16px;font-weight:700;">Seus hábitos</div>
+          <div style="font-size:12px;color:var(--lbl2);margin-top:2px;" id="habSummary">0 de 0 concluídos hoje</div>
+        </div>
+        <button class="hab-add-btn" onclick="openModal('habModal')">+ Novo</button>
+      </div>
+      <div id="habList">
+        <div class="empty" id="habEmpty"><em>🔥</em>Crie seu primeiro hábito!</div>
+      </div>
+    </div>
+
+    <!-- ▓ FOCO ▓ -->
+    <div class="panel" id="tab-focus">
+      <div class="sec-lbl" style="margin-bottom:8px;">Duração do foco</div>
+      <div class="focus-type-row">
+        <button class="focus-type-btn sel" id="f25" onclick="setFocusType(25,this)">🎯 25 min</button>
+        <button class="focus-type-btn" id="f50" onclick="setFocusType(50,this)">🔥 50 min</button>
+      </div>
+      <div class="sec-lbl" style="margin-bottom:8px;">Duração da pausa</div>
+      <div class="focus-brk-row">
+        <button class="focus-brk-btn sel" id="b5" onclick="setBreakType(5,this)">☕ 5 min</button>
+        <button class="focus-brk-btn" id="b15" onclick="setBreakType(15,this)">🌿 15 min</button>
+      </div>
+      <div class="card" style="text-align:center;padding:22px 16px;">
+        <div class="focus-timer-wrap">
+          <svg width="200" height="200" viewBox="0 0 200 200">
+            <circle cx="100" cy="100" r="88" fill="none" stroke="#2C2C2E" stroke-width="9"/>
+            <circle id="fRing" cx="100" cy="100" r="88" fill="none" stroke="#FF375F" stroke-width="9"
+              stroke-linecap="round" stroke-dasharray="553" stroke-dashoffset="0"
+              transform="rotate(-90 100 100)" style="transition:stroke-dashoffset .98s linear,stroke .3s;"/>
+          </svg>
+          <div class="focus-timer-txt">
+            <div class="focus-time" id="fTime">25:00</div>
+            <div class="focus-mode-lbl" id="fModeLbl">Foco</div>
+          </div>
+        </div>
+        <div class="focus-btns">
+          <button class="focus-start" id="fBtn" style="background:var(--pink);" onclick="toggleFocus()">▶ Iniciar</button>
+          <button class="focus-reset" onclick="resetFocus()">↺ Reset</button>
+        </div>
+      </div>
+      <div class="focus-sess-card">
+        <div><div style="font-size:14px;font-weight:600;">Sessões hoje</div><div style="font-size:12px;color:var(--lbl2);margin-top:2px;">Pomodoros completos</div></div>
+        <div class="focus-sess-n" id="fSessions">0</div>
+      </div>
+    </div>
+  </div><!-- /content -->
+  <div id="tabbar"></div>
+</div>
+
+<!-- MODALS -->
+<div class="overlay off" id="goalModal">
+  <div class="sheet"><div class="handle"></div><div class="m-title">Meta de hidratação</div>
+  <div class="m-grp"><label class="m-lbl">Meta diária (ml)</label><input class="field" id="goalInp" type="number" placeholder="2000" inputmode="numeric"></div>
+  <div class="m-acts"><button class="m-cancel" onclick="closeModal('goalModal')">Cancelar</button><button class="m-ok" style="background:var(--teal);" onclick="saveGoal()">Salvar</button></div></div>
+</div>
+
+<div class="overlay off" id="customWater">
+  <div class="sheet"><div class="handle"></div><div class="m-title">Adicionar copo personalizado</div>
+  <div class="m-grp"><label class="m-lbl">Quantidade (ml)</label><input class="field" id="cwInp" type="number" placeholder="Ex: 180" inputmode="numeric"></div>
+  <div class="w-save-row">
+    <span>Salvar essa quantidade como botão rápido</span>
+    <div class="toggle on" id="cwSaveToggle" onclick="toggleCustomCupSave()"></div>
+  </div>
+  <div class="m-acts"><button class="m-cancel" onclick="closeModal('customWater')">Cancelar</button><button class="m-ok" style="background:var(--teal);" onclick="addCustomW()">Adicionar</button></div></div>
+</div>
+
+<div class="overlay off" id="actModal">
+  <div class="sheet"><div class="handle"></div><div class="m-title" id="mActNm">Atividade</div>
+  <div class="m-grp"><label class="m-lbl">Duração (minutos)</label><input class="field" id="actMinInp" type="number" value="30" inputmode="numeric" oninput="updateActPrev()"></div>
+  <div id="actCalPrev" style="font-size:12px;color:var(--lbl2);text-align:center;margin-bottom:4px;"></div>
+  <div class="m-acts"><button class="m-cancel" onclick="closeModal('actModal')">Cancelar</button><button class="m-ok" style="background:var(--orange);" onclick="confirmAct()">Registrar</button></div></div>
+</div>
+
+<div class="overlay off" id="habModal">
+  <div class="sheet"><div class="handle"></div><div class="m-title">Novo hábito</div>
+  <div class="m-grp"><label class="m-lbl">Nome</label><input class="field" id="habNameInp" type="text" placeholder="Ex: Beber água, Meditar…" autocomplete="off"></div>
+  <div class="m-grp"><label class="m-lbl">Ícone</label>
+  <div class="emoji-grid" id="habEmojiGrid"></div></div>
+  <div class="m-grp"><label class="m-lbl">Frequência</label>
+  <div class="chips">
+    <button class="chip on" id="habFreqDia" onclick="habPickFreq('diario',this)">Diário</button>
+    <button class="chip" id="habFreqSem" onclick="habPickFreq('semanal',this)">Semanal</button>
+  </div></div>
+  <div class="m-acts"><button class="m-cancel" onclick="closeModal('habModal')">Cancelar</button><button class="m-ok" style="background:var(--orange);" onclick="confirmHab()">Criar</button></div></div>
+</div>
+
+<div class="overlay off" id="settingsModal">
+  <div class="sheet"><div class="handle"></div><div class="m-title">Configurações</div>
+  <div class="m-grp"><label class="m-lbl">Peso corporal (kg)</label><input class="field" id="weightInp" type="number" placeholder="70" inputmode="numeric"></div>
+  <div class="m-grp"><label class="m-lbl" style="margin-bottom:10px;">Abas na barra inferior (até 4)</label><div id="tabToggles"></div></div>
+  <div class="m-acts"><button class="m-cancel" onclick="closeModal('settingsModal')">Fechar</button><button class="m-ok" style="background:var(--blue);" onclick="saveSettings()">Salvar</button></div><button onclick="clearAllData()" style="width:100%;margin-top:10px;background:none;border:1.5px solid rgba(255,67,58,.35);border-radius:11px;color:var(--red);font-family:var(--font);font-size:14px;font-weight:500;padding:12px;cursor:pointer;">🗑 Apagar todos os dados</button></div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/state.js"></script>
+<script src="js/state-runtime.js"></script>
+<script src="js/navigation.js"></script>
+<script src="js/settings.js"></script>
+<script src="js/home.js"></script>
+<script src="js/water.js"></script>
+<script src="js/tasks.js"></script>
+<script src="js/sleep.js"></script>
+<script src="js/nutrition.js"></script>
+<script src="js/health.js"></script>
+<script src="js/breathing.js"></script>
+<script src="js/habits.js"></script>
+<script src="js/focus.js"></script>
+<script src="js/ux.js"></script>
+<script src="js/onboarding.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

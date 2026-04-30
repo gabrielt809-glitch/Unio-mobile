@@ -1,61 +1,38 @@
-# Unio — Base Organizada v1
+# Unio — Base Organizada v3
 
-Esta versão separa o app em uma estrutura mais saudável para GitHub + Vercel, sem mudar a proposta visual do HTML original.
+Projeto estático do Unio preparado para GitHub + Vercel.
 
 ## Estrutura
 
 ```text
-unio/
-├─ index.html
-├─ css/
-│  └─ styles.css
-└─ js/
-   ├─ data.js
-   ├─ state.js
-   ├─ state-runtime.js
-   ├─ navigation.js
-   ├─ settings.js
-   ├─ home.js
-   ├─ water.js
-   ├─ tasks.js
-   ├─ sleep.js
-   ├─ nutrition.js
-   ├─ health.js
-   ├─ breathing.js
-   ├─ habits.js
-   ├─ focus.js
-   ├─ ux.js
-   ├─ onboarding.js
-   ├─ storage.js
-   └─ app.js
+index.html
+manifest.webmanifest
+assets/icons/
+css/styles.css
+js/
+vercel.json
 ```
 
-## Como atualizar no GitHub pelo iPhone
+## O que mudou na v3
 
-1. Baixe e extraia o ZIP.
-2. Entre no repositório do Unio no GitHub.
-3. Envie/substitua estes arquivos e pastas:
-   - `index.html`
-   - pasta `css`
-   - pasta `js`
-4. Faça commit.
-5. A Vercel deve publicar automaticamente depois do commit.
+- A tela de splash com botão **Começar** aparece somente no primeiro acesso/onboarding.
+- Usuários que já concluíram o onboarding entram direto no app.
+- Ícone PWA/iOS personalizado adicionado, sem depender de um “U” genérico.
+- Manifest Web App incluído para instalação como app.
+- Área da respiração ampliada para a animação não invadir o texto.
 
-## Observações importantes
+## Atualização no GitHub
 
-- A chave desta versão é organização, não novas funcionalidades.
-- O app ainda usa `localStorage`.
-- As funções continuam expostas de forma compatível com os `onclick` do HTML.
-- Em uma próxima etapa, podemos remover os `onclick` inline e padronizar eventos via JavaScript.
+Substitua no repositório:
 
+```text
+index.html
+manifest.webmanifest
+assets/
+css/
+js/
+README.md
+vercel.json
+```
 
-## Atualização v2
-
-Esta versão organiza a próxima etapa de estabilidade do Unio:
-
-- Saúde deixou de depender de biblioteca interna de atividades.
-- A aba Saúde agora funciona como diário livre de movimento.
-- Home ganhou um resumo rápido do dia.
-- Tarefas ganharam atalhos para Hoje/Amanhã, resumo do dia e limpeza de concluídas.
-- A biblioteca de alimentos e atividades foi mantida vazia em `js/data.js` para não carregar listas internas.
-- JavaScript validado com `node --check` no arquivo combinado.
+Depois faça commit. A Vercel deve atualizar o deploy automaticamente.

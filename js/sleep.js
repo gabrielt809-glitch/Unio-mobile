@@ -1,4 +1,4 @@
-/* Unio Base Organizada v1 */
+/* Unio Base Organizada v2 */
 /* ━━━━ SLEEP ━━━━ */
 let selQual=3;
 function pickQual(q,el){selQual=q;document.querySelectorAll('.s-qual-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');haptic('light');}

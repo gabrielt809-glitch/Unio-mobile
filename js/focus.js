@@ -1,4 +1,4 @@
-/* Unio Base Organizada v1 */
+/* Unio Base Organizada v2 */
 /* ━━━━ FOCUS / POMODORO ━━━━ */
 function setFocusType(min,el){if(S.focus.running)return;S.focus.type=min;S.focus.remaining=min*60;document.querySelectorAll('.focus-type-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');renderFocusTimer();}
 function setBreakType(min,el){S.focus.brkType=min;document.querySelectorAll('.focus-brk-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');}

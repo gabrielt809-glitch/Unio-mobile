@@ -1,28 +1,163 @@
-/* Unio Base Organizada v1 */
-/* ━━━━ HEALTH ━━━━ */
-function saveSteps(){const v=parseInt(document.getElementById('stepsInp').value)||0;S.health.steps=v;renderHealth();}
-function addSteps(n){S.health.steps+=n;document.getElementById('stepsInp').value=S.health.steps;renderHealth();}
-function renderActOptions(q=''){
-  const re=document.getElementById('actRes');
-  if(!re)return;
-  const term=(q||'').trim();
-  const hits=term
-    ? ACTL.filter(a=>norm(a.n).includes(norm(term))||norm(a.cat).includes(norm(term)))
-    : ACTL;
-  const shown=term?hits.slice(0,24):hits;
-  const c30=a=>Math.round(a.met*S.weight*0.5);
-  if(!shown.length){
-    re.innerHTML='<div class="empty" style="padding:14px;font-size:12px;"><em>🔎</em>Nenhuma atividade encontrada</div>';
-    re.classList.add('on');
+/* Unio Base Organizada v2 */
+/* ━━━━ HEALTH — diário livre ━━━━ */
+let healthIntensity='moderada';
+
+function todayKey(){return dayKey(new Date());}
+function safeArr(v){return Array.isArray(v)?v:[];}
+
+function normalizeHealthEntries(){
+  if(!S.health)S.health={steps:0,acts:[]};
+  if(!Array.isArray(S.health.acts))S.health.acts=[];
+  const tk=todayKey();
+  S.health.acts=S.health.acts.map(a=>{
+    const min=Number(a.min ?? a.minutes ?? 0)||0;
+    const name=a.name || a.n || 'Atividade';
+    const intensity=a.intensity || (a.met>=8?'intensa':a.met>=4?'moderada':'leve');
+    return {
+      id:a.id || Date.now()+Math.floor(Math.random()*1000),
+      name,
+      min,
+      intensity,
+      note:a.note || (a.cat?String(a.cat):''),
+      time:a.time || '',
+      date:a.date || tk
+    };
+  });
+}
+
+function getTodayHealthEntries(){
+  normalizeHealthEntries();
+  const tk=todayKey();
+  return S.health.acts.filter(a=>!a.date || a.date===tk);
+}
+
+function saveSteps(){
+  const v=parseInt(document.getElementById('stepsInp').value,10)||0;
+  S.health.steps=Math.max(0,v);
+  renderHealth();
+  haptic('light');
+}
+
+function addSteps(n){
+  S.health.steps=Math.max(0,(Number(S.health.steps)||0)+n);
+  document.getElementById('stepsInp').value=S.health.steps;
+  renderHealth();
+  haptic('light');
+}
+
+function pickHealthIntensity(intensity,el){
+  healthIntensity=intensity;
+  document.querySelectorAll('.h-intensity-btn').forEach(b=>b.classList.remove('on'));
+  if(el)el.classList.add('on');
+  haptic('light');
+}
+
+function addHealthEntry(){
+  const nameEl=document.getElementById('healthNameInp');
+  const minEl=document.getElementById('healthMinInp');
+  const timeEl=document.getElementById('healthTimeInp');
+  const noteEl=document.getElementById('healthNoteInp');
+  const name=(nameEl?.value||'').trim();
+  if(!name){
+    showToast('Informe a atividade antes de adicionar.','',2200);
+    haptic('error');
     return;
   }
-  re.innerHTML=shown.map(a=>`<div class="dr-item" onclick="openActModal(${a.id})"><div style="flex:1;min-width:0;"><div class="dr-name">${a.n}</div><div class="dr-info">${a.cat} · ~${c30(a)} kcal/30min</div></div><button class="dr-add" style="background:var(--orange);" onclick="event.stopPropagation();openActModal(${a.id})">+</button></div>`).join('');
-  re.classList.add('on');
+  const min=Math.max(0,parseInt(minEl?.value||'0',10)||0);
+  const now=new Date();
+  const defaultTime=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  S.health.acts.unshift({
+    id:Date.now(),
+    name,
+    min,
+    intensity:healthIntensity,
+    note:(noteEl?.value||'').trim(),
+    time:timeEl?.value || defaultTime,
+    date:todayKey()
+  });
+  if(nameEl)nameEl.value='';
+  if(minEl)minEl.value='';
+  if(noteEl)noteEl.value='';
+  if(timeEl)timeEl.value='';
+  healthIntensity='moderada';
+  document.querySelectorAll('.h-intensity-btn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('hiModerada')?.classList.add('on');
+  renderHealth();
+  haptic('success');
+  showToast('Atividade adicionada ao diário! 🏃','',2200);
 }
-function showActList(){renderActOptions(document.getElementById('actQ')?.value||'');}
-function searchAct(q){renderActOptions(q);}
-function openActModal(id){selAct=ACTL.find(a=>a.id===id);document.getElementById('mActNm').textContent=selAct.n;document.getElementById('actMinInp').value=30;updateActPrev();openModal('actModal');}
-function updateActPrev(){if(!selAct)return;const m=parseInt(document.getElementById('actMinInp').value)||0;document.getElementById('actCalPrev').textContent=`≈ ${Math.round(selAct.met*S.weight*(m/60))} kcal queimadas`;}
-function confirmAct(){if(!selAct)return;const m=parseInt(document.getElementById('actMinInp').value)||0;const cal=Math.round(selAct.met*S.weight*(m/60));S.health.acts.unshift({id:Date.now(),n:selAct.n,min:m,cal,cat:selAct.cat});closeModal('actModal');document.getElementById('actQ').value='';haptic('success');showToast('Atividade registrada! 🏃','');renderHealth();showActList();}
-function rmAct(id){S.health.acts=S.health.acts.filter(x=>x.id!==id);renderHealth();}
-function renderHealth(){const{steps,acts}=S.health;const totalCal=acts.reduce((a,x)=>a+x.cal,0),totalMin=acts.reduce((a,x)=>a+x.min,0);document.getElementById('hSteps').textContent=steps.toLocaleString('pt-BR');document.getElementById('hCalB').textContent=totalCal;document.getElementById('hActN').textContent=acts.length;document.getElementById('hActMin').textContent=totalMin;document.getElementById('stepsInp').value=steps||'';const log=document.getElementById('actLog'),em=document.getElementById('actEmpty');log.querySelectorAll('.act-item').forEach(e=>e.remove());em.style.display=acts.length?'none':'block';acts.forEach(a=>{const d=document.createElement('div');d.className='act-item';d.innerHTML=`<div><div class="act-nm">${a.n}</div><div class="act-det">${a.cat} · ${a.min} min</div></div><div style="display:flex;align-items:center;gap:5px;"><div class="act-cal">${a.cal} kcal</div><button class="act-rm" onclick="rmAct(${a.id})">×</button></div>`;log.appendChild(d);});}
+
+function rmAct(id){
+  S.health.acts=S.health.acts.filter(x=>x.id!==id);
+  renderHealth();
+}
+
+function clearHealthToday(){
+  const entries=getTodayHealthEntries();
+  if(!entries.length){
+    showToast('Não há registros para limpar hoje.','',1800);
+    return;
+  }
+  if(!confirm('Limpar todos os registros de saúde de hoje?'))return;
+  const tk=todayKey();
+  S.health.acts=S.health.acts.filter(a=>a.date && a.date!==tk);
+  renderHealth();
+  saveState();
+}
+
+function intensityLabel(i){
+  if(i==='intensa')return 'Intensa';
+  if(i==='leve')return 'Leve';
+  return 'Moderada';
+}
+
+function intensityIcon(i){
+  if(i==='intensa')return '⚡';
+  if(i==='leve')return '🍃';
+  return '🔥';
+}
+
+function dominantIntensity(entries){
+  if(!entries.length)return '—';
+  const score={leve:0,moderada:0,intensa:0};
+  entries.forEach(e=>{score[e.intensity||'moderada']+=Math.max(1,e.min||1);});
+  return Object.entries(score).sort((a,b)=>b[1]-a[1])[0][0];
+}
+
+function renderHealth(){
+  normalizeHealthEntries();
+  const steps=Number(S.health.steps)||0;
+  const entries=getTodayHealthEntries();
+  const totalMin=entries.reduce((a,x)=>a+(Number(x.min)||0),0);
+  const dom=dominantIntensity(entries);
+
+  document.getElementById('hSteps').textContent=steps.toLocaleString('pt-BR');
+  document.getElementById('hActMin').textContent=totalMin;
+  document.getElementById('hActN').textContent=entries.length;
+  const intensityEl=document.getElementById('hIntensity');
+  if(intensityEl)intensityEl.textContent=dom==='—'?'—':intensityLabel(dom);
+  const stepsInp=document.getElementById('stepsInp');
+  if(stepsInp)stepsInp.value=steps||'';
+
+  const log=document.getElementById('actLog');
+  const em=document.getElementById('actEmpty');
+  if(!log||!em)return;
+  log.querySelectorAll('.act-item').forEach(e=>e.remove());
+  em.style.display=entries.length?'none':'block';
+
+  entries.forEach(a=>{
+    const d=document.createElement('div');
+    d.className='act-item';
+    const note=a.note?`<div class="act-note">${a.note}</div>`:'';
+    const time=a.time?` · ${a.time}`:'';
+    const minText=a.min?`${a.min} min · `:'';
+    d.innerHTML=`
+      <div style="flex:1;min-width:0;">
+        <div class="act-nm">${a.name}</div>
+        <div class="act-det">${minText}${intensityIcon(a.intensity)} ${intensityLabel(a.intensity)}${time}</div>
+        ${note}
+      </div>
+      <button class="act-rm" onclick="rmAct(${a.id})">×</button>`;
+    log.appendChild(d);
+  });
+}

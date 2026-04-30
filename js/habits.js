@@ -1,4 +1,4 @@
-/* Unio Base Organizada v2 */
+/* Unio Base Organizada v3 */
 /* ━━━━ HABITS ━━━━ */
 function pickHabEmoji(e,el){habEmoji=e;document.querySelectorAll('.eg-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');}
 function habPickFreq(f,el){habFreq=f;document.querySelectorAll('#habModal .chip').forEach(c=>c.classList.remove('on'));el.classList.add('on');}

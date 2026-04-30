@@ -1,4 +1,4 @@
-/* Unio Base Organizada v2 */
+/* Unio Base Organizada v3 */
 /* ━━━━ WATER ━━━━ */
 function toggleCustomCupSave(){const t=document.getElementById('cwSaveToggle');if(t)t.classList.toggle('on');}
 function addWater(ml){if(ml<=0)return;haptic('light');S.water.amt+=ml;S.water.log.unshift({ml,time:new Date()});renderWater();if(S.water.amt>=S.water.goal&&S.water.amt-ml<S.water.goal){showBadge('Meta de água atingida!','Parabéns! 💧','🎯');}}

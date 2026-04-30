@@ -1,4 +1,4 @@
-/* Unio Base Organizada v2 */
+/* Unio Base Organizada v3 */
 /* ━━━━ SPLASH ━━━━ */
 function startApp(){const willOnboard=!localStorage.getItem(STORE_KEY+'_onboarded');document.getElementById('splash').classList.add('out');document.getElementById('app').style.opacity='1';setTimeout(()=>{document.getElementById('splash').style.display='none';if(willOnboard)showOnboarding();},600);}
 

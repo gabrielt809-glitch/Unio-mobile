@@ -1,4 +1,4 @@
-/* Unio Base Organizada v2 */
+/* Unio Base Organizada v3 */
 /* ━━━━ SETTINGS ━━━━ */
 function renderTabToggles(){document.getElementById('tabToggles').innerHTML=ALL_TABS.map(t=>`<div class="set-tab-row"><div style="font-size:14px;font-weight:500;">${t.ico} ${t.lbl}</div><div class="toggle${S.pinnedTabs.includes(t.id)?' on':''}" onclick="toggleTabPin('${t.id}')"></div></div>`).join('');}
 function toggleTabPin(id){if(S.pinnedTabs.includes(id)){if(S.pinnedTabs.length<=1)return;S.pinnedTabs=S.pinnedTabs.filter(x=>x!==id);}else{if(S.pinnedTabs.length>=4)return;S.pinnedTabs.push(id);}renderTabToggles();}

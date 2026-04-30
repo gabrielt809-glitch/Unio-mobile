@@ -1,4 +1,4 @@
-/* Unio Base Organizada v2 */
+/* Unio Base Organizada v3 */
 /* ━━━━ NUTRITION ━━━━ */
 function norm(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');}
 const MEAL_MAP={b:{el:'mB',kc:'kcB',label:'Café da manhã'},l:{el:'mL',kc:'kcL',label:'Almoço'},d:{el:'mD',kc:'kcD',label:'Jantar'},s:{el:'mS',kc:'kcS',label:'Lanche'}};

@@ -47,3 +47,15 @@ unio/
 - O app ainda usa `localStorage`.
 - As funções continuam expostas de forma compatível com os `onclick` do HTML.
 - Em uma próxima etapa, podemos remover os `onclick` inline e padronizar eventos via JavaScript.
+
+
+## Atualização v2
+
+Esta versão organiza a próxima etapa de estabilidade do Unio:
+
+- Saúde deixou de depender de biblioteca interna de atividades.
+- A aba Saúde agora funciona como diário livre de movimento.
+- Home ganhou um resumo rápido do dia.
+- Tarefas ganharam atalhos para Hoje/Amanhã, resumo do dia e limpeza de concluídas.
+- A biblioteca de alimentos e atividades foi mantida vazia em `js/data.js` para não carregar listas internas.
+- JavaScript validado com `node --check` no arquivo combinado.

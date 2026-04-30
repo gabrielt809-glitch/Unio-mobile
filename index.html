@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
 <title>Unio</title>
-<!-- Unio Base Organizada v1: HTML separado de CSS e JS por módulos. -->
+<!-- Unio Base Organizada v2: HTML separado de CSS e JS por módulos. -->
 <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -113,6 +113,7 @@
     <div class="panel active" id="tab-home">
       <div class="home-greeting" id="homeGreeting">Bom dia 👋</div>
       <div class="home-date" id="homeDate"></div>
+      <div id="homeTodayFocus"></div>
       <div class="home-habits-row" id="homeHabitsRow" style="display:none;">
         <div style="display:flex;justify-content:space-between;align-items:center;">
           <span class="sec-lbl" style="margin-bottom:0;">Hábitos de hoje</span>
@@ -171,6 +172,12 @@
     <!-- ▓ TAREFAS ▓ -->
     <div class="panel" id="tab-tasks">
       <div class="week-strip" id="weekStrip"></div>
+      <div class="task-quick-row">
+        <button onclick="selectTaskDay('today')">Hoje</button>
+        <button onclick="selectTaskDay('tomorrow')">Amanhã</button>
+        <button onclick="clearDoneTasks()">Limpar concluídas</button>
+      </div>
+      <div class="task-day-card" id="taskDayCard"></div>
       <div class="t-row">
         <input class="field" id="tInput" type="text" placeholder="Nova tarefa…" onkeydown="if(event.key==='Enter')addTask()" style="flex:1;">
         <button class="t-add-btn" onclick="addTask()">+</button>
@@ -258,10 +265,11 @@
     <div class="panel" id="tab-health">
       <div class="h-stats">
         <div class="hst"><div class="hst-val" id="hSteps" style="color:var(--green)">0</div><div class="hst-lbl">👟 Passos</div></div>
-        <div class="hst"><div class="hst-val" id="hCalB" style="color:var(--orange)">0</div><div class="hst-lbl">🔥 kcal gastas</div></div>
-        <div class="hst"><div class="hst-val" id="hActN" style="color:var(--blue)">0</div><div class="hst-lbl">⚡ Atividades</div></div>
-        <div class="hst"><div class="hst-val" id="hActMin" style="color:var(--purple)">0</div><div class="hst-lbl">⏱ Minutos</div></div>
+        <div class="hst"><div class="hst-val" id="hActMin" style="color:var(--purple)">0</div><div class="hst-lbl">⏱ Minutos ativos</div></div>
+        <div class="hst"><div class="hst-val" id="hActN" style="color:var(--blue)">0</div><div class="hst-lbl">📓 Registros</div></div>
+        <div class="hst"><div class="hst-val" id="hIntensity" style="color:var(--orange)">—</div><div class="hst-lbl">🔥 Intensidade</div></div>
       </div>
+
       <div class="card">
         <div class="sec-lbl">Passos</div>
         <div style="display:flex;align-items:center;gap:10px;">
@@ -275,12 +283,52 @@
           <button class="step-btn" onclick="addSteps(10000)">+10k</button>
         </div>
       </div>
-      <div class="search-wrap"><span class="search-ico">🔍</span><input class="s-field" id="actQ" type="text" placeholder="Buscar atividade ou esporte…" oninput="searchAct(this.value)" onfocus="showActList()" onclick="showActList()" autocomplete="off" autocorrect="off" style="border-color:transparent;"></div>
-      <div class="drop-res" id="actRes"></div>
-      <div class="card">
-        <div class="sec-lbl">Atividades de hoje</div>
-        <div id="actLog"><div class="empty" id="actEmpty"><em>🏃</em>Nenhuma atividade registrada</div></div>
+
+      <div class="h-diary-card">
+        <div class="h-diary-head">
+          <div>
+            <div class="h-diary-title">Diário de movimento</div>
+            <div class="h-diary-sub">Registre livremente treinos, esportes, caminhada, bike ou qualquer atividade do dia.</div>
+          </div>
+          <div class="h-diary-ico">🏃</div>
+        </div>
+        <div class="m-grp">
+          <label class="m-lbl">Atividade</label>
+          <input class="field" id="healthNameInp" type="text" placeholder="Ex: bike, caminhada, musculação, futebol..." autocomplete="off" onkeydown="if(event.key==='Enter')addHealthEntry()">
+        </div>
+        <div class="h-form-row">
+          <div class="m-grp" style="margin-bottom:0;">
+            <label class="m-lbl">Duração</label>
+            <input class="field" id="healthMinInp" type="number" placeholder="Min" inputmode="numeric">
+          </div>
+          <div class="m-grp" style="margin-bottom:0;">
+            <label class="m-lbl">Horário</label>
+            <input class="field" id="healthTimeInp" type="time">
+          </div>
+        </div>
+        <div class="m-grp" style="margin-top:12px;">
+          <label class="m-lbl">Intensidade</label>
+          <div class="h-intensity-row">
+            <button class="h-intensity-btn" id="hiLeve" onclick="pickHealthIntensity('leve',this)">🍃 Leve</button>
+            <button class="h-intensity-btn on" id="hiModerada" onclick="pickHealthIntensity('moderada',this)">🔥 Moderada</button>
+            <button class="h-intensity-btn" id="hiIntensa" onclick="pickHealthIntensity('intensa',this)">⚡ Intensa</button>
+          </div>
+        </div>
+        <div class="m-grp">
+          <label class="m-lbl">Observação opcional</label>
+          <textarea class="h-note" id="healthNoteInp" placeholder="Ex: pedal leve na rua, treino de superiores, caminhada com subida..."></textarea>
+        </div>
+        <button class="action-btn" style="background:var(--orange);" onclick="addHealthEntry()">Adicionar ao diário</button>
       </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <div class="sec-lbl" style="margin-bottom:0;">Registros de hoje</div>
+          <button onclick="clearHealthToday()" class="mini-clear-btn">Limpar hoje</button>
+        </div>
+        <div id="actLog"><div class="empty" id="actEmpty"><em>🏃</em>Nenhuma atividade registrada hoje</div></div>
+      </div>
+
       <div class="breath-card">
         <div class="sec-lbl" style="margin-bottom:4px;">Respiração guiada</div>
         <div class="breath-desc" id="breathDesc">Escolha uma técnica de respiração para começar.</div>
@@ -361,13 +409,6 @@
     <div class="toggle on" id="cwSaveToggle" onclick="toggleCustomCupSave()"></div>
   </div>
   <div class="m-acts"><button class="m-cancel" onclick="closeModal('customWater')">Cancelar</button><button class="m-ok" style="background:var(--teal);" onclick="addCustomW()">Adicionar</button></div></div>
-</div>
-
-<div class="overlay off" id="actModal">
-  <div class="sheet"><div class="handle"></div><div class="m-title" id="mActNm">Atividade</div>
-  <div class="m-grp"><label class="m-lbl">Duração (minutos)</label><input class="field" id="actMinInp" type="number" value="30" inputmode="numeric" oninput="updateActPrev()"></div>
-  <div id="actCalPrev" style="font-size:12px;color:var(--lbl2);text-align:center;margin-bottom:4px;"></div>
-  <div class="m-acts"><button class="m-cancel" onclick="closeModal('actModal')">Cancelar</button><button class="m-ok" style="background:var(--orange);" onclick="confirmAct()">Registrar</button></div></div>
 </div>
 
 <div class="overlay off" id="habModal">

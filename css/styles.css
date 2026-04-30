@@ -1,4 +1,4 @@
-/* Unio Base Organizada v2 — estilos globais */
+/* Unio Base Organizada v3 — estilos globais */
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 :root{
   --bg:#000;--bg2:#1C1C1E;--bg3:#2C2C2E;--bg4:#3A3A3C;
@@ -310,20 +310,22 @@ html{height:100%;height:-webkit-fill-available;background:#000;}body{height:100%
 .act-det{font-size:11px;color:var(--lbl2);margin-top:1px;}
 .act-cal{font-size:13px;font-weight:600;color:var(--orange);}
 .act-rm{background:none;border:none;color:var(--red);font-size:16px;cursor:pointer;padding:3px 5px;}
-.breath-card{background:var(--bg2);border-radius:15px;padding:16px;margin-bottom:11px;text-align:center;}
-.breath-ring{width:110px;height:110px;border-radius:50%;background:rgba(0,122,255,.08);border:3px solid rgba(0,122,255,.2);margin:12px auto;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:var(--blue);transition:transform 4s ease-in-out,background .5s;}
-.breath-ring.expand{transform:scale(1.32);background:rgba(0,122,255,.16);}
+.breath-card{background:var(--bg2);border-radius:15px;padding:16px;margin-bottom:11px;text-align:center;overflow:hidden;}
+.breath-stage{position:relative;min-height:184px;display:flex;align-items:center;justify-content:center;margin:10px 0 6px;}
+.breath-ring{width:118px;height:118px;border-radius:50%;background:rgba(0,122,255,.08);border:3px solid rgba(0,122,255,.2);margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:var(--blue);transition:transform 4s ease-in-out,background .5s,box-shadow .5s;will-change:transform;}
+.breath-ring.expand{transform:scale(1.38);background:rgba(0,122,255,.16);box-shadow:0 0 38px rgba(0,122,255,.12);}
 
 
 .breath-mode-row{display:flex;gap:7px;overflow-x:auto;padding:12px 0 4px;margin:0 -2px;scrollbar-width:none;}
 .breath-mode-row::-webkit-scrollbar{display:none;}
 .breath-mode-btn{flex:0 0 auto;background:var(--bg3);border:2px solid transparent;border-radius:12px;color:var(--lbl2);font-family:var(--font);font-size:12px;font-weight:700;padding:9px 12px;cursor:pointer;transition:all .14s;white-space:nowrap;}
 .breath-mode-btn.on{border-color:var(--blue);color:var(--blue);background:rgba(0,122,255,.1);}
-.breath-ring.hold{transform:scale(1.18);background:rgba(0,122,255,.12);}
-.breath-ring.contract{transform:scale(.84);background:rgba(0,122,255,.06);}
+.breath-ring.hold{transform:scale(1.22);background:rgba(0,122,255,.12);box-shadow:0 0 28px rgba(0,122,255,.1);}
+.breath-ring.contract{transform:scale(.78);background:rgba(0,122,255,.06);}
 .breath-ring.pulse{animation:breathPulse 1.8s ease-in-out infinite;}
-@keyframes breathPulse{0%,100%{transform:scale(.94)}50%{transform:scale(1.22)}}
+@keyframes breathPulse{0%,100%{transform:scale(.86)}50%{transform:scale(1.32)}}
 .breath-desc{font-size:12px;color:var(--lbl2);line-height:1.45;min-height:34px;margin-top:4px;}
+.breath-phase{font-size:12px;color:var(--lbl2);min-height:18px;margin:4px 0 10px;}
 .breath-mini{display:flex;justify-content:center;gap:6px;margin-top:8px;flex-wrap:wrap;}
 .breath-mini span{background:var(--bg3);border-radius:999px;padding:5px 9px;font-size:11px;color:var(--lbl2);font-weight:600;}
 

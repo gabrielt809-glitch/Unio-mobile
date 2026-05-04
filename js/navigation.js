@@ -1,10 +1,12 @@
-/* Unio Base Organizada v4 */
+/* Unio Base Organizada v8 */
 /* ━━━━ SPLASH ━━━━ */
 function startApp(){
   const willOnboard=!localStorage.getItem(STORE_KEY+'_onboarded');
-  $('splash').classList.add('out');
+  const splash=$('splash');
+  splash.classList.remove('sp-loading');
+  splash.classList.add('out');
   $('app').style.opacity='1';
-  setTimeout(()=>{$('splash').style.display='none';if(willOnboard)showOnboarding();},600);
+  setTimeout(()=>{splash.style.display='none';if(willOnboard)showOnboarding();},560);
 }
 
 /* ━━━━ CLOCK ━━━━ */
@@ -18,9 +20,15 @@ function renderMenuItems(){$('menuItems').innerHTML=ALL_TABS.map(t=>`<div class=
 
 /* ━━━━ TABS ━━━━ */
 function buildTabBar(){
-  $('tabbar').innerHTML=S.pinnedTabs.map(id=>{
+  const bar=$('tabbar');
+  const pinned=S.pinnedTabs&&S.pinnedTabs.length?S.pinnedTabs:['home','water','habits','focus'];
+  bar.style.setProperty('--tab-count',pinned.length);
+  bar.setAttribute('role','tablist');
+  bar.setAttribute('aria-label','Navegação principal');
+  bar.innerHTML=pinned.map(id=>{
     const t=ALL_TABS.find(x=>x.id===id)||ALL_TABS[0];
-    return`<div class="tab${S.curTab===id?' active':''}" onclick="switchTabById('${id}')"><div class="tab-ico">${t.ico}</div><div class="tab-lbl">${t.lbl}</div></div>`;
+    const active=S.curTab===id;
+    return`<button type="button" class="tab${active?' active':''}" onclick="switchTabById('${id}')" aria-label="${t.lbl}" aria-current="${active?'page':'false'}"><span class="tab-ico" aria-hidden="true">${t.ico}</span><span class="tab-lbl">${t.lbl}</span></button>`;
   }).join('');
 }
 function switchTabById(id){

@@ -43,3 +43,18 @@ vercel.json
 Depois faça commit. A Vercel deve atualizar o deploy automaticamente.
 
 > Observação: por causa do Service Worker, após o deploy pode ser necessário fechar e abrir o app instalado ou limpar o cache do Safari se a versão antiga continuar aparecendo por alguns minutos.
+
+
+## v7
+- Barra inferior refinada em formato de dock flutuante, com safe area mais controlada no iPhone.
+- Abas renderizadas como botões acessíveis, com `aria-label`, estado ativo e contagem dinâmica.
+- Microinterações de seleção preservando `prefers-reduced-motion`.
+
+
+## v8 — Identidade visual premium
+
+- Novo ícone `U.` full-bleed, sem borda neon interna, para ficar mais natural na tela inicial do iPhone.
+- Splash refinado com o ícone do Unio e comportamento diferente para primeiro acesso e retorno ao app.
+- Home redesenhada com hero premium, resumo do dia, cards mais consistentes e preparação visual para Finanças.
+- Mantida a estrutura modular do app: visual no `styles.css`, Home no `home.js`, inicialização no `app.js`.
+- Cache atualizado para `unio-v8-cache-2026-05-04`.

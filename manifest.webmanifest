@@ -1,12 +1,12 @@
 {
   "name": "Unio",
   "short_name": "Unio",
-  "description": "Saúde, rotina e equilíbrio em um só lugar.",
+  "description": "Rotina, saúde, foco e organização em um só lugar.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#000000",
+  "background_color": "#070A14",
+  "theme_color": "#070A14",
   "orientation": "portrait",
   "icons": [
     {

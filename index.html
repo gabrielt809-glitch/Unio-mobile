@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
 <title>Unio</title>
-<meta name="theme-color" content="#000000">
+<meta name="theme-color" content="#070A14">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Unio">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png">
-<!-- Unio Base Organizada v5: rotina diária, tarefas por semana navegável, segurança de texto e PWA offline. -->
+<!-- Unio Base Organizada v8: identidade visual premium, novo ícone, splash refinado e Home redesenhada. -->
 <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -70,21 +70,21 @@
 </div>
 
 <!-- SPLASH -->
-<div id="splash">
-  <div class="sp-logo">Unio<span class="sp-dot">.</span></div>
-  <div class="sp-tag">Saúde, rotina e equilíbrio</div>
-  <div class="sp-grid">
-    <div class="sp-pill">🏠 Início</div>
-    <div class="sp-pill">💧 Hidratação</div>
-    <div class="sp-pill">✅ Tarefas</div>
-    <div class="sp-pill">🌙 Sono</div>
-    <div class="sp-pill">🥗 Nutrição</div>
-    <div class="sp-pill">🏃 Saúde</div>
-    <div class="sp-pill">🔥 Hábitos</div>
-    <div class="sp-pill">🎯 Foco</div>
+<div id="splash" aria-label="Carregando Unio">
+  <div class="sp-orb sp-orb-a"></div>
+  <div class="sp-orb sp-orb-b"></div>
+  <div class="sp-icon" aria-hidden="true">
+    <img src="assets/icons/icon-192.png" alt="">
   </div>
-  <button class="sp-btn" onclick="startApp()">Começar</button>
-  <div class="sp-hint">Tudo em um só lugar</div>
+  <div class="sp-logo">Unio<span class="sp-dot">.</span></div>
+  <div class="sp-tag">Sua rotina, sua casa e seu equilíbrio em um só lugar.</div>
+  <div class="sp-mini">
+    <span>Rotina</span>
+    <span>Saúde</span>
+    <span>Finanças em breve</span>
+  </div>
+  <button class="sp-btn" onclick="startApp()">Configurar Unio</button>
+  <div class="sp-hint">Carregando seus dados...</div>
 </div>
 
 <!-- SIDE MENU -->
@@ -118,27 +118,53 @@
   <div class="content">
     <!-- ▓ HOME ▓ -->
     <div class="panel active" id="tab-home">
-      <div class="home-greeting" id="homeGreeting">Bom dia 👋</div>
-      <div class="home-date" id="homeDate"></div>
+      <section class="home-hero" aria-labelledby="homeGreeting">
+        <div class="home-brand-row">
+          <div class="home-brand-mark">U.</div>
+          <div>
+            <div class="home-brand-name">Unio</div>
+            <div class="home-brand-sub">Centro pessoal</div>
+          </div>
+        </div>
+        <div class="home-greeting" id="homeGreeting">Bom dia</div>
+        <div class="home-date" id="homeDate"></div>
+      </section>
+
       <div id="homeTodayFocus"></div>
+
       <div class="home-habits-row" id="homeHabitsRow" style="display:none;">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <span class="sec-lbl" style="margin-bottom:0;">Hábitos de hoje</span>
-          <span id="homeHabPct" style="font-size:12px;color:var(--lbl2);"></span>
+        <div class="home-section-head">
+          <span class="sec-lbl">Hábitos de hoje</span>
+          <span id="homeHabPct" class="home-section-meta"></span>
         </div>
         <div class="hhab-strip" id="homeHabStrip"></div>
       </div>
+
       <div class="home-grid" id="homeGrid"></div>
-      <div class="home-focus-banner" onclick="switchTabById('focus')">
+
+      <div class="home-focus-banner" onclick="switchTabById('focus')" role="button" aria-label="Iniciar sessão de foco">
         <div class="hfb-left">
-          <div class="hfb-title">🎯 Sessão de Foco</div>
+          <div class="hfb-title">Sessão de Foco</div>
           <div class="hfb-sub" id="homeFocusSub">25 min · 0 sessões hoje</div>
         </div>
-        <button class="hfb-btn">Iniciar</button>
+        <button class="hfb-btn" type="button">Iniciar</button>
       </div>
-      <div id="homeWeekSummary" style="display:none;background:var(--bg2);border-radius:16px;padding:14px 16px;margin-bottom:10px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-          <span id="wsBadge" style="font-size:13px;font-weight:700;color:var(--blue);">📊 Esta semana</span>
+
+      <div class="home-finance-preview" id="homeFinancePreview">
+        <div>
+          <div class="hfp-kicker">Próximo módulo</div>
+          <div class="hfp-title">Finanças</div>
+          <div class="hfp-sub">Preparado para separar sua visão Pessoal e Casa na v9.</div>
+        </div>
+        <div class="hfp-tabs">
+          <span>Pessoal</span>
+          <span>Casa</span>
+        </div>
+      </div>
+
+      <div id="homeWeekSummary" class="home-week-summary" style="display:none;">
+        <div class="home-section-head">
+          <span id="wsBadge" class="home-week-title">Esta semana</span>
         </div>
         <div id="wsContent"></div>
       </div>

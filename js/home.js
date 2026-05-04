@@ -1,4 +1,4 @@
-/* Unio Base Organizada v3 */
+/* Unio Base Organizada v4 */
 /* ━━━━ HOME ━━━━ */
 function renderHome(){
   const now=new Date(),h=now.getHours();
@@ -17,7 +17,7 @@ function renderHome(){
       const isDone=h.log&&h.log.includes(todayK);
       return`<div class="hhab-dot" onclick="quickToggleHab(${h.id})">
         <div class="hhab-circle${isDone?' done':''}" style="background:${isDone?'rgba(52,199,89,.18)':'var(--bg3)'};">${h.emoji}</div>
-        <div class="hhab-lbl">${h.name}</div>
+        <div class="hhab-lbl">${unioEscape(h.name)}</div>
       </div>`;
     }).join('');
   }else{
@@ -69,13 +69,14 @@ function renderHome(){
   const weekSumEl=document.getElementById('homeWeekSummary');
   if(weekSumEl){
     const wkSleep=S.sleep.slice(0,7);
-    const weekSet=new Set(weekKeys());
+    const wkKeys=weekKeys();
+    const weekSet=new Set(wkKeys);
     const wkActs=(S.health?.acts||[]).filter(a=>!a.date||weekSet.has(a.date));
     const wkMins=wkActs.reduce((a,x)=>a+(Number(x.min)||0),0);
-    const wkTasks=S.tasks.filter(t=>t.date&&t.date>=weekKeys()[0]);
+    const wkTasks=S.tasks.filter(t=>t.date&&weekSet.has(t.date));
     const wkDoneTasks=wkTasks.filter(t=>t.done);
     const wkHabRate=S.habits.length?Math.round(S.habits.reduce((a,h)=>{
-      const done=weekKeys().filter(k=>h.log&&h.log.includes(k)).length;
+      const done=wkKeys.filter(k=>h.log&&h.log.includes(k)).length;
       return a+done/7;
     },0)/S.habits.length*100):0;
     if(S.sleep.length||wkActs.length||S.tasks.length||S.habits.length){

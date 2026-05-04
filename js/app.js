@@ -1,11 +1,12 @@
-/* Unio Base Organizada v3 */
+/* Unio Base Organizada v4 */
 /* ━━━━ INIT ━━━━ */
 loadState();
+ensureDailyState({silent:true});
 S_name=localStorage.getItem('unio_name')||'';
 
 const isOnboarded=localStorage.getItem(STORE_KEY+'_onboarded')==='1';
-const splashEl=document.getElementById('splash');
-const appEl=document.getElementById('app');
+const splashEl=$('splash');
+const appEl=$('app');
 
 if(isOnboarded){
   if(splashEl)splashEl.style.display='none';
@@ -16,10 +17,11 @@ if(isOnboarded){
 }
 
 buildTabBar();
-renderWeekStrip();renderTasks();renderWater();renderNutr();renderSleep();renderSleepChart();renderHealth();renderBreathMode();renderHabits();renderFocusTimer();renderHome();
+refreshAll();
 
 const initialTab=S.pinnedTabs.includes(S.curTab)?S.curTab:'home';
 if(initialTab!=='home')switchTabById(initialTab);
+else animateHeader('Início','');
 
 if(isOnboarded){
   const lastToast=localStorage.getItem('unio_last_toast');
@@ -29,3 +31,15 @@ if(isOnboarded){
     setTimeout(()=>showToast('Bem-vindo de volta! 👋','',2200),900);
   }
 }
+
+setInterval(()=>{
+  const changed=ensureDailyState({silent:false});
+  if(changed)refreshAll();
+},60000);
+
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible'){
+    const changed=ensureDailyState({silent:true});
+    if(changed)refreshAll();
+  }
+});

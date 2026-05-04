@@ -1,4 +1,4 @@
-/* Unio Base Organizada v3 */
+/* Unio Base Organizada v4 */
 /* ━━━━ HEALTH — diário livre ━━━━ */
 let healthIntensity='moderada';
 
@@ -148,13 +148,13 @@ function renderHealth(){
   entries.forEach(a=>{
     const d=document.createElement('div');
     d.className='act-item';
-    const note=a.note?`<div class="act-note">${a.note}</div>`:'';
+    const note=a.note?`<div class="act-note">${unioEscape(a.note)}</div>`:'';
     const time=a.time?` · ${a.time}`:'';
     const minText=a.min?`${a.min} min · `:'';
     d.innerHTML=`
       <div style="flex:1;min-width:0;">
-        <div class="act-nm">${a.name}</div>
-        <div class="act-det">${minText}${intensityIcon(a.intensity)} ${intensityLabel(a.intensity)}${time}</div>
+        <div class="act-nm">${unioEscape(a.name)}</div>
+        <div class="act-det">${minText}${intensityIcon(a.intensity)} ${intensityLabel(a.intensity)}${unioEscape(time)}</div>
         ${note}
       </div>
       <button class="act-rm" onclick="rmAct(${a.id})">×</button>`;

@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png">
-<!-- Unio Base Organizada v3: base modular, ícone PWA e splash apenas no primeiro acesso. -->
+<!-- Unio Base Organizada v5: rotina diária, tarefas por semana navegável, segurança de texto e PWA offline. -->
 <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -178,6 +178,14 @@
 
     <!-- ▓ TAREFAS ▓ -->
     <div class="panel" id="tab-tasks">
+      <div class="task-week-head">
+        <button class="task-week-nav" onclick="shiftTaskWeek(-1)">‹</button>
+        <div class="task-week-title">
+          <strong id="taskWeekTitle">Semana atual</strong>
+          <span id="taskWeekSub">Toque em um dia para ver as tarefas</span>
+        </div>
+        <button class="task-week-nav" onclick="shiftTaskWeek(1)">›</button>
+      </div>
       <div class="week-strip" id="weekStrip"></div>
       <div class="task-quick-row">
         <button onclick="selectTaskDay('today')">Hoje</button>
@@ -443,6 +451,7 @@
 <script src="js/data.js"></script>
 <script src="js/state.js"></script>
 <script src="js/state-runtime.js"></script>
+<script src="js/utils.js"></script>
 <script src="js/navigation.js"></script>
 <script src="js/settings.js"></script>
 <script src="js/home.js"></script>
@@ -458,5 +467,12 @@
 <script src="js/onboarding.js"></script>
 <script src="js/storage.js"></script>
 <script src="js/app.js"></script>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('sw.js').catch(err=>console.warn('Unio SW registration failed',err));
+  });
+}
+</script>
 </body>
 </html>

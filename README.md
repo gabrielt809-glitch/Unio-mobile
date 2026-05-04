@@ -1,4 +1,4 @@
-# Unio — Base Organizada v3
+# Unio — Base Organizada v4
 
 Projeto estático do Unio preparado para GitHub + Vercel.
 
@@ -10,16 +10,20 @@ manifest.webmanifest
 assets/icons/
 css/styles.css
 js/
+sw.js
 vercel.json
 ```
 
-## O que mudou na v3
+## O que mudou na v4
 
-- A tela de splash com botão **Começar** aparece somente no primeiro acesso/onboarding.
-- Usuários que já concluíram o onboarding entram direto no app.
-- Ícone PWA/iOS personalizado adicionado, sem depender de um “U” genérico.
-- Manifest Web App incluído para instalação como app.
-- Área da respiração ampliada para a animação não invadir o texto.
+- Correção estrutural da rotina diária: água, nutrição, passos e sessões de foco são zerados ao virar o dia.
+- Tarefas agora têm semana navegável com botões para avançar e voltar semanas.
+- A seleção “sem data” de tarefas passa a persistir corretamente no estado.
+- Resumo semanal da Home agora considera apenas os itens da semana atual.
+- Textos digitados pelo usuário em tarefas, hábitos, saúde e nutrição são protegidos antes de renderizar na tela.
+- Modal de meta de água agora abre já preenchido com a meta atual.
+- Service Worker adicionado para melhorar comportamento PWA/offline e cache do app instalado.
+- Renderização das abas ficou mais robusta ao trocar de tela ou voltar para o app depois de deixá-lo aberto.
 
 ## Atualização no GitHub
 
@@ -32,7 +36,10 @@ assets/
 css/
 js/
 README.md
+sw.js
 vercel.json
 ```
 
 Depois faça commit. A Vercel deve atualizar o deploy automaticamente.
+
+> Observação: por causa do Service Worker, após o deploy pode ser necessário fechar e abrir o app instalado ou limpar o cache do Safari se a versão antiga continuar aparecendo por alguns minutos.

@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png">
-<!-- Unio Base Organizada v8: identidade visual premium, novo ícone, splash refinado e Home redesenhada. -->
+<!-- Unio Base Organizada v8.1: ajustes finos de onboarding e barra inferior integrada ao iPhone. -->
 <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -23,14 +23,12 @@
 <div id="onboarding" style="display:none;">
   <div class="ob-prog" id="obProg"></div>
   <div class="ob-step active" id="ob0">
-    <div class="ob-ico">👋</div>
     <div class="ob-title">Olá! Bem-vindo ao Unio.</div>
     <div class="ob-sub">Vamos configurar tudo em menos de 1 minuto para personalizar sua experiência.</div>
     <button class="ob-btn" onclick="obNext()">Vamos lá →</button>
     <button class="ob-skip" onclick="finishOnboarding()">Pular configuração</button>
   </div>
   <div class="ob-step" id="ob1">
-    <div class="ob-ico">🙂</div>
     <div class="ob-title">Como posso te chamar?</div>
     <div class="ob-sub">Seu nome aparecerá na tela inicial.</div>
     <input class="ob-field" id="obName" type="text" placeholder="Seu nome" autocomplete="off" onkeydown="if(event.key==='Enter')obNext()">
@@ -38,7 +36,6 @@
     <button class="ob-skip" onclick="finishOnboarding()">Pular</button>
   </div>
   <div class="ob-step" id="ob2">
-    <div class="ob-ico">⚖️</div>
     <div class="ob-title">Qual é o seu peso?</div>
     <div class="ob-sub">Usado para calcular calorias gastas nas atividades físicas.</div>
     <input class="ob-field" id="obWeight" type="number" placeholder="Ex: 70 kg" inputmode="numeric" onkeydown="if(event.key==='Enter')obNext()">
@@ -46,7 +43,6 @@
     <button class="ob-skip" onclick="finishOnboarding()">Pular</button>
   </div>
   <div class="ob-step" id="ob3">
-    <div class="ob-ico">💧</div>
     <div class="ob-title">Qual sua meta de água diária?</div>
     <div class="ob-sub">A recomendação geral é de 35ml por kg de peso. Para 70kg: ~2450ml.</div>
     <input class="ob-field" id="obWater" type="number" placeholder="Ex: 2000 ml" inputmode="numeric" onkeydown="if(event.key==='Enter')obNext()">
@@ -54,7 +50,6 @@
     <button class="ob-skip" onclick="finishOnboarding()">Pular</button>
   </div>
   <div class="ob-step" id="ob4">
-    <div class="ob-ico">🔥</div>
     <div class="ob-title">Quais hábitos quer criar?</div>
     <div class="ob-sub">Selecione os que te interessam. Você pode editar depois.</div>
     <div class="ob-hab-grid" id="obHabGrid"></div>
@@ -62,7 +57,6 @@
     <button class="ob-skip" onclick="finishOnboarding()">Pular</button>
   </div>
   <div class="ob-step" id="ob5">
-    <div class="ob-ico">🎉</div>
     <div class="ob-title" id="obReadyTitle">Tudo pronto!</div>
     <div class="ob-sub">Seu Unio está configurado e pronto para usar.</div>
     <button class="ob-btn" onclick="finishOnboarding()">Começar a usar →</button>

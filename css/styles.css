@@ -428,3 +428,13 @@ html{height:100%;height:-webkit-fill-available;background:#000;}body{height:100%
 .h-note{width:100%;background:var(--bg3);border:1.5px solid transparent;border-radius:11px;color:var(--lbl);font-family:var(--font);font-size:14px;padding:12px 13px;outline:none;resize:none;min-height:68px;transition:border-color .18s;}
 .h-note:focus{border-color:var(--orange);}
 .act-note{font-size:12px;color:var(--lbl2);margin-top:3px;line-height:1.35;}
+
+/* ── TASKS v4: semana navegável ── */
+.task-week-head{display:flex;align-items:center;justify-content:space-between;gap:10px;background:linear-gradient(135deg,rgba(0,122,255,.13),rgba(255,255,255,.035));border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:10px 11px;margin-bottom:10px;}
+.task-week-nav{width:36px;height:36px;border:none;border-radius:12px;background:var(--bg3);color:var(--lbl);font-family:var(--font);font-size:24px;font-weight:700;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .12s,background .12s;}
+.task-week-nav:active{transform:scale(.93);background:var(--bg4);}
+.task-week-title{flex:1;min-width:0;text-align:center;}
+.task-week-title strong{display:block;font-size:14px;font-weight:800;color:var(--lbl);letter-spacing:-.1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.task-week-title span{display:block;font-size:11px;color:var(--lbl2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.wd-dot.done{background:var(--green);opacity:.55;}
+@media(max-width:360px){.task-week-nav{width:32px;height:32px;border-radius:10px}.task-week-title strong{font-size:13px}.task-week-title span{font-size:10px}.task-quick-row button{padding:8px 9px;font-size:11px}}

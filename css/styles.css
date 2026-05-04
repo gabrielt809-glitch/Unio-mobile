@@ -64,7 +64,7 @@ html{height:100%;height:-webkit-fill-available;background:#000;}body{height:100%
 .hdr-sub{font-size:13px;color:var(--lbl2);margin-top:2px;}
 
 /* ── SCROLL ── */
-.content{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-y;padding-bottom:calc(98px + max(8px,calc(env(safe-area-inset-bottom) * .28)));scrollbar-width:none;}
+.content{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-y;padding-bottom:calc(66px + env(safe-area-inset-bottom));scrollbar-width:none;}
 .content::-webkit-scrollbar{display:none;}
 
 /* ── PANELS ── */
@@ -77,7 +77,7 @@ html{height:100%;height:-webkit-fill-available;background:#000;}body{height:100%
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
 /* ── TOAST ── */
-#toastContainer{position:fixed;bottom:calc(112px + max(8px,calc(env(safe-area-inset-bottom) * .28)));left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:8px;z-index:900;pointer-events:none;}
+#toastContainer{position:fixed;bottom:calc(78px + env(safe-area-inset-bottom));left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:8px;z-index:900;pointer-events:none;}
 .toast{background:#1C1C1E;border:1px solid rgba(255,255,255,.1);color:#fff;font-size:13px;font-weight:500;padding:10px 18px;border-radius:22px;box-shadow:0 4px 20px rgba(0,0,0,.45);animation:toastIn .3s cubic-bezier(.34,1.3,.64,1) both;max-width:320px;text-align:center;}
 .toast.out{animation:toastOut .25s ease forwards;}
 @keyframes toastIn{from{opacity:0;transform:translateY(12px) scale(.92)}to{opacity:1;transform:translateY(0) scale(1)}}
@@ -88,9 +88,10 @@ html{height:100%;height:-webkit-fill-available;background:#000;}body{height:100%
 #onboarding.out{opacity:0;transform:scale(1.03);pointer-events:none;}
 .ob-step{display:none;width:100%;max-width:360px;animation:fadeUp .3s ease both;}
 .ob-step.active{display:flex;flex-direction:column;}
+.ob-ico{display:none;}
 .ob-ico{font-size:56px;margin-bottom:16px;text-align:center;}
-.ob-title{font-size:28px;font-weight:700;letter-spacing:-.5px;margin-bottom:8px;text-align:center;}
-.ob-sub{font-size:15px;color:var(--lbl2);margin-bottom:32px;text-align:center;line-height:1.5;}
+.ob-title{font-size:28px;font-weight:700;letter-spacing:-.5px;margin-bottom:10px;text-align:center;}
+.ob-sub{font-size:15px;color:var(--lbl2);margin-bottom:28px;text-align:center;line-height:1.5;}
 .ob-field{width:100%;background:var(--bg2);border:1.5px solid var(--sep);border-radius:14px;color:#fff;font-family:var(--font);font-size:17px;padding:16px;outline:none;margin-bottom:12px;transition:border-color .2s;}
 .ob-field:focus{border-color:var(--blue);}
 .ob-btn{width:100%;background:#fff;color:#000;border:none;border-radius:16px;font-family:var(--font);font-size:17px;font-weight:700;padding:17px;cursor:pointer;margin-top:8px;transition:transform .14s,opacity .14s;}
@@ -125,29 +126,29 @@ html{height:100%;height:-webkit-fill-available;background:#000;}body{height:100%
 #tabbar{
   --tab-count:4;
   position:absolute;
-  left:14px;
-  right:14px;
-  bottom:max(8px,calc(env(safe-area-inset-bottom) * .28));
+  left:0;
+  right:0;
+  bottom:0;
   z-index:100;
   display:grid;
   grid-template-columns:repeat(var(--tab-count),minmax(0,1fr));
-  align-items:center;
-  gap:4px;
-  min-height:66px;
-  padding:8px;
-  background:linear-gradient(180deg,rgba(28,28,30,.82),rgba(10,10,12,.94));
-  border:1px solid rgba(255,255,255,.09);
-  border-radius:26px;
-  box-shadow:0 18px 46px rgba(0,0,0,.46),inset 0 1px 0 rgba(255,255,255,.08);
-  backdrop-filter:blur(28px) saturate(180%);
-  -webkit-backdrop-filter:blur(28px) saturate(180%);
+  align-items:end;
+  gap:2px;
+  min-height:58px;
+  padding:6px 10px calc(8px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,rgba(14,15,20,.84),rgba(6,7,10,.96));
+  border-top:1px solid rgba(255,255,255,.07);
+  border-radius:0;
+  box-shadow:0 -10px 28px rgba(0,0,0,.24);
+  backdrop-filter:blur(22px) saturate(165%);
+  -webkit-backdrop-filter:blur(22px) saturate(165%);
 }
 .tab{
   position:relative;
   min-width:0;
-  min-height:50px;
+  min-height:46px;
   border:0;
-  border-radius:19px;
+  border-radius:16px;
   background:transparent;
   color:var(--lbl);
   font-family:var(--font);
@@ -157,7 +158,7 @@ html{height:100%;height:-webkit-fill-available;background:#000;}body{height:100%
   justify-content:center;
   gap:4px;
   cursor:pointer;
-  padding:4px 3px;
+  padding:3px 2px;
   user-select:none;
   transition:background .18s ease,transform .18s cubic-bezier(.34,1.56,.64,1),opacity .15s ease;
 }
@@ -165,7 +166,7 @@ html{height:100%;height:-webkit-fill-available;background:#000;}body{height:100%
   content:"";
   position:absolute;
   left:50%;
-  bottom:4px;
+  bottom:2px;
   width:4px;
   height:4px;
   border-radius:50%;
@@ -175,31 +176,31 @@ html{height:100%;height:-webkit-fill-available;background:#000;}body{height:100%
   transition:opacity .18s ease,transform .18s cubic-bezier(.34,1.56,.64,1);
 }
 .tab:active{opacity:.72;transform:scale(.96);}
-.tab.active{background:rgba(0,122,255,.11);}
+.tab.active{background:rgba(0,122,255,.10);}
 .tab.active::after{opacity:1;transform:translateX(-50%) scale(1);}
 .tab-ico{
-  font-size:22px;
+  font-size:21px;
   line-height:1;
-  height:24px;
+  height:22px;
   display:flex;
   align-items:center;
   justify-content:center;
   transition:transform .2s cubic-bezier(.34,1.56,.64,1),filter .2s ease;
 }
-.tab.active .tab-ico{transform:translateY(-2px) scale(1.12);filter:drop-shadow(0 6px 12px rgba(0,122,255,.28));}
+.tab.active .tab-ico{transform:translateY(-1px) scale(1.08);filter:drop-shadow(0 5px 10px rgba(0,122,255,.20));}
 .tab-lbl{
   max-width:100%;
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;
-  font-size:10px;
-  line-height:1.1;
+  font-size:9px;
+  line-height:1.05;
   font-weight:600;
   color:var(--lbl3);
-  letter-spacing:.15px;
+  letter-spacing:.1px;
   transition:color .15s ease,transform .18s ease;
 }
-.tab.active .tab-lbl{color:var(--blue);transform:translateY(-1px);}
+.tab.active .tab-lbl{color:var(--blue);transform:translateY(0);}
 
 @media (prefers-reduced-motion: reduce){
   .tab,.tab::after,.tab-ico,.tab-lbl{transition:none!important;animation:none!important;}

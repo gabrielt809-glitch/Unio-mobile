@@ -1,4 +1,4 @@
-/* Unio Base Organizada v8.2.2 */
+/* Unio Base Organizada v8.3.2 */
 /* ━━━━ SPLASH ━━━━ */
 function startApp(){
   const willOnboard=!localStorage.getItem(STORE_KEY+'_onboarded');

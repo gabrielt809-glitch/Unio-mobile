@@ -1,5 +1,5 @@
-/* Unio Base Organizada v8.4 — Service Worker */
-const CACHE_NAME='unio-v8-4-cache-2026-05-04';
+/* Unio Base Organizada v8.5 — Service Worker */
+const CACHE_NAME='unio-v8-5-cache-2026-05-04';
 const CORE_ASSETS=[
   './',
   './index.html',

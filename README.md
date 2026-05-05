@@ -57,4 +57,4 @@ Depois faça commit. A Vercel deve atualizar o deploy automaticamente.
 - Splash refinado com o ícone do Unio e comportamento diferente para primeiro acesso e retorno ao app.
 - Home redesenhada com hero premium, resumo do dia, cards mais consistentes e preparação visual para Finanças.
 - Mantida a estrutura modular do app: visual no `styles.css`, Home no `home.js`, inicialização no `app.js`.
-- Cache atualizado para `unio-v8-4-cache-2026-05-04`.
+- Cache atualizado para `unio-v8-5-cache-2026-05-04`.

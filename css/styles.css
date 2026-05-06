@@ -130,30 +130,33 @@ html{height:100%;height:-webkit-fill-available;background:#000;}body{height:100%
   right:0;
   bottom:0;
   z-index:100;
-  display:grid;
-  grid-template-columns:repeat(var(--tab-count),minmax(0,1fr));
-  grid-template-rows:auto env(safe-area-inset-bottom,0px);
+  /* rework layout: flexbox instead of grid for safe area friendly layout */
+  display:flex;
+  justify-content:space-around;
   align-items:stretch;
   gap:0;
-  padding:5px 4px 0 4px;
+  /* pad top/bottom: bottom includes safe area */
+  padding:4px 4px calc(4px + env(safe-area-inset-bottom,0px)) 4px;
   background:rgba(14,14,20,.97);
-  border:none;
+  /* subtle top border to separate from content */
+  border-top:1px solid rgba(255,255,255,.07);
+  border-left:none;
+  border-right:none;
+  border-bottom:none;
   border-radius:0;
   box-shadow:none;
   backdrop-filter:blur(20px) saturate(150%);
   -webkit-backdrop-filter:blur(20px) saturate(150%);
 }
 /* preenche a safe-area abaixo dos ícones sem deslocá-los */
+/* safe-area handled by padding; hide old filler */
 #tabbar::after{
-  content:"";
-  grid-column:1 / -1;
-  height:env(safe-area-inset-bottom,0px);
-  display:block;
+  display:none;
 }
 .tab{
   position:relative;
   min-width:0;
-  min-height:42px;
+  min-height:38px;
   border:0;
   border-radius:10px;
   background:transparent;
@@ -162,10 +165,10 @@ html{height:100%;height:-webkit-fill-available;background:#000;}body{height:100%
   display:flex;
   flex-direction:column;
   align-items:center;
-  justify-content:center;
-  gap:2px;
+  justify-content:flex-end;
+  gap:1px;
   cursor:pointer;
-  padding:4px 2px 3px;
+  padding:5px 2px 2px;
   user-select:none;
   transition:background .2s ease,color .18s ease,transform .15s ease,opacity .15s ease;
 }

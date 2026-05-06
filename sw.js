@@ -1,5 +1,5 @@
-/* Unio Base Organizada v9.4 — Service Worker */
-const CACHE_NAME='unio-v9-4-cache-2026-05-06';
+/* Unio Base Organizada v9.5.1 — Service Worker */
+const CACHE_NAME='unio-v9-5-1-cache-2026-05-06';
 const CORE_ASSETS=[
   './',
   './index.html',
@@ -11,6 +11,8 @@ const CORE_ASSETS=[
   './js/state-runtime.js',
   './js/utils.js',
   './js/ui-components.js',
+  './js/app-forms.js',
+  './js/app-errors.js',
   './js/app-core.js',
   './js/navigation.js',
   './js/settings.js',
@@ -33,6 +35,7 @@ const CORE_ASSETS=[
   './js/onboarding.js',
   './js/app-migrations.js',
   './js/storage.js',
+  './js/app-diagnostics.js',
   './js/app.js',
   './assets/icons/favicon-32.png',
   './assets/icons/apple-touch-icon.png',

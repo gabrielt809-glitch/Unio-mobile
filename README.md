@@ -217,3 +217,33 @@ Versão técnica para deixar a base mais sólida antes de fatura, parcelamentos 
 ### Objetivo
 
 Substituir pontos frágeis de UX/código, criar base de diagnóstico e padronizar formulários antes da v10.
+
+
+## v9.5.1 — Correção de Finanças
+
+Correção de regressão da v9.5.
+
+### Correções
+
+- `commitFinance()` voltou a fazer commit direto:
+  - salva estado;
+  - renderiza Finanças;
+  - atualiza Home.
+- Removida a dependência indireta de `commitModule()` no fluxo financeiro.
+- Lançamentos agora forçam o mês selecionado para o mês da data lançada, garantindo que apareçam imediatamente.
+- Datas dos formulários financeiros agora usam `financeDefaultDate()`, respeitando o mês selecionado.
+- Ajustado layout mobile da aba Finanças:
+  - linhas de lançamento em uma coluna;
+  - botões com quebra segura;
+  - textos longos sem invadir containers;
+  - mini formulários em uma coluna;
+  - lista de contas/cartões mais segura contra overflow.
+- Corrigida a visualização de valores, botões e textos que podiam sobrepor containers.
+
+### Arquivos principais
+
+- `js/finance-actions.js`
+- `js/finance-core.js`
+- `js/finance-render.js`
+- `css/styles.css`
+- `sw.js`

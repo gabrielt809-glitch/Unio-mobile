@@ -98,3 +98,85 @@ Arquivos principais alterados nesta versão:
 - Topbar de Finanças recebeu comportamento responsivo para telas estreitas.
 - Datas das listas foram encurtadas para `dd/mm`, reduzindo quebra visual e invasão dos valores.
 - Cache atualizado para `unio-v9-1-cache-2026-05-06`.
+
+
+## v9.2 — Organização técnica de Finanças
+
+- Aba Finanças reorganizada internamente por seções: helpers, cálculos, renderização e ações.
+- Botões separados de receita/despesa/transferência/cartão substituídos por um único botão “+”.
+- O botão “+” abre uma caixa de seleção com as opções adequadas para Pessoal ou Casa.
+- Formulários de lançamento só aparecem depois da escolha do tipo de ação.
+- Contas agora mostram saldo e podem ser editadas rapidamente.
+- Cartões agora podem ter nome, limite, fechamento e vencimento editados.
+- Lançamentos pessoais e contas da casa passaram a ter edição rápida.
+- Mantida a base visual e a barra inferior corrigida da v8.9/v9.
+
+
+## v9.3 — Saúde do código
+
+Versão técnica antes da v10. Não adiciona grandes funcionalidades novas.
+
+### Melhorias estruturais
+
+- `finance.js` foi reduzido para coordenador do módulo.
+- A lógica de Finanças foi dividida em:
+  - `js/finance-core.js`
+  - `js/finance-calculations.js`
+  - `js/finance-validators.js`
+  - `js/finance-render.js`
+  - `js/finance-actions.js`
+  - `js/finance.js`
+- Cálculos, renderização, validações e mutações de estado ficam em arquivos separados.
+- Adicionado `commitFinance()` para centralizar salvamento e renderização após mudanças financeiras.
+- Adicionadas validações para transações, contas, cartões e contas da casa.
+- Adicionadas fábricas para criar transações, contas, cartões e contas da casa com campos consistentes.
+- Adicionado `schemaVersion: 3` no estado de Finanças.
+- Melhorada a migração de dados financeiros carregados do localStorage.
+- Service Worker atualizado para cachear os novos arquivos do módulo Finanças.
+
+### Objetivo
+
+Preparar o app para a v10, que deve adicionar fatura, parcelamentos e navegação mês a mês com menos risco de quebrar a base existente.
+
+
+## v9.4 — Saúde global do código
+
+Versão técnica antes da v10, sem grandes funcionalidades novas.
+
+### Melhorias globais
+
+- Adicionado `js/constants.js` para versões de schema, defaults de abas e defaults financeiros.
+- Adicionado `APP_SCHEMA_VERSION = 4` e `FINANCE_SCHEMA_VERSION = 3`.
+- Adicionado `js/app-core.js` com `commitApp()` e `commitModule()` para centralizar salvamento/renderização.
+- Adicionado `js/ui-components.js` com helpers iniciais reutilizáveis:
+  - `uiEmptyState()`
+  - `uiSectionHead()`
+  - `uiPill()`
+  - `uiSafeText()`
+- Adicionado `js/app-migrations.js` com migração global:
+  - `migrateLoadedState()`
+  - `normalizeStateAfterLoad()`
+- `storage.js` agora salva `schemaVersion` global e passa dados carregados por migração.
+- `finance-actions.js` passa a usar o commit global quando disponível.
+- `state-runtime.js` usa constantes globais para defaults e versões.
+- `sw.js` atualizado para cachear os novos arquivos.
+- `styles.css` recebeu uma seção inicial de componentes UI globais.
+
+### Checklist manual recomendado
+
+1. Abrir o app no Safari e no app instalado na tela inicial.
+2. Confirmar que a Home carrega sem tela branca.
+3. Alternar entre as abas fixas da barra inferior.
+4. Abrir Finanças > Pessoal.
+5. Abrir o botão `+` e testar cada tipo de lançamento.
+6. Editar conta e saldo.
+7. Abrir Finanças > Casa.
+8. Adicionar conta da casa.
+9. Trocar mês em Finanças.
+10. Fechar e abrir o app novamente para validar persistência.
+11. Confirmar que a barra inferior continua correta.
+12. Confirmar que não há overflow no campo de data no iPhone.
+
+### Objetivo
+
+Deixar o app inteiro mais preparado para crescer sem acúmulo de dívida técnica, antes da v10.

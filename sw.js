@@ -1,14 +1,17 @@
-/* Unio Base Organizada v9.1 — Service Worker */
-const CACHE_NAME='unio-v9-1-cache-2026-05-06';
+/* Unio Base Organizada v9.4 — Service Worker */
+const CACHE_NAME='unio-v9-4-cache-2026-05-06';
 const CORE_ASSETS=[
   './',
   './index.html',
   './manifest.webmanifest',
   './css/styles.css',
   './js/data.js',
+  './js/constants.js',
   './js/state.js',
   './js/state-runtime.js',
   './js/utils.js',
+  './js/ui-components.js',
+  './js/app-core.js',
   './js/navigation.js',
   './js/settings.js',
   './js/home.js',
@@ -20,9 +23,15 @@ const CORE_ASSETS=[
   './js/breathing.js',
   './js/habits.js',
   './js/focus.js',
+  './js/finance-core.js',
+  './js/finance-calculations.js',
+  './js/finance-validators.js',
+  './js/finance-render.js',
+  './js/finance-actions.js',
   './js/finance.js',
   './js/ux.js',
   './js/onboarding.js',
+  './js/app-migrations.js',
   './js/storage.js',
   './js/app.js',
   './assets/icons/favicon-32.png',

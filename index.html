@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png">
-<!-- Unio Base Organizada v9.1: aba Finanças com visões Pessoal e Casa. -->
+<!-- Unio Base Organizada v9.4: saúde global do código, constantes, UI helpers e migração global. -->
 <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -72,7 +72,7 @@
   <div class="sp-mini">
     <span>Rotina</span>
     <span>Saúde</span>
-    <span>Finanças em breve</span>
+    <span>Finanças</span>
   </div>
   <button class="sp-btn" onclick="startApp()">Configurar Unio</button>
   <div class="sp-hint">Carregando seus dados...</div>
@@ -494,9 +494,12 @@
 </div>
 
 <script src="js/data.js"></script>
+<script src="js/constants.js"></script>
 <script src="js/state.js"></script>
 <script src="js/state-runtime.js"></script>
 <script src="js/utils.js"></script>
+<script src="js/ui-components.js"></script>
+<script src="js/app-core.js"></script>
 <script src="js/navigation.js"></script>
 <script src="js/settings.js"></script>
 <script src="js/home.js"></script>
@@ -508,9 +511,15 @@
 <script src="js/breathing.js"></script>
 <script src="js/habits.js"></script>
 <script src="js/focus.js"></script>
+<script src="js/finance-core.js"></script>
+<script src="js/finance-calculations.js"></script>
+<script src="js/finance-validators.js"></script>
+<script src="js/finance-render.js"></script>
+<script src="js/finance-actions.js"></script>
 <script src="js/finance.js"></script>
 <script src="js/ux.js"></script>
 <script src="js/onboarding.js"></script>
+<script src="js/app-migrations.js"></script>
 <script src="js/storage.js"></script>
 <script src="js/app.js"></script>
 <script>

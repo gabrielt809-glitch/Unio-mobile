@@ -1,4 +1,4 @@
-/* Unio Base Organizada v8.8 */
+/* Unio Base Organizada v9 */
 /* ━━━━ STATE ━━━━ */
 const DS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 const MS=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
@@ -22,10 +22,28 @@ const S={
   taskWeekAnchor:dayKey(new Date()),
   tNoDate:false,
   weight:70,
-  pinnedTabs:['home','water','habits','focus'],
+  pinnedTabs:['home','finance','water','habits'],
   curTab:'home',
   focus:{type:25,brkType:5,running:false,onBreak:false,remaining:25*60,sessions:0,iv:null},
+  finance:{
+    view:'personal',
+    month:null,
+    accounts:[
+      {id:1,name:'Itaú',type:'Conta corrente',balance:0},
+      {id:2,name:'Nubank',type:'Conta pagamento',balance:0},
+      {id:3,name:'Mercado Pago',type:'Carteira digital',balance:0},
+      {id:4,name:'Dinheiro',type:'Dinheiro físico',balance:0}
+    ],
+    cards:[{id:1,name:'Nubank',limit:0,closingDay:20,dueDay:27}],
+    categories:['Alimentação','Transporte','Casa','Lazer','Saúde','Educação','Compras','Assinaturas','Investimentos','Outros'],
+    transactions:[],
+    house:{
+      splitMode:'fifty',
+      people:[{id:'gabriel',name:'Gabriel',income:0},{id:'giulianna',name:'Giulianna',income:0}],
+      bills:[]
+    }
+  },
   breathMode:'box',
 };
-let tId=0,habId=0,selFood=null,selMeal='b',selAct=null,habFreq='diario',habEmoji='💪',breathTimer=null,breathPhaseIdx=0;
+let tId=0,habId=0,financeTxId=0,financeAccountId=4,financeCardId=1,financeBillId=0,selFood=null,selMeal='b',selAct=null,habFreq='diario',habEmoji='💪',breathTimer=null,breathPhaseIdx=0;
 const HAB_EMOJIS=['💧','🏃','📚','🧘','💪','🥗','😴','✍️','🎯','🧹','🚶','🌅','🎸','📖','💊','🥤','🍎','🌿','🧠','⚡','🔥','🎨','🏊','🚴','🤸'];

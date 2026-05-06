@@ -1,4 +1,4 @@
-/* Unio Base Organizada v8.9 */
+/* Unio Base Organizada v9 */
 /* ━━━━ SPLASH ━━━━ */
 function startApp(){
   const willOnboard=!localStorage.getItem(STORE_KEY+'_onboarded');
@@ -63,6 +63,7 @@ function renderCurrentTab(){
   if(S.curTab==='sleep'){renderSleep();renderSleepChart();}
   if(S.curTab==='nutrition')renderNutr();
   if(S.curTab==='health')renderHealth();
+  if(S.curTab==='finance')renderFinance();
   if(S.curTab==='habits')renderHabits();
   if(S.curTab==='focus')renderFocusTimer();
 }

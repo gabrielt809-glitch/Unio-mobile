@@ -1,4 +1,4 @@
-/* Unio Base Organizada v8.8 */
+/* Unio Base Organizada v9 */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    PERSISTÊNCIA — localStorage
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
@@ -26,9 +26,14 @@ function saveState(){
         onBreak:false,
         remaining:S.focus.running?S.focus.type*60:S.focus.remaining
       },
+      finance:S.finance,
       breathMode:S.breathMode,
       tId,
       habId,
+      financeTxId,
+      financeAccountId,
+      financeCardId,
+      financeBillId,
       savedAt:Date.now()
     };
     localStorage.setItem(STORE_KEY,JSON.stringify(p));
@@ -52,6 +57,8 @@ function loadState(){
     if(d.weight)S.weight=d.weight;
     if(d.pinnedTabs)S.pinnedTabs=d.pinnedTabs;
     if(d.curTab)S.curTab=d.curTab;
+    if(d.finance)S.finance=mergeFinanceState(d.finance);
+    migratePinnedTabsForFinance(d);
     if(d.breathMode)S.breathMode=d.breathMode;
     if(d.focus){
       S.focus.type=d.focus.type??25;
@@ -63,10 +70,32 @@ function loadState(){
     }
     if(d.tId)tId=d.tId;
     if(d.habId)habId=d.habId;
+    if(d.financeTxId)financeTxId=d.financeTxId;
+    if(d.financeAccountId)financeAccountId=d.financeAccountId;
+    if(d.financeCardId)financeCardId=d.financeCardId;
+    if(d.financeBillId)financeBillId=d.financeBillId;
     if(S.water.log)S.water.log=S.water.log.map(it=>({...it,time:new Date(it.time)}));
     ensureDailyState?.({silent:true});
     return true;
   }catch(e){console.warn('Unio load error',e);return false;}
+}
+
+function mergeFinanceState(saved){
+  const base=JSON.parse(JSON.stringify(S.finance));
+  const fin={...base,...saved};
+  fin.accounts=Array.isArray(saved.accounts)?saved.accounts:base.accounts;
+  fin.cards=Array.isArray(saved.cards)?saved.cards:base.cards;
+  fin.categories=Array.isArray(saved.categories)?saved.categories:base.categories;
+  fin.transactions=Array.isArray(saved.transactions)?saved.transactions:base.transactions;
+  fin.house={...base.house,...(saved.house||{})};
+  fin.house.people=Array.isArray(saved.house?.people)?saved.house.people:base.house.people;
+  fin.house.bills=Array.isArray(saved.house?.bills)?saved.house.bills:base.house.bills;
+  return fin;
+}
+function migratePinnedTabsForFinance(saved){
+  const oldDefault=Array.isArray(saved.pinnedTabs)&&saved.pinnedTabs.join('|')==='home|water|habits|focus';
+  if(oldDefault){S.pinnedTabs=['home','finance','water','habits'];return;}
+  if(!Array.isArray(S.pinnedTabs)||!S.pinnedTabs.length)S.pinnedTabs=['home','finance','water','habits'];
 }
 function clearAllData(){
   if(!confirm('Apagar todos os dados do Unio?\nEsta ação não pode ser desfeita.'))return;
@@ -76,4 +105,4 @@ function clearAllData(){
   location.reload();
 }
 function autoSave(fn){return function(...a){const r=fn.apply(this,a);saveState();return r;};}
-saveGoal=autoSave(saveGoal);addWater=autoSave(addWater);removeWater=autoSave(removeWater);removeWaterPreset=autoSave(removeWaterPreset);addTask=autoSave(addTask);toggleTask=autoSave(toggleTask);delTask=autoSave(delTask);logSleep=autoSave(logSleep);addDiaryFood=autoSave(addDiaryFood);rmFood=autoSave(rmFood);saveSteps=autoSave(saveSteps);addSteps=autoSave(addSteps);addHealthEntry=autoSave(addHealthEntry);rmAct=autoSave(rmAct);confirmHab=autoSave(confirmHab);toggleHabToday=autoSave(toggleHabToday);toggleHabDay=autoSave(toggleHabDay);rmHabit=autoSave(rmHabit);saveSettings=autoSave(saveSettings);tickFocus=autoSave(tickFocus);toggleNoDate=autoSave(toggleNoDate);shiftTaskWeek=autoSave(shiftTaskWeek);selectTaskDay=autoSave(selectTaskDay);moveTaskToDay=autoSave(moveTaskToDay);
+saveGoal=autoSave(saveGoal);addWater=autoSave(addWater);removeWater=autoSave(removeWater);removeWaterPreset=autoSave(removeWaterPreset);addTask=autoSave(addTask);toggleTask=autoSave(toggleTask);delTask=autoSave(delTask);logSleep=autoSave(logSleep);addDiaryFood=autoSave(addDiaryFood);rmFood=autoSave(rmFood);saveSteps=autoSave(saveSteps);addSteps=autoSave(addSteps);addHealthEntry=autoSave(addHealthEntry);rmAct=autoSave(rmAct);confirmHab=autoSave(confirmHab);toggleHabToday=autoSave(toggleHabToday);toggleHabDay=autoSave(toggleHabDay);rmHabit=autoSave(rmHabit);saveSettings=autoSave(saveSettings);tickFocus=autoSave(tickFocus);toggleNoDate=autoSave(toggleNoDate);shiftTaskWeek=autoSave(shiftTaskWeek);selectTaskDay=autoSave(selectTaskDay);moveTaskToDay=autoSave(moveTaskToDay);setFinanceView=autoSave(setFinanceView);shiftFinanceMonth=autoSave(shiftFinanceMonth);addFinanceTx=autoSave(addFinanceTx);deleteFinanceTx=autoSave(deleteFinanceTx);addFinanceAccount=autoSave(addFinanceAccount);deleteFinanceAccount=autoSave(deleteFinanceAccount);addFinanceCard=autoSave(addFinanceCard);deleteFinanceCard=autoSave(deleteFinanceCard);addHouseBill=autoSave(addHouseBill);toggleHouseBillPaid=autoSave(toggleHouseBillPaid);deleteHouseBill=autoSave(deleteHouseBill);setHouseSplitMode=autoSave(setHouseSplitMode);saveHousePeople=autoSave(saveHousePeople);

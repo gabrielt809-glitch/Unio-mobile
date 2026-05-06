@@ -1,4 +1,4 @@
-/* Unio Base Organizada v8.8 */
+/* Unio Base Organizada v9 */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    UTILS — segurança, datas e rotina diária
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
@@ -64,6 +64,6 @@ function ensureDailyState(opts={}){
 }
 function refreshAll(){
   try{
-    renderWeekStrip?.();renderTasks?.();renderWater?.();renderNutr?.();renderSleep?.();renderSleepChart?.();renderHealth?.();renderBreathMode?.();renderHabits?.();renderFocusTimer?.();renderHome?.();buildTabBar?.();
+    renderWeekStrip?.();renderTasks?.();renderWater?.();renderNutr?.();renderSleep?.();renderSleepChart?.();renderHealth?.();renderBreathMode?.();renderHabits?.();renderFocusTimer?.();renderFinance?.();renderHome?.();buildTabBar?.();
   }catch(e){console.warn('Unio refresh error',e);}
 }

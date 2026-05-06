@@ -1,4 +1,4 @@
-/* Unio Base Organizada v9.5 — estilos globais */
+/* Unio Base Organizada v9.5.1 — estilos globais */
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 :root{
   --bg:#000;--bg2:#1C1C1E;--bg3:#2C2C2E;--bg4:#3A3A3C;
@@ -870,3 +870,110 @@ html{height:100%;height:-webkit-fill-available;background:#000;}body{height:100%
 .edit-modal-cancel{background:rgba(255,255,255,.07);color:var(--lbl2);}
 .edit-modal-save{background:var(--green);color:#061006;}
 .edit-modal-cancel:active,.edit-modal-save:active{transform:scale(.98);opacity:.86;}
+
+
+/* ── FINANCE v9.5.1 — estabilização mobile e anti-overflow ── */
+#financeContent{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  min-width:0;
+}
+#financeContent>*{
+  min-width:0;
+}
+.fin-card,
+.fin-metric,
+.fin-add-zone,
+.fin-action-sheet,
+.fin-form-card,
+.fin-row,
+.fin-tx{
+  max-width:100%;
+}
+.fin-card{
+  overflow:visible;
+}
+.fin-card-head>div:first-child{
+  min-width:0;
+}
+.fin-card-sub{
+  overflow-wrap:anywhere;
+}
+.fin-form-grid{
+  grid-template-columns:minmax(0,1fr);
+}
+.fin-form-grid .m-grp{
+  margin-bottom:0;
+}
+.fin-form-grid .field,
+.fin-mini-form .field,
+.edit-modal-body .field{
+  min-height:44px;
+  border-radius:13px;
+}
+.fin-mini-form,
+.fin-account-add,
+.fin-card-add{
+  grid-template-columns:minmax(0,1fr);
+}
+.fin-mini-form button{
+  min-height:42px;
+}
+.fin-row,
+.fin-tx{
+  grid-template-columns:minmax(0,1fr);
+  align-items:stretch;
+}
+.fin-row-actions,
+.fin-tx-side{
+  width:100%;
+  max-width:none;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:7px;
+  padding-top:4px;
+}
+.fin-row-actions button,
+.fin-tx-side button,
+.fin-tx-side .fin-edit-btn,
+.fin-row .fin-edit-btn{
+  min-width:0;
+  flex:1 1 auto;
+  max-width:100%;
+}
+.fin-tx-side b{
+  flex:1 1 100%;
+  text-align:left;
+  font-size:13px;
+  white-space:normal;
+}
+.fin-tx span,
+.fin-row span{
+  white-space:normal;
+  overflow:visible;
+  text-overflow:clip;
+  word-break:break-word;
+}
+.fin-action-option{
+  grid-template-columns:34px minmax(0,1fr);
+}
+.fin-action-option em{
+  white-space:normal;
+}
+.fin-topbar{
+  align-items:stretch;
+}
+.fin-month-nav{
+  flex-shrink:0;
+}
+@media (min-width:390px){
+  .fin-two-col{
+    grid-template-columns:minmax(0,1fr);
+  }
+}
+@media (min-width:430px){
+  .fin-two-col{
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  }
+}

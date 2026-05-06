@@ -247,3 +247,33 @@ Correção de regressão da v9.5.
 - `js/finance-render.js`
 - `css/styles.css`
 - `sw.js`
+
+
+## v10 — Cartões, faturas e parcelamentos
+
+Primeira versão avançada da aba Finanças.
+
+### Entrou nesta versão
+
+- Compra no cartão com opção de parcelas.
+- Parcelamentos geram lançamentos mensais automaticamente.
+- Cartões exibem fatura do mês selecionado.
+- Cartões exibem valor usado, valor pago, valor em aberto e limite disponível.
+- Botão de pagamento de fatura por cartão.
+- Pagamento de fatura gera lançamento financeiro vinculado ao cartão.
+- Formulário de cartão passa a diferenciar valor total e quantidade de parcelas.
+- Data padrão respeita o mês selecionado em Finanças.
+- Migração financeira preserva campos de parcelamento e pagamento de fatura.
+- `APP_SCHEMA_VERSION` atualizado para `10`.
+- `FINANCE_SCHEMA_VERSION` atualizado para `4`.
+
+### Arquivos principais
+
+- `js/finance-core.js`
+- `js/finance-calculations.js`
+- `js/finance-validators.js`
+- `js/finance-render.js`
+- `js/finance-actions.js`
+- `js/storage.js`
+- `css/styles.css`
+- `sw.js`

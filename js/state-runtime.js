@@ -1,4 +1,4 @@
-/* Unio Base Organizada v9.1 */
+/* Unio Base Organizada v9.4 */
 /* ━━━━ STATE ━━━━ */
 const DS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 const MS=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
@@ -11,6 +11,7 @@ function weekKeys(anchor){
 }
 
 const S={
+  schemaVersion:APP_SCHEMA_VERSION,
   activeDay:dayKey(new Date()),
   water:{amt:0,goal:2000,log:[],presets:[150,250,350,500]},
   tasks:[],
@@ -22,12 +23,14 @@ const S={
   taskWeekAnchor:dayKey(new Date()),
   tNoDate:false,
   weight:70,
-  pinnedTabs:['home','finance','water','habits'],
+  pinnedTabs:DEFAULT_PINNED_TABS.slice(),
   curTab:'home',
   focus:{type:25,brkType:5,running:false,onBreak:false,remaining:25*60,sessions:0,iv:null},
   finance:{
+    schemaVersion:FINANCE_SCHEMA_VERSION,
     view:'personal',
     month:null,
+    ui:{actionOpen:false,activeAction:null},
     accounts:[
       {id:1,name:'Itaú',type:'Conta corrente',balance:0},
       {id:2,name:'Nubank',type:'Conta pagamento',balance:0},
@@ -35,7 +38,7 @@ const S={
       {id:4,name:'Dinheiro',type:'Dinheiro físico',balance:0}
     ],
     cards:[{id:1,name:'Nubank',limit:0,closingDay:20,dueDay:27}],
-    categories:['Alimentação','Transporte','Casa','Lazer','Saúde','Educação','Compras','Assinaturas','Investimentos','Outros'],
+    categories:DEFAULT_FINANCE_CATEGORIES.slice(),
     transactions:[],
     house:{
       splitMode:'fifty',

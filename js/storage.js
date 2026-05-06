@@ -1,4 +1,4 @@
-/* Unio Base Organizada v9.1 */
+/* Unio Base Organizada v9.4 */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    PERSISTÊNCIA — localStorage
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
@@ -6,6 +6,7 @@ const STORE_KEY='unio_v4';
 function saveState(){
   try{
     const p={
+      schemaVersion:APP_SCHEMA_VERSION,
       activeDay:S.activeDay,
       water:S.water,
       tasks:S.tasks,
@@ -43,7 +44,8 @@ function loadState(){
   try{
     const raw=localStorage.getItem(STORE_KEY);
     if(!raw)return false;
-    const d=JSON.parse(raw);
+    let d=JSON.parse(raw);
+    if(typeof migrateLoadedState==='function')d=migrateLoadedState(d);
     if(d.activeDay)S.activeDay=d.activeDay;
     if(d.water)Object.assign(S.water,d.water);
     if(d.tasks)S.tasks=d.tasks;
@@ -75,6 +77,7 @@ function loadState(){
     if(d.financeCardId)financeCardId=d.financeCardId;
     if(d.financeBillId)financeBillId=d.financeBillId;
     if(S.water.log)S.water.log=S.water.log.map(it=>({...it,time:new Date(it.time)}));
+    if(typeof normalizeStateAfterLoad==='function')normalizeStateAfterLoad();
     ensureDailyState?.({silent:true});
     return true;
   }catch(e){console.warn('Unio load error',e);return false;}
@@ -82,20 +85,64 @@ function loadState(){
 
 function mergeFinanceState(saved){
   const base=JSON.parse(JSON.stringify(S.finance));
-  const fin={...base,...saved};
-  fin.accounts=Array.isArray(saved.accounts)?saved.accounts:base.accounts;
-  fin.cards=Array.isArray(saved.cards)?saved.cards:base.cards;
-  fin.categories=Array.isArray(saved.categories)?saved.categories:base.categories;
-  fin.transactions=Array.isArray(saved.transactions)?saved.transactions:base.transactions;
-  fin.house={...base.house,...(saved.house||{})};
-  fin.house.people=Array.isArray(saved.house?.people)?saved.house.people:base.house.people;
-  fin.house.bills=Array.isArray(saved.house?.bills)?saved.house.bills:base.house.bills;
+  const source=saved||{};
+  const fin={...base,...source};
+  fin.schemaVersion=FINANCE_SCHEMA_VERSION;
+  fin.accounts=Array.isArray(source.accounts)?source.accounts:base.accounts;
+  fin.cards=Array.isArray(source.cards)?source.cards:base.cards;
+  fin.categories=Array.isArray(source.categories)?source.categories:base.categories;
+  fin.transactions=Array.isArray(source.transactions)?source.transactions:base.transactions;
+  fin.ui={...base.ui,...(source.ui||{})};
+  fin.house={...base.house,...(source.house||{})};
+  fin.house.people=Array.isArray(source.house?.people)?source.house.people:base.house.people;
+  fin.house.bills=Array.isArray(source.house?.bills)?source.house.bills:base.house.bills;
+  return migrateFinanceState(fin);
+}
+function migrateFinanceState(fin){
+  fin.accounts=(fin.accounts||[]).map(a=>({
+    id:a.id,
+    name:a.name||'Conta',
+    type:a.type||'Conta',
+    balance:Number(a.balance)||0,
+    createdAt:a.createdAt||Date.now(),
+    updatedAt:a.updatedAt||a.createdAt||Date.now()
+  }));
+  fin.cards=(fin.cards||[]).map(c=>({
+    id:c.id,
+    name:c.name||'Cartão',
+    limit:Number(c.limit)||0,
+    closingDay:clamp(parseInt(c.closingDay)||20,1,31),
+    dueDay:clamp(parseInt(c.dueDay)||27,1,31),
+    createdAt:c.createdAt||Date.now(),
+    updatedAt:c.updatedAt||c.createdAt||Date.now()
+  }));
+  fin.transactions=(fin.transactions||[]).map(t=>({
+    ...t,
+    scope:t.scope||'personal',
+    amount:Number(t.amount)||0,
+    title:t.title||financeActionLabel?.(t.type)||'Lançamento',
+    date:t.date||financeDateToday?.()||dayKey(new Date()),
+    category:t.category||'Outros',
+    createdAt:t.createdAt||Date.now(),
+    updatedAt:t.updatedAt||t.createdAt||Date.now()
+  }));
+  fin.house.bills=(fin.house.bills||[]).map(b=>({
+    ...b,
+    title:b.title||'Conta da casa',
+    amount:Number(b.amount)||0,
+    date:b.date||financeDateToday?.()||dayKey(new Date()),
+    category:b.category||'Casa',
+    paidBy:b.paidBy||'none',
+    paid:!!b.paid,
+    createdAt:b.createdAt||Date.now(),
+    updatedAt:b.updatedAt||b.createdAt||Date.now()
+  }));
   return fin;
 }
 function migratePinnedTabsForFinance(saved){
   const oldDefault=Array.isArray(saved.pinnedTabs)&&saved.pinnedTabs.join('|')==='home|water|habits|focus';
-  if(oldDefault){S.pinnedTabs=['home','finance','water','habits'];return;}
-  if(!Array.isArray(S.pinnedTabs)||!S.pinnedTabs.length)S.pinnedTabs=['home','finance','water','habits'];
+  if(oldDefault){S.pinnedTabs=DEFAULT_PINNED_TABS.slice();return;}
+  if(!Array.isArray(S.pinnedTabs)||!S.pinnedTabs.length)S.pinnedTabs=DEFAULT_PINNED_TABS.slice();
 }
 function clearAllData(){
   if(!confirm('Apagar todos os dados do Unio?\nEsta ação não pode ser desfeita.'))return;

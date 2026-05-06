@@ -1,4 +1,4 @@
-/* Unio Base Organizada v8.5 — estilos globais */
+/* Unio Base Organizada v8.8 — estilos globais */
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 :root{
   --bg:#000;--bg2:#1C1C1E;--bg3:#2C2C2E;--bg4:#3A3A3C;
@@ -62,11 +62,11 @@ html{height:100%;height:-webkit-fill-available;background:#000;}body{height:100%
 .hdr-sub{font-size:13px;color:var(--lbl2);margin-top:2px;}
 
 /* ── SCROLL ── */
-.content{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-y;padding-bottom:calc(58px + max(8px,env(safe-area-inset-bottom)));scrollbar-width:none;}
+.content{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-y;padding-bottom:calc(76px + env(safe-area-inset-bottom,0px));scrollbar-width:none;}
 .content::-webkit-scrollbar{display:none;}
 
 /* ── FADE acima da tabbar ── */
-#app::after{content:"";position:absolute;left:0;right:0;bottom:0;height:calc(130px + env(safe-area-inset-bottom,0px));background:linear-gradient(to top,rgba(14,14,20,1) 0%,rgba(14,14,20,.85) 30%,rgba(14,14,20,.4) 60%,transparent 100%);pointer-events:none;z-index:98;}
+#app::after{content:"";position:absolute;left:0;right:0;bottom:0;height:calc(104px + env(safe-area-inset-bottom,0px));background:linear-gradient(to top,rgba(14,14,20,.98) 0%,rgba(14,14,20,.72) 44%,rgba(14,14,20,.22) 72%,transparent 100%);pointer-events:none;z-index:98;}
 
 /* ── PANELS ── */
 .panel{display:none;padding:14px 14px 0;position:relative;}
@@ -78,7 +78,7 @@ html{height:100%;height:-webkit-fill-available;background:#000;}body{height:100%
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
 /* ── TOAST ── */
-#toastContainer{position:fixed;bottom:calc(65px + max(8px,env(safe-area-inset-bottom)));left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:8px;z-index:900;pointer-events:none;}
+#toastContainer{position:fixed;bottom:calc(82px + env(safe-area-inset-bottom,0px));left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:8px;z-index:900;pointer-events:none;}
 .toast{background:#1C1C1E;border:1px solid rgba(255,255,255,.1);color:#fff;font-size:13px;font-weight:500;padding:10px 18px;border-radius:22px;box-shadow:0 4px 20px rgba(0,0,0,.45);animation:toastIn .3s cubic-bezier(.34,1.3,.64,1) both;max-width:320px;text-align:center;}
 .toast.out{animation:toastOut .25s ease forwards;}
 @keyframes toastIn{from{opacity:0;transform:translateY(12px) scale(.92)}to{opacity:1;transform:translateY(0) scale(1)}}
@@ -122,7 +122,7 @@ html{height:100%;height:-webkit-fill-available;background:#000;}body{height:100%
 .badge-title{font-size:13px;font-weight:700;color:var(--yellow);}
 .badge-sub{font-size:12px;color:var(--lbl2);margin-top:1px;}
 
-/* ── TAB BAR ── */
+/* ── TAB BAR v8.8 ── */
 #tabbar{
   --tab-count:4;
   position:absolute;
@@ -130,75 +130,81 @@ html{height:100%;height:-webkit-fill-available;background:#000;}body{height:100%
   right:0;
   bottom:0;
   z-index:100;
-  /* rework layout: flexbox instead of grid for safe area friendly layout */
-  display:flex;
-  justify-content:space-around;
-  align-items:stretch;
-  gap:0;
-  /* pad top/bottom: bottom includes safe area */
-  /* reduce constant to bring icons closer to the bottom while still respecting the safe area */
-  padding:4px 4px calc(2px + env(safe-area-inset-bottom,0px)) 4px;
+  height:calc(62px + env(safe-area-inset-bottom,0px));
+  padding:0;
+  margin:0;
   background:rgba(14,14,20,.97);
-  /* subtle top border to separate from content */
-  border-top:1px solid rgba(255,255,255,.07);
-  border-left:none;
-  border-right:none;
-  border-bottom:none;
-  border-radius:0;
-  box-shadow:none;
+  border-top:1px solid rgba(255,255,255,.075);
+  box-shadow:0 -10px 28px rgba(0,0,0,.22);
   backdrop-filter:blur(20px) saturate(150%);
   -webkit-backdrop-filter:blur(20px) saturate(150%);
 }
-/* preenche a safe-area abaixo dos ícones sem deslocá-los */
-/* safe-area handled by padding; hide old filler */
-#tabbar::after{
-  display:none;
+#tabbar::before{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  top:-26px;
+  height:26px;
+  background:linear-gradient(to top,rgba(14,14,20,.82),transparent);
+  pointer-events:none;
+}
+.tabbar-inner{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:max(8px,calc(env(safe-area-inset-bottom,0px) - 16px));
+  height:54px;
+  display:grid;
+  grid-template-columns:repeat(var(--tab-count),minmax(0,1fr));
+  align-items:end;
+  gap:0;
+  padding:0 5px;
 }
 .tab{
   position:relative;
   min-width:0;
-  min-height:36px;
+  height:52px;
   border:0;
-  border-radius:10px;
+  border-radius:14px;
   background:transparent;
-  color:var(--lbl2);
+  color:rgba(235,235,245,.62);
   font-family:var(--font);
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:flex-end;
-  gap:1px;
+  gap:2px;
   cursor:pointer;
-  /* adjust padding: more top padding and minimal bottom padding to push content downward */
-  padding:6px 2px 1px;
+  padding:8px 2px 5px;
   user-select:none;
-  transition:background .2s ease,color .18s ease,transform .15s ease,opacity .15s ease;
+  transition:background .18s ease,color .16s ease,transform .14s ease,opacity .14s ease;
 }
 .tab::after{display:none;}
-.tab:active{opacity:.7;transform:scale(.94);}
-.tab.active{background:rgba(142,167,255,.14);color:var(--brand);}
+.tab:active{opacity:.72;transform:scale(.96);}
+.tab.active{background:rgba(142,167,255,.13);color:var(--brand);}
 .tab-ico{
-  font-size:19px;
+  font-size:20px;
   line-height:1;
-  height:20px;
+  height:21px;
   display:flex;
   align-items:center;
   justify-content:center;
   color:inherit;
-  transition:transform .2s cubic-bezier(.34,1.56,.64,1),color .18s ease;
+  transition:transform .18s cubic-bezier(.34,1.56,.64,1),color .16s ease;
 }
-.tab.active .tab-ico{transform:scale(1.1);color:var(--brand);}
+.tab.active .tab-ico{transform:scale(1.05);color:var(--brand);}
 .tab-lbl{
   max-width:100%;
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;
-  font-size:9px;
-  line-height:1.1;
+  font-size:10px;
+  line-height:1.05;
   font-weight:600;
   color:inherit;
-  letter-spacing:.1px;
-  transition:color .18s ease;
+  letter-spacing:.05px;
+  transition:color .16s ease;
 }
 .tab.active .tab-lbl{color:var(--brand);}
 

@@ -1,4 +1,4 @@
-/* Unio Base Organizada v9.4 */
+/* Unio Base Organizada v9.5 */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    FINANÇAS — ações
    Mutação do estado, commit, edição e exclusão.
@@ -36,19 +36,25 @@ function addFinanceTx(){
 function editFinanceTx(id){
   const t=(S.finance.transactions||[]).find(x=>x.id===id);
   if(!t)return;
-  const title=prompt('Descrição do lançamento',t.title||'');
-  if(title===null)return;
-  const amount=prompt('Valor',String(t.amount||0).replace('.',','));
-  if(amount===null)return;
-  const date=prompt('Data no formato AAAA-MM-DD',t.date||financeDateToday());
-  if(date===null)return;
-  const n=financeParseAmount(amount);
-  if(n<=0){showToast('Valor inválido');return;}
-  t.title=title.trim()||t.title;
-  t.amount=n;
-  t.date=date.trim()||t.date;
-  t.updatedAt=Date.now();
-  commitFinance();
+  openEditModal({
+    title:'Editar lançamento',
+    subtitle:'Atualize descrição, valor e data.',
+    fields:[
+      {name:'title',label:'Descrição',value:t.title||'',placeholder:'Descrição'},
+      {name:'amount',label:'Valor',value:String(t.amount||0).replace('.',','),inputmode:'decimal',placeholder:'0,00'},
+      {name:'date',label:'Data',type:'date',value:t.date||financeDateToday()}
+    ],
+    onSave(values){
+      const n=financeParseAmount(values.amount);
+      if(n<=0){showToast('Valor inválido');return false;}
+      if(!isDateInputValue(values.date)){showToast('Data inválida');return false;}
+      t.title=String(values.title||'').trim()||t.title;
+      t.amount=n;
+      t.date=values.date;
+      t.updatedAt=Date.now();
+      commitFinance();
+    }
+  });
 }
 function deleteFinanceTx(id){
   if(!confirm('Excluir este lançamento?'))return;
@@ -65,17 +71,23 @@ function addFinanceAccount(){
 function editFinanceAccount(id){
   const a=financeAccountById(id);
   if(!a)return;
-  const name=prompt('Nome da conta',a.name||'');
-  if(name===null)return;
-  const balance=prompt('Saldo atual da conta',String(a.balance||0).replace('.',','));
-  if(balance===null)return;
-  const type=prompt('Tipo da conta',a.type||'Conta');
-  if(type===null)return;
-  a.name=name.trim()||a.name;
-  a.balance=financeParseAmount(balance);
-  a.type=type.trim()||'Conta';
-  a.updatedAt=Date.now();
-  commitFinance();
+  openEditModal({
+    title:'Editar conta',
+    subtitle:'Ajuste nome, tipo e saldo atual.',
+    fields:[
+      {name:'name',label:'Nome da conta',value:a.name||'',placeholder:'Ex: Nubank'},
+      {name:'type',label:'Tipo',value:a.type||'Conta',placeholder:'Conta corrente, carteira...'},
+      {name:'balance',label:'Saldo atual',value:String(a.balance||0).replace('.',','),inputmode:'decimal',placeholder:'0,00'}
+    ],
+    onSave(values){
+      if(!String(values.name||'').trim()){showToast('Informe o nome da conta');return false;}
+      a.name=String(values.name).trim();
+      a.type=String(values.type||'Conta').trim()||'Conta';
+      a.balance=financeParseAmount(values.balance);
+      a.updatedAt=Date.now();
+      commitFinance();
+    }
+  });
 }
 function deleteFinanceAccount(id){
   if((S.finance.accounts||[]).length<=1){showToast('Mantenha pelo menos uma conta');return;}
@@ -93,20 +105,25 @@ function addFinanceCard(){
 function editFinanceCard(id){
   const c=financeCardById(id);
   if(!c)return;
-  const name=prompt('Nome do cartão',c.name||'');
-  if(name===null)return;
-  const limit=prompt('Limite do cartão',String(c.limit||0).replace('.',','));
-  if(limit===null)return;
-  const closing=prompt('Dia de fechamento',String(c.closingDay||20));
-  if(closing===null)return;
-  const due=prompt('Dia de vencimento',String(c.dueDay||27));
-  if(due===null)return;
-  c.name=name.trim()||c.name;
-  c.limit=financeParseAmount(limit);
-  c.closingDay=clamp(parseInt(closing)||20,1,31);
-  c.dueDay=clamp(parseInt(due)||27,1,31);
-  c.updatedAt=Date.now();
-  commitFinance();
+  openEditModal({
+    title:'Editar cartão',
+    subtitle:'Ajuste limite, fechamento e vencimento.',
+    fields:[
+      {name:'name',label:'Nome do cartão',value:c.name||'',placeholder:'Ex: Nubank'},
+      {name:'limit',label:'Limite',value:String(c.limit||0).replace('.',','),inputmode:'decimal',placeholder:'0,00'},
+      {name:'closingDay',label:'Dia de fechamento',type:'number',value:c.closingDay||20,inputmode:'numeric'},
+      {name:'dueDay',label:'Dia de vencimento',type:'number',value:c.dueDay||27,inputmode:'numeric'}
+    ],
+    onSave(values){
+      if(!String(values.name||'').trim()){showToast('Informe o nome do cartão');return false;}
+      c.name=String(values.name).trim();
+      c.limit=financeParseAmount(values.limit);
+      c.closingDay=clamp(parseInt(values.closingDay)||20,1,31);
+      c.dueDay=clamp(parseInt(values.dueDay)||27,1,31);
+      c.updatedAt=Date.now();
+      commitFinance();
+    }
+  });
 }
 function deleteFinanceCard(id){
   if(!confirm('Excluir este cartão?'))return;
@@ -145,19 +162,25 @@ function addHouseBill(){
 function editHouseBill(id){
   const b=(S.finance.house.bills||[]).find(x=>x.id===id);
   if(!b)return;
-  const title=prompt('Descrição da conta',b.title||'');
-  if(title===null)return;
-  const amount=prompt('Valor',String(b.amount||0).replace('.',','));
-  if(amount===null)return;
-  const date=prompt('Data no formato AAAA-MM-DD',b.date||financeDateToday());
-  if(date===null)return;
-  const n=financeParseAmount(amount);
-  if(n<=0){showToast('Valor inválido');return;}
-  b.title=title.trim()||b.title;
-  b.amount=n;
-  b.date=date.trim()||b.date;
-  b.updatedAt=Date.now();
-  commitFinance();
+  openEditModal({
+    title:'Editar conta da casa',
+    subtitle:'Atualize descrição, valor e data.',
+    fields:[
+      {name:'title',label:'Descrição',value:b.title||'',placeholder:'Ex: Internet, mercado'},
+      {name:'amount',label:'Valor',value:String(b.amount||0).replace('.',','),inputmode:'decimal',placeholder:'0,00'},
+      {name:'date',label:'Data',type:'date',value:b.date||financeDateToday()}
+    ],
+    onSave(values){
+      const n=financeParseAmount(values.amount);
+      if(n<=0){showToast('Valor inválido');return false;}
+      if(!isDateInputValue(values.date)){showToast('Data inválida');return false;}
+      b.title=String(values.title||'').trim()||b.title;
+      b.amount=n;
+      b.date=values.date;
+      b.updatedAt=Date.now();
+      commitFinance();
+    }
+  });
 }
 function toggleHouseBillPaid(id){
   const b=S.finance.house.bills.find(x=>x.id===id);

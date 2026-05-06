@@ -1,4 +1,4 @@
-/* Unio Base Organizada v9.4 */
+/* Unio Base Organizada v9.5 */
 /* ━━━━ STATE ━━━━ */
 const DS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 const MS=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];

@@ -1,4 +1,4 @@
-/* Unio Base Organizada v9.4 */
+/* Unio Base Organizada v9.5 */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    FINANÇAS — módulo coordenador
    Este arquivo fica propositalmente leve. A implementação foi separada em:

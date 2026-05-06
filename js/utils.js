@@ -1,4 +1,4 @@
-/* Unio Base Organizada v9.4 */
+/* Unio Base Organizada v9.5 */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    UTILS — segurança, datas e rotina diária
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */

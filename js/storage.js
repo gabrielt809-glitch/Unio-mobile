@@ -1,4 +1,4 @@
-/* Unio Base Organizada v9.4 */
+/* Unio Base Organizada v9.5 */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    PERSISTÊNCIA — localStorage
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */

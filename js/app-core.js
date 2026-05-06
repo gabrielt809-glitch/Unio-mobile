@@ -1,16 +1,17 @@
-/* Unio Base Organizada v9.4 */
+/* Unio Base Organizada v9.5 */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    APP CORE — commit global e renderização controlada
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 function commitApp(options={}){
-  if(typeof saveState==='function')saveState();
-  if(options.render===false)return;
-  const targets=Array.isArray(options.targets)?options.targets:[];
-  if(!targets.length){
-    if(typeof refreshAll==='function')refreshAll();
-    return;
-  }
-  targets.forEach(target=>{
+  return (typeof safeRun==='function')?safeRun(()=>{
+    if(typeof saveState==='function')saveState();
+    if(options.render===false)return;
+    const targets=Array.isArray(options.targets)?options.targets:[];
+    if(!targets.length){
+      if(typeof refreshAll==='function')refreshAll();
+      return;
+    }
+    targets.forEach(target=>{
     if(target==='home'&&typeof renderHome==='function')renderHome();
     if(target==='finance'&&typeof renderFinance==='function')renderFinance();
     if(target==='water'&&typeof renderWater==='function')renderWater();
@@ -27,7 +28,8 @@ function commitApp(options={}){
     if(target==='habits'&&typeof renderHabits==='function')renderHabits();
     if(target==='focus'&&typeof renderFocusTimer==='function')renderFocusTimer();
     if(target==='tabs'&&typeof buildTabBar==='function')buildTabBar();
-  });
+    });
+  },'Não foi possível atualizar o app.'):null;
 }
 function commitModule(moduleName,options={}){
   const targets=[moduleName];

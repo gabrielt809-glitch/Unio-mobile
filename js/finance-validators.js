@@ -1,4 +1,4 @@
-/* Unio Base Organizada v9.5.1 */
+/* Unio Base Organizada v10 */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    FINANÇAS — validações e fábricas
    Responsável por manter dados financeiros consistentes antes de salvar.
@@ -64,6 +64,11 @@ function createFinanceTransaction(payload){
     fromAccountId:p.fromAccountId||null,
     toAccountId:p.toAccountId||null,
     cardId:p.cardId||null,
+    cardPayment:!!p.cardPayment,
+    installment:Number(p.installment)||null,
+    installments:Number(p.installments)||null,
+    installmentGroupId:p.installmentGroupId||null,
+    totalAmount:Number(p.totalAmount)||null,
     createdAt:Date.now(),
     updatedAt:Date.now()
   };

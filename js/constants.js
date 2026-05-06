@@ -1,9 +1,9 @@
-/* Unio Base Organizada v9.5.1 */
+/* Unio Base Organizada v10 */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    CONSTANTS — versões, defaults e chaves estáveis
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-var APP_SCHEMA_VERSION=5;
-var FINANCE_SCHEMA_VERSION=3;
+var APP_SCHEMA_VERSION=10;
+var FINANCE_SCHEMA_VERSION=4;
 var DEFAULT_PINNED_TABS=['home','finance','water','habits'];
 var DEFAULT_FINANCE_CATEGORIES=['Alimentação','Transporte','Casa','Lazer','Saúde','Educação','Compras','Assinaturas','Investimentos','Outros'];
 var DEFAULT_FINANCE_ACCOUNTS=[

@@ -1,4 +1,4 @@
-/* Unio Base Organizada v9.5.1 */
+/* Unio Base Organizada v10 */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    FINANÇAS — ações
    Mutação do estado, commit, edição e exclusão.
@@ -30,11 +30,33 @@ function addFinanceTx(){
   const validation=validateFinanceTransactionPayload(payload);
   if(!validation.ok){showToast(validation.message);return;}
   S.finance.month=payload.date.slice(0,7);
-  S.finance.transactions.unshift(createFinanceTransaction(payload));
+  if(type==='card'){
+    const installments=clamp(parseInt(financeVal('finTxInstallments'))||1,1,36);
+    const groupId=`card-${Date.now()}`;
+    const perInstallment=Math.round((Number(payload.amount)/installments)*100)/100;
+    const generated=[];
+    for(let i=0;i<installments;i++){
+      const txPayload={
+        ...payload,
+        amount:i===installments-1?Math.round((Number(payload.amount)-(perInstallment*(installments-1)))*100)/100:perInstallment,
+        date:financeShiftDateMonth(payload.date,i),
+        installment:i+1,
+        installments,
+        installmentGroupId:groupId,
+        totalAmount:Number(payload.amount)
+      };
+      generated.push(createFinanceTransaction(txPayload));
+    }
+    S.finance.transactions.unshift(...generated.reverse());
+    showToast(installments>1?'Compra parcelada adicionada':'Gasto no cartão adicionado');
+  }else{
+    S.finance.transactions.unshift(createFinanceTransaction(payload));
+    showToast('Lançamento adicionado');
+  }
   if(S.finance.ui)S.finance.ui.activeAction=null;
-  showToast('Lançamento adicionado');
   commitFinance();
 }
+
 function editFinanceTx(id){
   const t=(S.finance.transactions||[]).find(x=>x.id===id);
   if(!t)return;
@@ -131,6 +153,41 @@ function deleteFinanceCard(id){
   if(!confirm('Excluir este cartão?'))return;
   S.finance.cards=S.finance.cards.filter(c=>c.id!==id);
   commitFinance();
+}
+
+
+function payCardInvoice(cardId){
+  const invoice=financeCardInvoice(cardId);
+  if(invoice.open<=0){showToast('Não há fatura aberta neste mês');return;}
+  const accounts=(S.finance.accounts||[]).map(a=>({value:a.id,label:a.name}));
+  openEditModal({
+    title:`Pagar fatura ${invoice.card.name||''}`,
+    subtitle:`Valor aberto: ${financeMoney(invoice.open)} no mês selecionado.`,
+    fields:[
+      {name:'amount',label:'Valor pago',value:String(invoice.open).replace('.',','),inputmode:'decimal',placeholder:'0,00'},
+      {name:'date',label:'Data do pagamento',type:'date',value:financeDefaultDate()},
+      {name:'accountId',label:'Conta de pagamento',type:'select',value:S.finance.accounts?.[0]?.id||'',options:accounts}
+    ],
+    onSave(values){
+      const amount=financeParseAmount(values.amount);
+      if(amount<=0){showToast('Valor inválido');return false;}
+      if(!isDateInputValue(values.date)){showToast('Data inválida');return false;}
+      const payload={
+        type:'expense',
+        amount,
+        title:`Pagamento fatura ${invoice.card.name||'cartão'}`,
+        date:values.date,
+        category:'Cartão',
+        accountId:values.accountId,
+        cardId:cardId,
+        cardPayment:true
+      };
+      S.finance.month=payload.date.slice(0,7);
+      S.finance.transactions.unshift(createFinanceTransaction(payload));
+      showToast('Pagamento de fatura registrado');
+      commitFinance();
+    }
+  });
 }
 
 /* ━━━━ ACTIONS — HOUSE ━━━━ */

@@ -1,4 +1,4 @@
-/* Unio Base Organizada v9.5.1 */
+/* Unio Base Organizada v10 */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    PERSISTÊNCIA — localStorage
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
@@ -124,6 +124,11 @@ function migrateFinanceState(fin){
     date:t.date||financeDateToday?.()||dayKey(new Date()),
     category:t.category||'Outros',
     createdAt:t.createdAt||Date.now(),
+    cardPayment:!!t.cardPayment,
+    installment:Number(t.installment)||null,
+    installments:Number(t.installments)||null,
+    installmentGroupId:t.installmentGroupId||null,
+    totalAmount:Number(t.totalAmount)||null,
     updatedAt:t.updatedAt||t.createdAt||Date.now()
   }));
   fin.house.bills=(fin.house.bills||[]).map(b=>({

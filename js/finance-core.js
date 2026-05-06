@@ -1,4 +1,4 @@
-/* Unio Base Organizada v9.5.1 */
+/* Unio Base Organizada v10 */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    FINANÇAS — core/helpers
    Funções puras, formatação e acesso básico ao estado.
@@ -61,3 +61,31 @@ function financeActionIcon(type){
   return map[type]||'＋';
 }
 
+
+/* ━━━━ V10 HELPERS — mês, cartão e fatura ━━━━ */
+function financeShiftDateMonth(dateValue,delta){
+  const base=isDateInputValue?.(dateValue)?new Date(String(dateValue)+'T00:00:00'):new Date();
+  base.setMonth(base.getMonth()+Number(delta||0));
+  const y=base.getFullYear(),m=String(base.getMonth()+1).padStart(2,'0'),d=String(base.getDate()).padStart(2,'0');
+  return `${y}-${m}-${d}`;
+}
+function financeCardTransactions(cardId,monthKey=financeCurrentMonth()){
+  return (S.finance.transactions||[]).filter(t=>t.type==='card'&&String(t.cardId)===String(cardId)&&(t.date||'').slice(0,7)===monthKey);
+}
+function financeCardPayments(cardId,monthKey=financeCurrentMonth()){
+  return (S.finance.transactions||[]).filter(t=>t.cardPayment&&String(t.cardId)===String(cardId)&&(t.date||'').slice(0,7)===monthKey);
+}
+function financeCardInvoice(cardId,monthKey=financeCurrentMonth()){
+  const card=financeCardById(cardId)||{};
+  const purchases=financeCardTransactions(cardId,monthKey);
+  const payments=financeCardPayments(cardId,monthKey);
+  const used=purchases.reduce((a,t)=>a+Number(t.amount||0),0);
+  const paid=payments.reduce((a,t)=>a+Number(t.amount||0),0);
+  const open=Math.max(0,used-paid);
+  const available=Math.max(0,(Number(card.limit)||0)-open);
+  return {card,purchases,payments,used,paid,open,available};
+}
+function financeCardInvoiceLabel(t){
+  if(!t.installments||t.installments<=1)return '';
+  return ` · ${t.installment}/${t.installments}`;
+}

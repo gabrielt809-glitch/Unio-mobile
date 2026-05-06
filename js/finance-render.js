@@ -1,4 +1,4 @@
-/* Unio Base Organizada v9.5.1 */
+/* Unio Base Organizada v10 */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    FINANÇAS — renderização
    Somente HTML/estado visual da aba.
@@ -116,19 +116,20 @@ function renderFinanceTxForm(activeType='expense'){
     <div class="fin-card-head">
       <div>
         <div class="fin-card-title">${financeActionIcon(activeType)} ${financeActionLabel(activeType)}</div>
-        <div class="fin-card-sub">Preencha os dados principais. Você pode editar depois.</div>
+        <div class="fin-card-sub">${activeType==='card'?'Para compras parceladas, informe o valor total e a quantidade de parcelas.':'Preencha os dados principais. Você pode editar depois.'}</div>
       </div>
       <button class="fin-close-btn" type="button" onclick="financeCancelActiveForm()">×</button>
     </div>
     <input type="hidden" id="finTxType" value="${activeType}">
     <div class="fin-form-grid">
-      <div class="m-grp"><label class="m-lbl">Valor</label><input class="field" id="finTxAmount" type="text" inputmode="decimal" placeholder="0,00"></div>
+      <div class="m-grp"><label class="m-lbl">${activeType==='card'?'Valor total':'Valor'}</label><input class="field" id="finTxAmount" type="text" inputmode="decimal" placeholder="0,00"></div>
       <div class="m-grp fin-date-grp"><label class="m-lbl">Data</label><input class="field fin-date-field" id="finTxDate" type="date" value="${financeDefaultDate()}"></div>
       <div class="m-grp fin-wide"><label class="m-lbl">Descrição</label><input class="field" id="finTxTitle" type="text" placeholder="Ex: Mercado, salário, Uber" autocomplete="off"></div>
       <div class="m-grp" data-fin-type="expense,income"><label class="m-lbl">Conta</label><select class="field" id="finTxAccount">${financeAccountOptions(acc)}</select></div>
       <div class="m-grp" data-fin-type="transfer"><label class="m-lbl">De</label><select class="field" id="finTxFrom">${financeAccountOptions(acc)}</select></div>
       <div class="m-grp" data-fin-type="transfer"><label class="m-lbl">Para</label><select class="field" id="finTxTo">${financeAccountOptions(S.finance.accounts?.[1]?.id||acc)}</select></div>
       <div class="m-grp" data-fin-type="card"><label class="m-lbl">Cartão</label><select class="field" id="finTxCard">${financeCardOptions(card)}</select></div>
+      <div class="m-grp" data-fin-type="card"><label class="m-lbl">Parcelas</label><input class="field" id="finTxInstallments" type="number" inputmode="numeric" min="1" max="36" value="1"></div>
       <div class="m-grp"><label class="m-lbl">Categoria</label><select class="field" id="finTxCategory">${financeCategoryOptions('Outros')}</select></div>
     </div>
     <button class="action-btn fin-submit" id="finAddTxBtn" onclick="addFinanceTx()">Adicionar ${financeActionLabel(activeType).toLowerCase()}</button>
@@ -167,23 +168,36 @@ function renderFinanceAccounts(){
 function renderFinanceCards(){
   return `<div class="fin-card">
     <div class="fin-card-head">
-      <div><div class="fin-card-title">Cartões</div><div class="fin-card-sub">Edite limite, fechamento e vencimento.</div></div>
+      <div><div class="fin-card-title">Cartões e faturas</div><div class="fin-card-sub">Fatura do mês selecionado, limite e pagamento.</div></div>
     </div>
-    <div class="fin-list">${(S.finance.cards||[]).map(c=>`<div class="fin-row fin-row-editable">
-      <div>
-        <strong>${unioEscape(c.name)}</strong>
-        <span>Limite ${financeMoney(c.limit)} · fecha ${c.closingDay||'—'} · vence ${c.dueDay||'—'}</span>
-      </div>
-      <div class="fin-row-actions">
-        <button class="fin-edit-btn" onclick="editFinanceCard(${c.id})">Editar</button>
-        <button onclick="deleteFinanceCard(${c.id})">×</button>
-      </div>
-    </div>`).join('')||'<div class="empty"><em>💳</em>Nenhum cartão.</div>'}</div>
+    <div class="fin-list fin-card-list">${(S.finance.cards||[]).map(c=>renderFinanceCardItem(c)).join('')||'<div class="empty"><em>💳</em>Nenhum cartão.</div>'}</div>
     <div class="fin-mini-form fin-card-add">
       <input class="field" id="finCardName" placeholder="Novo cartão">
       <input class="field" id="finCardLimit" inputmode="decimal" placeholder="Limite">
       <button onclick="addFinanceCard()">Adicionar</button>
     </div>
+  </div>`;
+}
+function renderFinanceCardItem(c){
+  const inv=financeCardInvoice(c.id);
+  return `<div class="fin-card-invoice">
+    <div class="fin-card-invoice-head">
+      <div>
+        <strong>${unioEscape(c.name)}</strong>
+        <span>Fecha dia ${c.closingDay||'—'} · vence dia ${c.dueDay||'—'}</span>
+      </div>
+      <div class="fin-row-actions compact">
+        <button class="fin-edit-btn" onclick="editFinanceCard(${c.id})">Editar</button>
+        <button onclick="deleteFinanceCard(${c.id})">×</button>
+      </div>
+    </div>
+    <div class="fin-invoice-grid">
+      <div><span>Fatura</span><strong>${financeMoney(inv.used)}</strong></div>
+      <div><span>Pago</span><strong>${financeMoney(inv.paid)}</strong></div>
+      <div><span>Aberto</span><strong>${financeMoney(inv.open)}</strong></div>
+      <div><span>Disponível</span><strong>${financeMoney(inv.available)}</strong></div>
+    </div>
+    <button class="fin-invoice-pay" onclick="payCardInvoice(${c.id})" ${inv.open<=0?'disabled':''}>Pagar fatura</button>
   </div>`;
 }
 function renderFinanceTxList(txs){
@@ -195,9 +209,10 @@ function renderFinanceTxList(txs){
 function financeTxItem(t){
   const sign=t.type==='income'?'+':t.type==='transfer'?'↔':'-';
   const cls=t.type==='income'?'income':t.type==='transfer'?'transfer':'expense';
-  const meta=t.type==='card'?financeCardName(t.cardId):t.type==='transfer'?`${financeAccountName(t.fromAccountId)} → ${financeAccountName(t.toAccountId)}`:financeAccountName(t.accountId);
+  const meta=t.type==='card'?financeCardName(t.cardId):t.cardPayment?`Pagamento ${financeCardName(t.cardId)}`:t.type==='transfer'?`${financeAccountName(t.fromAccountId)} → ${financeAccountName(t.toAccountId)}`:financeAccountName(t.accountId);
+  const parcel=financeCardInvoiceLabel(t);
   return `<div class="fin-tx ${cls}">
-    <div><strong>${unioEscape(t.title)}</strong><span>${financeDateLabel(t.date)} · ${unioEscape(t.category||'Outros')} · ${unioEscape(meta)}</span></div>
+    <div><strong>${unioEscape(t.title)}${parcel}</strong><span>${financeDateLabel(t.date)} · ${unioEscape(t.category||'Outros')} · ${unioEscape(meta)}</span></div>
     <div class="fin-tx-side"><b>${sign} ${financeMoney(t.amount)}</b><button class="fin-edit-btn" onclick="editFinanceTx(${t.id})">Editar</button><button onclick="deleteFinanceTx(${t.id})">×</button></div>
   </div>`;
 }

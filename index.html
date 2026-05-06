@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png">
-<!-- Unio Base Organizada v8.8: onboarding limpo, splash limpo e barra inferior refinada/alinhada. -->
+<!-- Unio Base Organizada v9: aba Finanças com visões Pessoal e Casa. -->
 <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -141,11 +141,11 @@
         <button class="hfb-btn" type="button">Iniciar</button>
       </div>
 
-      <div class="home-finance-preview" id="homeFinancePreview">
+      <div class="home-finance-preview" id="homeFinancePreview" onclick="switchTabById('finance')" role="button" aria-label="Abrir Finanças">
         <div>
-          <div class="hfp-kicker">Próximo módulo</div>
+          <div class="hfp-kicker">Novo módulo</div>
           <div class="hfp-title">Finanças</div>
-          <div class="hfp-sub">Preparado para separar sua visão Pessoal e Casa na v9.</div>
+          <div class="hfp-sub">Controle Pessoal e Casa em duas visualizações simples.</div>
         </div>
         <div class="hfp-tabs">
           <span>Pessoal</span>
@@ -375,6 +375,34 @@
 
     </div>
 
+    <!-- ▓ FINANÇAS ▓ -->
+    <div class="panel" id="tab-finance">
+      <div class="finance-shell">
+        <div class="fin-hero">
+          <div>
+            <div class="fin-kicker">Central financeira</div>
+            <div class="fin-title">Pessoal e Casa</div>
+            <div class="fin-sub">Primeira versão funcional para registrar lançamentos, contas, cartões e despesas compartilhadas.</div>
+          </div>
+          <div class="fin-hero-mark">💰</div>
+        </div>
+
+        <div class="fin-topbar">
+          <div class="fin-seg">
+            <button class="fin-seg-btn on" data-view="personal" onclick="setFinanceView('personal')">Pessoal</button>
+            <button class="fin-seg-btn" data-view="house" onclick="setFinanceView('house')">Casa</button>
+          </div>
+          <div class="fin-month-nav">
+            <button onclick="shiftFinanceMonth(-1)">‹</button>
+            <strong id="financeMonthLabel">mês</strong>
+            <button onclick="shiftFinanceMonth(1)">›</button>
+          </div>
+        </div>
+
+        <div id="financeContent"></div>
+      </div>
+    </div>
+
     <!-- ▓ HÁBITOS ▓ -->
     <div class="panel" id="tab-habits">
       <div class="hab-header-row">
@@ -480,6 +508,7 @@
 <script src="js/breathing.js"></script>
 <script src="js/habits.js"></script>
 <script src="js/focus.js"></script>
+<script src="js/finance.js"></script>
 <script src="js/ux.js"></script>
 <script src="js/onboarding.js"></script>
 <script src="js/storage.js"></script>

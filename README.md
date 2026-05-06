@@ -66,3 +66,25 @@ Depois faça commit. A Vercel deve atualizar o deploy automaticamente.
 - `css/styles.css`: `#tabbar` cuida apenas do fundo/safe area; `.tabbar-inner` cuida da posição dos botões.
 - Objetivo: reduzir o efeito de ícones “boiando” dentro da barra e melhorar a transição visual entre conteúdo e navegação.
 - Cache atualizado para `unio-v8-9-cache-2026-05-04`.
+
+## v9 — Finanças base
+
+- Nova aba **Finanças** adicionada ao app.
+- Duas visualizações internas: **Pessoal** e **Casa**.
+- Visão Pessoal com cartões de resumo, contas, cartões e lançamentos simples.
+- Tipos de lançamento: receita, despesa, transferência e gasto no cartão.
+- Visão Casa com contas compartilhadas, divisão 50/50 ou proporcional por renda e status pago/pendente.
+- Estado financeiro salvo no `localStorage` junto com o restante do app.
+- Barra inferior preservada da v8.9, com Finanças adicionada como aba padrão para novas instalações e migração do padrão antigo.
+
+Arquivos principais alterados nesta versão:
+
+- `index.html`
+- `css/styles.css`
+- `js/state.js`
+- `js/state-runtime.js`
+- `js/navigation.js`
+- `js/storage.js`
+- `js/utils.js`
+- `js/finance.js`
+- `sw.js`

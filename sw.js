@@ -1,5 +1,5 @@
-/* Unio Base Organizada v8.8 — Service Worker */
-const CACHE_NAME='unio-v8-8-cache-2026-05-04';
+/* Unio Base Organizada v9 — Service Worker */
+const CACHE_NAME='unio-v9-cache-2026-05-06';
 const CORE_ASSETS=[
   './',
   './index.html',
@@ -20,6 +20,7 @@ const CORE_ASSETS=[
   './js/breathing.js',
   './js/habits.js',
   './js/focus.js',
+  './js/finance.js',
   './js/ux.js',
   './js/onboarding.js',
   './js/storage.js',

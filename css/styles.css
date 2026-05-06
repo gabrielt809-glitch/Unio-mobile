@@ -66,7 +66,7 @@ html{height:100%;height:-webkit-fill-available;background:#000;}body{height:100%
 .content::-webkit-scrollbar{display:none;}
 
 /* ── FADE acima da tabbar ── */
-#app::after{content:"";position:absolute;left:0;right:0;bottom:0;height:calc(85px + max(8px,env(safe-area-inset-bottom)));background:linear-gradient(to top,#000 18%,rgba(0,0,0,.6) 55%,transparent 100%);pointer-events:none;z-index:98;}
+#app::after{content:"";position:absolute;left:0;right:0;bottom:0;height:calc(130px + env(safe-area-inset-bottom,0px));background:linear-gradient(to top,rgba(14,14,20,1) 0%,rgba(14,14,20,.85) 30%,rgba(14,14,20,.4) 60%,transparent 100%);pointer-events:none;z-index:98;}
 
 /* ── PANELS ── */
 .panel{display:none;padding:14px 14px 0;position:relative;}
@@ -132,15 +132,23 @@ html{height:100%;height:-webkit-fill-available;background:#000;}body{height:100%
   z-index:100;
   display:grid;
   grid-template-columns:repeat(var(--tab-count),minmax(0,1fr));
+  grid-template-rows:auto env(safe-area-inset-bottom,0px);
   align-items:stretch;
   gap:0;
-  padding:4px 4px max(8px,env(safe-area-inset-bottom)) 4px;
+  padding:5px 4px 0 4px;
   background:rgba(14,14,20,.97);
   border:none;
   border-radius:0;
-  box-shadow:0 -1px 0 rgba(255,255,255,.06);
+  box-shadow:none;
   backdrop-filter:blur(20px) saturate(150%);
   -webkit-backdrop-filter:blur(20px) saturate(150%);
+}
+/* preenche a safe-area abaixo dos ícones sem deslocá-los */
+#tabbar::after{
+  content:"";
+  grid-column:1 / -1;
+  height:env(safe-area-inset-bottom,0px);
+  display:block;
 }
 .tab{
   position:relative;

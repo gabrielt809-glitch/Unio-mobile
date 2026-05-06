@@ -88,3 +88,13 @@ Arquivos principais alterados nesta versão:
 - `js/utils.js`
 - `js/finance.js`
 - `sw.js`
+
+
+## v9.1 — Validação UX da aba Finanças
+
+- Corrigido risco de overflow nos formulários da aba Finanças, principalmente em campos de data no iOS/WebKit.
+- Forms financeiros foram tratados como mobile-first, com uma coluna por padrão para evitar invasão de containers.
+- Listas de lançamentos, contas e cartões agora usam `minmax(0, 1fr)`, truncamento seguro e colunas mais estáveis.
+- Topbar de Finanças recebeu comportamento responsivo para telas estreitas.
+- Datas das listas foram encurtadas para `dd/mm`, reduzindo quebra visual e invasão dos valores.
+- Cache atualizado para `unio-v9-1-cache-2026-05-06`.

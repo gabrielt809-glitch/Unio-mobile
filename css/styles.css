@@ -1,4 +1,4 @@
-/* Unio Base Organizada v9.5.1 — estilos globais */
+/* Unio Base Organizada v10 — estilos globais */
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 :root{
   --bg:#000;--bg2:#1C1C1E;--bg3:#2C2C2E;--bg4:#3A3A3C;
@@ -976,4 +976,91 @@ html{height:100%;height:-webkit-fill-available;background:#000;}body{height:100%
   .fin-two-col{
     grid-template-columns:minmax(0,1fr) minmax(0,1fr);
   }
+}
+
+
+/* ── FINANCE v10 — cartões, fatura e parcelamentos ── */
+.fin-card-list{gap:10px;}
+.fin-card-invoice{
+  background:rgba(255,255,255,.045);
+  border:1px solid rgba(255,255,255,.055);
+  border-radius:15px;
+  padding:12px;
+  min-width:0;
+}
+.fin-card-invoice-head{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:9px;
+  margin-bottom:10px;
+}
+.fin-card-invoice-head>div:first-child{min-width:0;}
+.fin-card-invoice-head strong{
+  display:block;
+  font-size:14px;
+  font-weight:900;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.fin-card-invoice-head span{
+  display:block;
+  font-size:11px;
+  color:var(--lbl2);
+  margin-top:2px;
+}
+.fin-row-actions.compact{
+  padding-top:0;
+  justify-content:flex-start;
+}
+.fin-invoice-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:7px;
+  margin-bottom:10px;
+}
+.fin-invoice-grid div{
+  background:rgba(255,255,255,.045);
+  border-radius:12px;
+  padding:9px;
+  min-width:0;
+}
+.fin-invoice-grid span{
+  display:block;
+  font-size:10px;
+  color:var(--lbl3);
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.45px;
+  margin-bottom:4px;
+}
+.fin-invoice-grid strong{
+  display:block;
+  font-size:13px;
+  font-weight:900;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.fin-invoice-pay{
+  width:100%;
+  min-height:40px;
+  border:0;
+  border-radius:12px;
+  background:rgba(52,199,89,.16);
+  color:var(--green);
+  font-family:var(--font);
+  font-size:12px;
+  font-weight:900;
+  cursor:pointer;
+}
+.fin-invoice-pay:disabled{
+  opacity:.45;
+  cursor:default;
+  background:rgba(255,255,255,.06);
+  color:var(--lbl3);
+}
+@media (min-width:390px){
+  .fin-card-invoice-head{grid-template-columns:minmax(0,1fr) auto;align-items:start;}
+  .fin-row-actions.compact{justify-content:flex-end;}
 }

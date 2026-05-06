@@ -136,7 +136,8 @@ html{height:100%;height:-webkit-fill-available;background:#000;}body{height:100%
   align-items:stretch;
   gap:0;
   /* pad top/bottom: bottom includes safe area */
-  padding:4px 4px calc(4px + env(safe-area-inset-bottom,0px)) 4px;
+  /* reduce constant to bring icons closer to the bottom while still respecting the safe area */
+  padding:4px 4px calc(2px + env(safe-area-inset-bottom,0px)) 4px;
   background:rgba(14,14,20,.97);
   /* subtle top border to separate from content */
   border-top:1px solid rgba(255,255,255,.07);
@@ -156,7 +157,7 @@ html{height:100%;height:-webkit-fill-available;background:#000;}body{height:100%
 .tab{
   position:relative;
   min-width:0;
-  min-height:38px;
+  min-height:36px;
   border:0;
   border-radius:10px;
   background:transparent;
@@ -168,7 +169,8 @@ html{height:100%;height:-webkit-fill-available;background:#000;}body{height:100%
   justify-content:flex-end;
   gap:1px;
   cursor:pointer;
-  padding:5px 2px 2px;
+  /* adjust padding: more top padding and minimal bottom padding to push content downward */
+  padding:6px 2px 1px;
   user-select:none;
   transition:background .2s ease,color .18s ease,transform .15s ease,opacity .15s ease;
 }

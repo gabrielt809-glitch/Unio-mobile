@@ -1,4 +1,4 @@
-/* Unio Base Organizada v10 */
+/* Unio Base Organizada v23 */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    FINANÇAS — ações
    Mutação do estado, commit, edição e exclusão.
@@ -209,7 +209,8 @@ function addHouseBill(){
     amount:financeNum('houseBillAmount'),
     date:financeVal('houseBillDate')||financeDefaultDate(),
     category:financeVal('houseBillCategory')||'Casa',
-    paidBy:financeVal('houseBillPaidBy')||'none'
+    paidBy:financeVal('houseBillPaidBy')||'none',
+    projectId:financeVal('houseBillProject')||''
   };
   const validation=validateHouseBillPayload(payload);
   if(!validation.ok){showToast(validation.message);return;}
@@ -228,7 +229,8 @@ function editHouseBill(id){
     fields:[
       {name:'title',label:'Descrição',value:b.title||'',placeholder:'Ex: Internet, mercado'},
       {name:'amount',label:'Valor',value:String(b.amount||0).replace('.',','),inputmode:'decimal',placeholder:'0,00'},
-      {name:'date',label:'Data',type:'date',value:b.date||financeDateToday()}
+      {name:'date',label:'Data',type:'date',value:b.date||financeDateToday()},
+      {name:'projectId',label:'Projeto',type:'select',value:b.projectId||'',options:[{value:'',label:'Sem projeto'}].concat(financeHouseProjects().map(p=>({value:p.id,label:`${p.emoji||'🏠'} ${p.name}`})))}
     ],
     onSave(values){
       const n=financeParseAmount(values.amount);
@@ -237,6 +239,7 @@ function editHouseBill(id){
       b.title=String(values.title||'').trim()||b.title;
       b.amount=n;
       b.date=values.date;
+      b.projectId=values.projectId||'';
       b.updatedAt=Date.now();
       commitFinance();
     }
@@ -252,3 +255,213 @@ function deleteHouseBill(id){
   commitFinance();
 }
 
+
+
+/* ━━━━ V11 ACTIONS — categorias, orçamento e recorrências ━━━━ */
+function addFinanceCategory(){
+  const raw=financeVal('finNewCategory');
+  const validation=validateFinanceCategoryName(raw);
+  if(!validation.ok){showToast(validation.message);return;}
+  S.finance.categories.push(validation.data);
+  S.finance.categories.sort((a,b)=>a.localeCompare(b,'pt-BR'));
+  showToast('Categoria adicionada');
+  commitFinance();
+}
+function deleteFinanceCategory(encodedCategory){
+  const category=decodeURIComponent(encodedCategory);
+  if(['Outros','Casa'].includes(category)){showToast('Essa categoria é padrão');return;}
+  if(!confirm(`Excluir a categoria "${category}"? Lançamentos antigos continuarão com esse nome.`))return;
+  S.finance.categories=(S.finance.categories||[]).filter(c=>c!==category);
+  if(S.finance.budgets)delete S.finance.budgets[category];
+  commitFinance();
+}
+function setFinanceBudget(){
+  const category=financeVal('finBudgetCategory')||'Outros';
+  const amount=financeNum('finBudgetAmount');
+  if(amount<0){showToast('Informe um valor válido');return;}
+  if(!S.finance.budgets)S.finance.budgets={};
+  S.finance.budgets[category]=amount;
+  showToast('Orçamento salvo');
+  commitFinance();
+}
+function editFinanceBudget(encodedCategory){
+  const category=decodeURIComponent(encodedCategory);
+  openEditModal({
+    title:'Editar orçamento',
+    subtitle:`Categoria: ${category}`,
+    fields:[
+      {name:'amount',label:'Orçamento mensal',value:String(financeBudgetForCategory(category)||0).replace('.',','),inputmode:'decimal',placeholder:'0,00'}
+    ],
+    onSave(values){
+      const amount=financeParseAmount(values.amount);
+      if(amount<0){showToast('Valor inválido');return false;}
+      if(!S.finance.budgets)S.finance.budgets={};
+      S.finance.budgets[category]=amount;
+      commitFinance();
+    }
+  });
+}
+function addFinanceRecurring(){
+  const payload={
+    type:financeVal('finRecType')||'expense',
+    title:financeVal('finRecTitle'),
+    amount:financeNum('finRecAmount'),
+    category:financeVal('finRecCategory')||'Outros',
+    accountId:S.finance.accounts?.[0]?.id||null,
+    startMonth:financeCurrentMonth()
+  };
+  const validation=validateFinanceRecurringPayload(payload);
+  if(!validation.ok){showToast(validation.message);return;}
+  if(!Array.isArray(S.finance.recurring))S.finance.recurring=[];
+  S.finance.recurring.unshift(createFinanceRecurring(payload));
+  showToast('Recorrência adicionada');
+  commitFinance();
+}
+function editFinanceRecurring(id){
+  const r=financeRecurringById(id);
+  if(!r)return;
+  openEditModal({
+    title:'Editar recorrência',
+    subtitle:'Atualize valor, categoria e início.',
+    fields:[
+      {name:'title',label:'Descrição',value:r.title||'',placeholder:'Descrição'},
+      {name:'amount',label:'Valor',value:String(r.amount||0).replace('.',','),inputmode:'decimal',placeholder:'0,00'},
+      {name:'type',label:'Tipo',type:'select',value:r.type||'expense',options:[{value:'expense',label:'Despesa fixa'},{value:'income',label:'Receita fixa'}]},
+      {name:'category',label:'Categoria',type:'select',value:r.category||'Outros',options:(S.finance.categories||[]).map(c=>({value:c,label:c}))},
+      {name:'startMonth',label:'Mês inicial',type:'month',value:r.startMonth||financeCurrentMonth()}
+    ],
+    onSave(values){
+      const amount=financeParseAmount(values.amount);
+      if(amount<=0){showToast('Valor inválido');return false;}
+      if(!/^\d{4}-\d{2}$/.test(String(values.startMonth||''))){showToast('Mês inválido');return false;}
+      r.title=String(values.title||'').trim()||r.title;
+      r.amount=amount;
+      r.type=values.type==='income'?'income':'expense';
+      r.category=values.category||'Outros';
+      r.startMonth=values.startMonth;
+      r.updatedAt=Date.now();
+      commitFinance();
+    }
+  });
+}
+function toggleFinanceRecurring(id){
+  const r=financeRecurringById(id);
+  if(!r)return;
+  r.active=r.active===false?true:false;
+  r.updatedAt=Date.now();
+  commitFinance();
+}
+function deleteFinanceRecurring(id){
+  if(!confirm('Excluir esta recorrência?'))return;
+  S.finance.recurring=(S.finance.recurring||[]).filter(r=>String(r.id)!==String(id));
+  commitFinance();
+}
+
+
+/* ━━━━ V12 ACTIONS — projetos da casa ━━━━ */
+function addHouseProject(){
+  const payload={
+    emoji:financeVal('houseProjectEmoji')||'🏠',
+    name:financeVal('houseProjectName'),
+    goal:financeNum('houseProjectGoal')
+  };
+  const validation=validateHouseProjectPayload(payload);
+  if(!validation.ok){showToast(validation.message);return;}
+  financeHouseProjects().push(createHouseProject(payload));
+  showToast('Projeto adicionado');
+  commitFinance();
+}
+function editHouseProject(id){
+  const project=financeHouseProjectById(id);
+  if(!project)return;
+  openEditModal({
+    title:'Editar projeto',
+    subtitle:'Atualize nome, emoji e valor planejado.',
+    fields:[
+      {name:'emoji',label:'Emoji',value:project.emoji||'🏠',placeholder:'🏠'},
+      {name:'name',label:'Nome',value:project.name||'',placeholder:'Ex: Reforma'},
+      {name:'goal',label:'Meta/planejado',value:String(project.goal||0).replace('.',','),inputmode:'decimal',placeholder:'0,00'}
+    ],
+    onSave(values){
+      if(!String(values.name||'').trim()){showToast('Informe o nome do projeto');return false;}
+      project.emoji=String(values.emoji||'🏠').trim()||'🏠';
+      project.name=String(values.name).trim();
+      project.goal=financeParseAmount(values.goal);
+      project.updatedAt=Date.now();
+      commitFinance();
+    }
+  });
+}
+function deleteHouseProject(id){
+  const project=financeHouseProjectById(id);
+  if(!project)return;
+  if(!confirm(`Excluir o projeto "${project.name}"? As contas vinculadas ficarão sem projeto.`))return;
+  S.finance.house.projects=financeHouseProjects().filter(p=>String(p.id)!==String(id));
+  (S.finance.house.bills||[]).forEach(b=>{if(String(b.projectId||'')===String(id))b.projectId='';});
+  commitFinance();
+}
+function addHouseProjectItem(projectId){
+  const project=financeHouseProjectById(projectId);
+  if(!project)return;
+  const payload={
+    title:financeVal(`houseItemTitle_${projectId}`),
+    estimated:financeNum(`houseItemEstimated_${projectId}`),
+    paid:financeNum(`houseItemPaid_${projectId}`),
+    status:financeNum(`houseItemPaid_${projectId}`)>0?'buying':'planned'
+  };
+  const validation=validateHouseProjectItemPayload(payload);
+  if(!validation.ok){showToast(validation.message);return;}
+  if(!Array.isArray(project.items))project.items=[];
+  project.items.push(createHouseProjectItem(payload));
+  project.updatedAt=Date.now();
+  showToast('Item adicionado ao projeto');
+  commitFinance();
+}
+function editHouseProjectItem(projectId,itemId){
+  const project=financeHouseProjectById(projectId);
+  const item=(project?.items||[]).find(i=>String(i.id)===String(itemId));
+  if(!project||!item)return;
+  openEditModal({
+    title:'Editar item do projeto',
+    subtitle:`Projeto: ${project.name}`,
+    fields:[
+      {name:'title',label:'Item',value:item.title||'',placeholder:'Ex: Piso, sofá, armário'},
+      {name:'estimated',label:'Valor estimado',value:String(item.estimated||0).replace('.',','),inputmode:'decimal',placeholder:'0,00'},
+      {name:'paid',label:'Valor pago',value:String(item.paid||0).replace('.',','),inputmode:'decimal',placeholder:'0,00'},
+      {name:'status',label:'Status',type:'select',value:item.status||'planned',options:[
+        {value:'planned',label:'Planejado'},
+        {value:'buying',label:'Em compra'},
+        {value:'paid',label:'Pago'},
+        {value:'done',label:'Concluído'},
+        {value:'cancelled',label:'Cancelado'}
+      ]}
+    ],
+    onSave(values){
+      if(!String(values.title||'').trim()){showToast('Informe o item');return false;}
+      item.title=String(values.title).trim();
+      item.estimated=financeParseAmount(values.estimated);
+      item.paid=financeParseAmount(values.paid);
+      item.status=values.status||'planned';
+      item.updatedAt=Date.now();
+      project.updatedAt=Date.now();
+      commitFinance();
+    }
+  });
+}
+function toggleHouseProjectItemStatus(projectId,itemId){
+  const project=financeHouseProjectById(projectId);
+  const item=(project?.items||[]).find(i=>String(i.id)===String(itemId));
+  if(!item)return;
+  item.status=item.status==='done'?'planned':'done';
+  item.updatedAt=Date.now();
+  project.updatedAt=Date.now();
+  commitFinance();
+}
+function deleteHouseProjectItem(projectId,itemId){
+  const project=financeHouseProjectById(projectId);
+  if(!project)return;
+  if(!confirm('Excluir este item do projeto?'))return;
+  project.items=(project.items||[]).filter(i=>String(i.id)!==String(itemId));
+  project.updatedAt=Date.now();
+  commitFinance();
+}

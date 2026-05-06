@@ -1,4 +1,4 @@
-/* Unio Base Organizada v10 */
+/* Unio Base Organizada v23 */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    FINANÇAS — validações e fábricas
    Responsável por manter dados financeiros consistentes antes de salvar.
@@ -106,6 +106,79 @@ function createHouseBill(payload){
     category:p.category||'Casa',
     paidBy:p.paidBy||'none',
     paid:p.paidBy&&p.paidBy!=='none',
+    projectId:p.projectId||'',
+    createdAt:Date.now(),
+    updatedAt:Date.now()
+  };
+}
+
+
+/* ━━━━ V11 VALIDATORS — categorias, orçamento e recorrências ━━━━ */
+function validateFinanceCategoryName(name){
+  const value=String(name||'').trim();
+  if(!value)return financeValidationResult(false,'Informe o nome da categoria');
+  if(value.length>28)return financeValidationResult(false,'Categoria muito longa');
+  if((S.finance.categories||[]).some(c=>c.toLowerCase()===value.toLowerCase()))return financeValidationResult(false,'Categoria já existe');
+  return financeValidationResult(true,'',value);
+}
+function validateFinanceRecurringPayload(payload){
+  const p=payload||{};
+  if(!['income','expense'].includes(p.type))return financeValidationResult(false,'Tipo de recorrência inválido');
+  if(!validateFinanceAmount(p.amount))return financeValidationResult(false,'Informe um valor válido');
+  if(!String(p.title||'').trim())return financeValidationResult(false,'Informe uma descrição');
+  if(!/^\d{4}-\d{2}$/.test(String(p.startMonth||'')))return financeValidationResult(false,'Informe o mês inicial');
+  return financeValidationResult(true,'',p);
+}
+function createFinanceRecurring(payload){
+  const p=payload||{};
+  return {
+    id:Date.now(),
+    type:p.type||'expense',
+    title:String(p.title||'Recorrência').trim(),
+    amount:Number(p.amount)||0,
+    category:p.category||'Outros',
+    accountId:p.accountId||null,
+    startMonth:p.startMonth||financeCurrentMonth(),
+    endMonth:p.endMonth||'',
+    active:true,
+    createdAt:Date.now(),
+    updatedAt:Date.now()
+  };
+}
+
+
+/* ━━━━ V12 VALIDATORS — projetos da casa ━━━━ */
+function validateHouseProjectPayload(payload){
+  const p=payload||{};
+  if(!String(p.name||'').trim())return financeValidationResult(false,'Informe o nome do projeto');
+  return financeValidationResult(true,'',p);
+}
+function validateHouseProjectItemPayload(payload){
+  const p=payload||{};
+  if(!String(p.title||'').trim())return financeValidationResult(false,'Informe o nome do item');
+  if(Number(p.estimated)<0||Number(p.paid)<0)return financeValidationResult(false,'Valores não podem ser negativos');
+  return financeValidationResult(true,'',p);
+}
+function createHouseProject(payload){
+  const p=payload||{};
+  return {
+    id:Date.now(),
+    name:String(p.name||'Projeto').trim(),
+    emoji:String(p.emoji||'🏠').trim()||'🏠',
+    goal:Number(p.goal)||0,
+    items:[],
+    createdAt:Date.now(),
+    updatedAt:Date.now()
+  };
+}
+function createHouseProjectItem(payload){
+  const p=payload||{};
+  return {
+    id:Date.now(),
+    title:String(p.title||'Item').trim(),
+    estimated:Number(p.estimated)||0,
+    paid:Number(p.paid)||0,
+    status:p.status||'planned',
     createdAt:Date.now(),
     updatedAt:Date.now()
   };

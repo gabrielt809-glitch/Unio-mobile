@@ -1,4 +1,4 @@
-/* Unio Base Organizada v10 */
+/* Unio Base Organizada v23 */
 /* ━━━━ SPLASH ━━━━ */
 function startApp(){
   const willOnboard=!localStorage.getItem(STORE_KEY+'_onboarded');
@@ -70,15 +70,11 @@ function renderCurrentTab(){
 
 /* ━━━━ MODALS ━━━━ */
 function openModal(id){
-  if(id==='goalModal'){$('goalInp').value=S.water.goal||2000;}
+  if(id==='goalModal'){$('goalInp').value=S.water.goal||DEFAULT_WATER_GOAL;}
   if(id==='customWater'){$('cwInp').value='';}
-  if(id==='settingsModal'){$('weightInp').value=S.weight;renderTabToggles();}
+  if(id==='settingsModal'){renderSettingsPremium?.();}
   if(id==='habModal'){
-    $('habNameInp').value='';
-    habEmoji='💪';habFreq='diario';
-    const eg=$('habEmojiGrid');
-    eg.innerHTML=HAB_EMOJIS.map(e=>`<button class="eg-btn${e===habEmoji?' sel':''}" onclick="pickHabEmoji('${e}',this)">${e}</button>`).join('');
-    document.querySelectorAll('#habModal .chip').forEach((c,i)=>c.classList.toggle('on',i===0));
+    prepareHabitModal?.();
   }
   $(id).classList.remove('off');
 }

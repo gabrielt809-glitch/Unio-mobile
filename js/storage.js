@@ -1,4 +1,4 @@
-/* Unio Base Organizada v10 */
+/* Unio Base Organizada v23 */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    PERSISTÊNCIA — localStorage
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
@@ -10,7 +10,10 @@ function saveState(){
       activeDay:S.activeDay,
       water:S.water,
       tasks:S.tasks,
+      taskCategories:S.taskCategories,
+      taskView:S.taskView,
       sleep:S.sleep,
+      sleepGoal:S.sleepGoal,
       nutr:S.nutr,
       health:S.health,
       habits:S.habits,
@@ -25,7 +28,10 @@ function saveState(){
         brkType:S.focus.brkType,
         sessions:S.focus.sessions,
         onBreak:false,
-        remaining:S.focus.running?S.focus.type*60:S.focus.remaining
+        remaining:S.focus.running?S.focus.type*60:S.focus.remaining,
+        preset:S.focus.preset||'pomodoro',
+        custom:S.focus.custom||{focus:30,break:5},
+        logs:Array.isArray(S.focus.logs)?S.focus.logs:[]
       },
       finance:S.finance,
       breathMode:S.breathMode,
@@ -49,7 +55,10 @@ function loadState(){
     if(d.activeDay)S.activeDay=d.activeDay;
     if(d.water)Object.assign(S.water,d.water);
     if(d.tasks)S.tasks=d.tasks;
+    if(d.taskCategories)S.taskCategories=d.taskCategories;
+    if(d.taskView)S.taskView=d.taskView;
     if(d.sleep)S.sleep=d.sleep;
+    if(d.sleepGoal)S.sleepGoal=d.sleepGoal;
     if(d.nutr)S.nutr=d.nutr;
     if(d.health)S.health=d.health;
     if(d.habits)S.habits=d.habits;
@@ -69,6 +78,12 @@ function loadState(){
       S.focus.onBreak=false;
       S.focus.running=false;
       S.focus.remaining=d.focus.remaining??(S.focus.type*60);
+      S.focus.preset=d.focus.preset||'pomodoro';
+      S.focus.custom=d.focus.custom||{focus:30,break:5};
+      S.focus.logs=Array.isArray(d.focus.logs)?d.focus.logs:[];
+      S.focus.startedAt=null;
+      S.focus.currentStartedAt=null;
+      S.focus.iv=null;
     }
     if(d.tId)tId=d.tId;
     if(d.habId)habId=d.habId;
@@ -92,10 +107,13 @@ function mergeFinanceState(saved){
   fin.cards=Array.isArray(source.cards)?source.cards:base.cards;
   fin.categories=Array.isArray(source.categories)?source.categories:base.categories;
   fin.transactions=Array.isArray(source.transactions)?source.transactions:base.transactions;
+  fin.recurring=Array.isArray(source.recurring)?source.recurring:(Array.isArray(base.recurring)?base.recurring:[]);
+  fin.budgets={...(base.budgets||{}),...(source.budgets||{})};
   fin.ui={...base.ui,...(source.ui||{})};
   fin.house={...base.house,...(source.house||{})};
   fin.house.people=Array.isArray(source.house?.people)?source.house.people:base.house.people;
   fin.house.bills=Array.isArray(source.house?.bills)?source.house.bills:base.house.bills;
+  fin.house.projects=Array.isArray(source.house?.projects)?source.house.projects:(Array.isArray(base.house?.projects)?base.house.projects:JSON.parse(JSON.stringify(DEFAULT_HOUSE_PROJECTS||[])));
   return migrateFinanceState(fin);
 }
 function migrateFinanceState(fin){
@@ -139,8 +157,40 @@ function migrateFinanceState(fin){
     category:b.category||'Casa',
     paidBy:b.paidBy||'none',
     paid:!!b.paid,
+    projectId:b.projectId||'',
     createdAt:b.createdAt||Date.now(),
     updatedAt:b.updatedAt||b.createdAt||Date.now()
+  }));
+  fin.recurring=(fin.recurring||[]).map(r=>({
+    id:r.id||Date.now(),
+    type:r.type==='income'?'income':'expense',
+    title:r.title||'Recorrência',
+    amount:Number(r.amount)||0,
+    category:r.category||'Outros',
+    accountId:r.accountId||null,
+    startMonth:r.startMonth||r.startDate?.slice(0,7)||financeMonthKey?.()||'2026-05',
+    endMonth:r.endMonth||'',
+    active:r.active!==false,
+    createdAt:r.createdAt||Date.now(),
+    updatedAt:r.updatedAt||r.createdAt||Date.now()
+  }));
+  fin.budgets=Object.fromEntries(Object.entries(fin.budgets||{}).map(([k,v])=>[k,Number(v)||0]));
+  fin.house.projects=(fin.house.projects&&fin.house.projects.length?fin.house.projects:JSON.parse(JSON.stringify(DEFAULT_HOUSE_PROJECTS||[]))).map(p=>({
+    id:p.id||Date.now(),
+    name:p.name||'Projeto',
+    emoji:p.emoji||'🏠',
+    goal:Number(p.goal)||0,
+    items:Array.isArray(p.items)?p.items.map(i=>({
+      id:i.id||Date.now(),
+      title:i.title||'Item',
+      estimated:Number(i.estimated)||0,
+      paid:Number(i.paid)||0,
+      status:i.status||'planned',
+      createdAt:i.createdAt||Date.now(),
+      updatedAt:i.updatedAt||i.createdAt||Date.now()
+    })):[],
+    createdAt:p.createdAt||Date.now(),
+    updatedAt:p.updatedAt||p.createdAt||Date.now()
   }));
   return fin;
 }

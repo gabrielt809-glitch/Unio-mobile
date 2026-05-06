@@ -1,4 +1,4 @@
-/* Unio Base Organizada v10 */
+/* Unio Base Organizada v23 */
 /* ━━━━ STATE ━━━━ */
 const DS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 const MS=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
@@ -13,11 +13,14 @@ function weekKeys(anchor){
 const S={
   schemaVersion:APP_SCHEMA_VERSION,
   activeDay:dayKey(new Date()),
-  water:{amt:0,goal:2000,log:[],presets:[150,250,350,500]},
+  water:{amt:0,goal:DEFAULT_WATER_GOAL,log:[],history:{},presets:DEFAULT_WATER_PRESETS.slice()},
   tasks:[],
+  taskCategories:DEFAULT_TASK_CATEGORIES.slice(),
+  taskView:'today',
   sleep:[],
-  nutr:{b:[],l:[],d:[],s:[]},
-  health:{steps:0,acts:[]},
+  sleepGoal:DEFAULT_SLEEP_GOAL,
+  nutr:{b:[],l:[],s:[],d:[],c:[],favorites:[],goals:{...DEFAULT_NUTRITION_GOALS}},
+  health:{steps:0,stepsLog:{},acts:[],diary:[],weightLog:[],breathSessions:[]},
   habits:[],
   selDay:dayKey(new Date()),
   taskWeekAnchor:dayKey(new Date()),
@@ -25,7 +28,7 @@ const S={
   weight:70,
   pinnedTabs:DEFAULT_PINNED_TABS.slice(),
   curTab:'home',
-  focus:{type:25,brkType:5,running:false,onBreak:false,remaining:25*60,sessions:0,iv:null},
+  focus:{type:25,brkType:5,running:false,onBreak:false,remaining:25*60,sessions:0,iv:null,preset:'pomodoro',logs:[],startedAt:null,currentStartedAt:null,custom:{focus:30,break:5}},
   finance:{
     schemaVersion:FINANCE_SCHEMA_VERSION,
     view:'personal',
@@ -40,13 +43,16 @@ const S={
     cards:[{id:1,name:'Nubank',limit:0,closingDay:20,dueDay:27}],
     categories:DEFAULT_FINANCE_CATEGORIES.slice(),
     transactions:[],
+    recurring:[],
+    budgets:{},
     house:{
       splitMode:'fifty',
       people:[{id:'gabriel',name:'Gabriel',income:0},{id:'giulianna',name:'Giulianna',income:0}],
-      bills:[]
+      bills:[],
+      projects:JSON.parse(JSON.stringify(DEFAULT_HOUSE_PROJECTS))
     }
   },
   breathMode:'box',
 };
-let tId=0,habId=0,financeTxId=0,financeAccountId=4,financeCardId=1,financeBillId=0,selFood=null,selMeal='b',selAct=null,habFreq='diario',habEmoji='💪',breathTimer=null,breathPhaseIdx=0;
+let tId=0,habId=0,financeTxId=0,financeAccountId=4,financeCardId=1,financeBillId=0,selFood=null,selMeal='b',selAct=null,habFreq='daily',habEmoji='💪',breathTimer=null,breathPhaseIdx=0;
 const HAB_EMOJIS=['💧','🏃','📚','🧘','💪','🥗','😴','✍️','🎯','🧹','🚶','🌅','🎸','📖','💊','🥤','🍎','🌿','🧠','⚡','🔥','🎨','🏊','🚴','🤸'];

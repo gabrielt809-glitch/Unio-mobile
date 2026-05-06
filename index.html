@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png">
-<!-- Unio Base Organizada v10.1: correção de Finanças, commit direto e layout anti-overflow. -->
+<!-- Unio Base Organizada v23.1: correção de Finanças, commit direto e layout anti-overflow. -->
 <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -109,7 +109,7 @@
   <div class="content">
     <!-- ▓ HOME ▓ -->
     <div class="panel active" id="tab-home">
-      <section class="home-hero" aria-labelledby="homeGreeting">
+      <section class="home-hero smart" aria-labelledby="homeGreeting">
         <div class="home-brand-row">
           <div class="home-brand-mark">U.</div>
           <div>
@@ -121,7 +121,34 @@
         <div class="home-date" id="homeDate"></div>
       </section>
 
-      <div id="homeTodayFocus"></div>
+      <section class="home-smart-score" aria-label="Score do dia">
+        <div class="home-score-ring-wrap">
+          <svg width="138" height="138" viewBox="0 0 138 138">
+            <circle cx="69" cy="69" r="58" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="10"/>
+            <circle id="homeSmartRing" cx="69" cy="69" r="58" fill="none" stroke="var(--brand)" stroke-width="10"
+              stroke-linecap="round" stroke-dasharray="365" stroke-dashoffset="365" transform="rotate(-90 69 69)"/>
+          </svg>
+          <div class="home-score-center">
+            <strong id="homeSmartScore">0</strong>
+            <span>score</span>
+          </div>
+        </div>
+        <div class="home-score-copy">
+          <div class="home-score-label" id="homeSmartScoreLabel">Calculando seu dia</div>
+          <div class="home-score-sub" id="homeSmartScoreSub">Resumo local com base nos seus registros.</div>
+          <div class="home-priority-line" id="homePriorityText"></div>
+        </div>
+      </section>
+
+      <div id="homeAlertStrip" class="home-alert-strip"></div>
+
+      <section class="home-next-card">
+        <div class="home-section-head">
+          <span class="sec-lbl">Próximas ações</span>
+          <span class="home-section-meta">prioridade local</span>
+        </div>
+        <div id="homeNextActions"></div>
+      </section>
 
       <div class="home-habits-row" id="homeHabitsRow" style="display:none;">
         <div class="home-section-head">
@@ -131,21 +158,25 @@
         <div class="hhab-strip" id="homeHabStrip"></div>
       </div>
 
-      <div class="home-grid" id="homeGrid"></div>
+      <div class="home-section-head home-mod-head">
+        <span class="sec-lbl">Painel do dia</span>
+        <span class="home-section-meta">cards priorizados</span>
+      </div>
+      <div class="home-grid smart" id="homeGrid"></div>
 
       <div class="home-focus-banner" onclick="switchTabById('focus')" role="button" aria-label="Iniciar sessão de foco">
         <div class="hfb-left">
           <div class="hfb-title">Sessão de Foco</div>
-          <div class="hfb-sub" id="homeFocusSub">25 min · 0 sessões hoje</div>
+          <div class="hfb-sub" id="homeFocusSub">0 min · 0 sessões hoje</div>
         </div>
         <button class="hfb-btn" type="button">Iniciar</button>
       </div>
 
       <div class="home-finance-preview" id="homeFinancePreview" onclick="switchTabById('finance')" role="button" aria-label="Abrir Finanças">
         <div>
-          <div class="hfp-kicker">Novo módulo</div>
-          <div class="hfp-title">Finanças</div>
-          <div class="hfp-sub">Controle Pessoal e Casa em duas visualizações simples.</div>
+          <div class="hfp-kicker" id="homeFinanceKicker">Finanças</div>
+          <div class="hfp-title" id="homeFinanceTitle">Pessoal e Casa</div>
+          <div class="hfp-sub" id="homeFinanceSub">Acompanhe gastos, faturas, orçamento e projetos.</div>
         </div>
         <div class="hfp-tabs">
           <span>Pessoal</span>
@@ -156,6 +187,7 @@
       <div id="homeWeekSummary" class="home-week-summary" style="display:none;">
         <div class="home-section-head">
           <span id="wsBadge" class="home-week-title">Esta semana</span>
+          <span class="home-section-meta">visão geral</span>
         </div>
         <div id="wsContent"></div>
       </div>
@@ -163,7 +195,7 @@
 
     <!-- ▓ ÁGUA ▓ -->
     <div class="panel" id="tab-water">
-      <div class="card" style="padding-bottom:16px;">
+      <div class="water-hero-card v19">
         <div class="ring-wrap">
           <svg width="184" height="184" viewBox="0 0 184 184">
             <circle cx="92" cy="92" r="78" fill="none" stroke="#2C2C2E" stroke-width="11"/>
@@ -177,17 +209,55 @@
             <div class="ring-gt" id="wGoalT">de 2000ml</div>
           </div>
         </div>
+
+        <div class="water-hero-stats">
+          <div><span>Progresso</span><strong id="wPct">0%</strong></div>
+          <div><span>Falta</span><strong id="wNeed">2000ml</strong></div>
+          <div><span>Sequência</span><strong><span id="wStreak">0</span>d</strong></div>
+        </div>
+
         <div class="qa-row water-preset-row" id="waterPresetRow"></div>
+
+        <div class="water-manual-row">
+          <input class="field" id="waterManualInp" type="number" inputmode="numeric" placeholder="Quantidade manual em ml">
+          <button onclick="addManualWater()">Adicionar</button>
+        </div>
+
         <button class="w-custom-btn" onclick="openModal('customWater')">✏️ Adicionar copo personalizado</button>
-        <div class="w-cups-hint">Os copos personalizados salvos aparecem como botões rápidos.</div>
       </div>
-      <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <div><div style="font-size:14px;font-weight:600;">Meta diária</div><div style="font-size:12px;color:var(--lbl2);margin-top:2px;" id="wGoalD">2000 ml</div></div>
-          <button onclick="openModal('goalModal')" style="background:var(--bg3);border:none;color:var(--teal);font-family:var(--font);font-size:13px;font-weight:500;padding:7px 14px;border-radius:16px;cursor:pointer;">Editar</button>
+
+      <div class="water-card v19">
+        <div class="water-card-head">
+          <div>
+            <div class="water-card-title">Meta diária</div>
+            <div class="water-card-sub" id="wGoalD">2000 ml</div>
+            <div class="water-card-hint" id="waterSuggestedGoal">Sugestão pelo peso atual: —</div>
+          </div>
+          <button onclick="openModal('goalModal')">Editar</button>
         </div>
       </div>
-      <div class="card">
+
+      <div class="water-card v19">
+        <div class="water-card-head">
+          <div>
+            <div class="water-card-title">Histórico semanal</div>
+            <div class="water-card-sub">Média, total e dias em que você bateu a meta.</div>
+          </div>
+        </div>
+        <div id="waterWeekBox"></div>
+      </div>
+
+      <div class="water-card v19">
+        <div class="water-card-head">
+          <div>
+            <div class="water-card-title">Copos rápidos</div>
+            <div class="water-card-sub">Edite presets e crie novos atalhos.</div>
+          </div>
+        </div>
+        <div id="waterPresetManager"></div>
+      </div>
+
+      <div class="water-card v19">
         <div class="sec-lbl">Registro de hoje</div>
         <div id="wLog"><div class="empty" id="wEmpty"><em>💧</em>Nenhum registro ainda</div></div>
       </div>
@@ -203,110 +273,242 @@
         </div>
         <button class="task-week-nav" onclick="shiftTaskWeek(1)">›</button>
       </div>
+
       <div class="week-strip" id="weekStrip"></div>
-      <div class="task-quick-row">
-        <button onclick="selectTaskDay('today')">Hoje</button>
-        <button onclick="selectTaskDay('tomorrow')">Amanhã</button>
-        <button onclick="clearDoneTasks()">Limpar concluídas</button>
+
+      <div class="task-view-tabs">
+        <button class="task-view-chip on" data-view="today" onclick="setTaskView('today')">Hoje</button>
+        <button class="task-view-chip" data-view="week" onclick="setTaskView('week')">Semana</button>
+        <button class="task-view-chip" data-view="nodate" onclick="setTaskView('nodate')">Sem data</button>
+        <button class="task-view-chip" data-view="done" onclick="setTaskView('done')">Concluídas</button>
       </div>
+
+      <div class="task-compose-card">
+        <div class="task-compose-title">Nova tarefa</div>
+        <div class="t-row">
+          <input class="field" id="tInput" type="text" placeholder="Ex: pagar boleto, estudar, ligar para alguém…" onkeydown="if(event.key==='Enter')addTask()" style="flex:1;">
+          <button class="t-add-btn" onclick="addTask()">+</button>
+        </div>
+        <div class="task-form-grid">
+          <select class="field" id="tPriority">
+            <option value="normal">Prioridade normal</option>
+            <option value="high">Alta prioridade</option>
+            <option value="low">Baixa prioridade</option>
+          </select>
+          <select class="field" id="tCategory"></select>
+          <input class="field" id="tDateInput" type="date">
+          <select class="field" id="tRecurrence">
+            <option value="none">Sem repetição</option>
+            <option value="daily">Diária</option>
+            <option value="weekdays">Dias úteis</option>
+            <option value="weekly">Semanal</option>
+          </select>
+        </div>
+        <div class="task-quick-row v14">
+          <button onclick="selectTaskDay('today')">Hoje</button>
+          <button onclick="selectTaskDay('tomorrow')">Amanhã</button>
+          <button onclick="clearDoneTasks()">Limpar concluídas</button>
+        </div>
+        <button class="t-nodate-btn" id="tNodateBtn" onclick="toggleNoDate(this)">
+          <span id="tNodateIco">📅</span><span id="tNodateTxt">Com data</span>
+        </button>
+      </div>
+
       <div class="task-day-card" id="taskDayCard"></div>
-      <div class="t-row">
-        <input class="field" id="tInput" type="text" placeholder="Nova tarefa…" onkeydown="if(event.key==='Enter')addTask()" style="flex:1;">
-        <button class="t-add-btn" onclick="addTask()">+</button>
+      <div id="taskList"></div>
+
+      <div class="task-category-card">
+        <div class="t-sec">Categorias</div>
+        <div id="taskCategoryManager"></div>
       </div>
-      <button class="t-nodate-btn" id="tNodateBtn" onclick="toggleNoDate(this)">
-        <span id="tNodateIco">📅</span><span id="tNodateTxt">Vinculada ao dia selecionado</span>
-      </button>
-      <div id="tPinnedSec" style="display:none;"><div class="t-sec">📌 Sem data</div><div id="tPinned"></div></div>
-      <div id="tPendSec" style="display:none;"><div class="t-sec" id="tPendLbl">Pendentes</div><div id="tPend"></div></div>
-      <div id="tDoneSec" style="display:none;"><div class="t-sec">Concluídas</div><div id="tDone"></div></div>
-      <div class="empty" id="tEmpty" style="margin-top:22px;"><em>✓</em>Nenhuma tarefa para este dia</div>
+
+      <div class="empty" id="tEmpty" style="margin-top:22px;"><em>✓</em>Nenhuma tarefa nesta visualização</div>
+
+      <div id="tPinnedSec" style="display:none;"><div id="tPinned"></div></div>
+      <div id="tPendSec" style="display:none;"><div id="tPendLbl"></div><div id="tPend"></div></div>
+      <div id="tDoneSec" style="display:none;"><div id="tDone"></div></div>
     </div>
 
     <!-- ▓ SONO ▓ -->
     <div class="panel" id="tab-sleep">
-      <div class="stat-row">
+      <div class="stat-row sleep-stats-v18">
         <div class="stat-card"><div class="stat-v" id="sAvg" style="color:var(--purple)">—</div><div class="stat-l">Média 7 dias</div></div>
         <div class="stat-card"><div class="stat-v" id="sLast" style="color:var(--purple)">—</div><div class="stat-l">Última noite</div></div>
-        <div class="stat-card"><div class="stat-v" id="sGood" style="color:var(--green)">0</div><div class="stat-l">Noites ≥7h</div></div>
-        <div class="stat-card"><div class="stat-v" id="sQualAvg" style="color:var(--yellow)">—</div><div class="stat-l">Qualidade média</div></div>
+        <div class="stat-card"><div class="stat-v" id="sGood" style="color:var(--green)">0</div><div class="stat-l">Noites na meta</div></div>
+        <div class="stat-card"><div class="stat-v" id="sScore" style="color:var(--yellow)">—</div><div class="stat-l">Score</div></div>
       </div>
-      <div class="s-form">
-        <div class="sec-lbl">Registrar sono</div>
+
+      <div class="stat-row sleep-stats-v18 secondary">
+        <div class="stat-card"><div class="stat-v" id="sQualAvg" style="color:var(--yellow)">—</div><div class="stat-l">Qualidade</div></div>
+        <div class="stat-card"><div class="stat-v" id="sDebt" style="color:var(--red)">0h</div><div class="stat-l">Dívida 7 dias</div></div>
+        <div class="stat-card wide"><div class="stat-v" id="sConsistency" style="color:var(--teal)">—</div><div class="stat-l">Consistência</div></div>
+      </div>
+
+      <div class="s-form v18">
+        <div class="s-form-head">
+          <div>
+            <div class="sec-lbl" style="margin-bottom:3px;">Registrar sono</div>
+            <div class="s-form-sub">Informe os horários e o app calcula automaticamente a duração.</div>
+          </div>
+          <div class="s-form-ico">🌙</div>
+        </div>
+
+        <div class="sleep-goal-box">
+          <div>
+            <strong>Meta de sono</strong>
+            <span>Usada para score, dívida e noites na meta.</span>
+          </div>
+          <div class="sleep-goal-row">
+            <input class="field" id="sleepGoalInp" inputmode="decimal" placeholder="8">
+            <button onclick="saveSleepGoal()">Salvar</button>
+          </div>
+        </div>
+
         <div class="s-row">
           <div class="s-grp"><label class="s-lbl">Dormi às</label><input class="s-inp" type="time" id="sStart" value="23:00"></div>
           <div class="s-grp"><label class="s-lbl">Acordei às</label><input class="s-inp" type="time" id="sEnd" value="07:00"></div>
         </div>
+
         <label class="s-lbl" style="margin-bottom:8px;">Como foi sua noite?</label>
         <div class="s-qual-row">
           <button class="s-qual-btn" id="sq1" onclick="pickQual(1,this)">😩<span class="s-qual-lbl">Péssima</span></button>
           <button class="s-qual-btn" id="sq2" onclick="pickQual(2,this)">😕<span class="s-qual-lbl">Ruim</span></button>
-          <button class="s-qual-btn" id="sq3" onclick="pickQual(3,this)">😐<span class="s-qual-lbl">Regular</span></button>
+          <button class="s-qual-btn sel" id="sq3" onclick="pickQual(3,this)">😐<span class="s-qual-lbl">Regular</span></button>
           <button class="s-qual-btn" id="sq4" onclick="pickQual(4,this)">😊<span class="s-qual-lbl">Boa</span></button>
           <button class="s-qual-btn" id="sq5" onclick="pickQual(5,this)">😴<span class="s-qual-lbl">Ótima</span></button>
         </div>
-        <button id="sBtn" class="action-btn" style="background:var(--purple);" onclick="logSleep()">Registrar</button>
+
+        <div class="m-grp">
+          <label class="s-lbl">Observação opcional</label>
+          <textarea class="sleep-note-field" id="sleepNoteInp" placeholder="Ex: acordei durante a noite, dormi pesado, usei tela tarde..."></textarea>
+        </div>
+
+        <button id="sBtn" class="action-btn" style="background:var(--purple);" onclick="logSleep()">Registrar sono</button>
       </div>
+
+      <div class="s-form v18 nap-card">
+        <div class="s-form-head">
+          <div>
+            <div class="sec-lbl" style="margin-bottom:3px;">Cochilo</div>
+            <div class="s-form-sub">Registre descansos curtos sem misturar com o sono principal.</div>
+          </div>
+          <div class="s-form-ico">💤</div>
+        </div>
+        <div class="sleep-nap-grid">
+          <input class="field" id="napMinInp" inputmode="numeric" placeholder="Minutos">
+          <input class="field" id="napNoteInp" placeholder="Observação opcional">
+          <button onclick="logNap()">Registrar cochilo</button>
+        </div>
+      </div>
+
+      <div class="card sleep-insight-card">
+        <div class="sec-lbl">Insights</div>
+        <div id="sleepInsights"></div>
+      </div>
+
       <div class="card"><div class="sec-lbl">Últimas 7 noites</div><div class="bar-chart" id="sChart"></div></div>
+
       <div class="card" id="sCorrCard" style="display:none;">
         <div class="sec-lbl" style="margin-bottom:8px;">Qualidade × Duração</div>
         <div class="s-corr-row" id="sCorrRow"></div>
       </div>
+
       <div class="card"><div class="sec-lbl">Histórico</div><div id="sHist"><div class="empty" id="sEmpty"><em>🌙</em>Nenhum registro ainda</div></div></div>
     </div>
 
     <!-- ▓ NUTRIÇÃO ▓ -->
     <div class="panel" id="tab-nutrition">
-      <div class="n-diary-card">
+      <div class="n-summary-grid">
+        <div><span>Registros</span><strong id="nFoodCount">0</strong></div>
+        <div><span>Calorias</span><strong id="nCalCount">0</strong></div>
+        <div><span>Proteína</span><strong id="nProteinCount">0g</strong></div>
+      </div>
+
+      <div class="n-diary-card v17">
         <div class="n-diary-head">
           <div>
-            <div class="n-diary-count" id="nFoodCount">0</div>
-            <div class="n-diary-sub">registros hoje</div>
+            <div style="font-size:16px;font-weight:900;color:var(--green);">Diário alimentar</div>
+            <div style="font-size:12px;color:var(--lbl2);margin-top:3px;line-height:1.35;">Registre refeições por período, com calorias/proteína opcionais.</div>
           </div>
-          <div style="text-align:right;">
-            <div style="font-size:13px;font-weight:700;color:var(--green);">Diário alimentar</div>
-            <div style="font-size:12px;color:var(--lbl2);margin-top:3px;">Registre o que comeu, sem depender de biblioteca interna.</div>
-          </div>
+          <button class="n-copy-btn" onclick="copyYesterdayNutrition()">Copiar ontem</button>
         </div>
+
+        <div class="n-goals-card">
+          <div class="n-goals-title">Metas opcionais</div>
+          <div class="n-goals-grid">
+            <input class="field" id="nutrGoalCalories" inputmode="decimal" placeholder="Meta kcal">
+            <input class="field" id="nutrGoalProtein" inputmode="decimal" placeholder="Meta proteína">
+            <button onclick="saveNutritionGoals()">Salvar metas</button>
+          </div>
+          <div id="nutritionProgress"></div>
+        </div>
+
         <div class="m-grp">
           <label class="m-lbl">O que você comeu?</label>
           <input class="field" id="foodNameInp" type="text" placeholder="Ex: arroz, feijão, frango e salada" autocomplete="off" onkeydown="if(event.key==='Enter')addDiaryFood()">
         </div>
+
+        <div class="n-form-grid">
+          <div class="m-grp"><label class="m-lbl">Calorias</label><input class="field" id="foodCalInp" inputmode="decimal" placeholder="kcal opcional"></div>
+          <div class="m-grp"><label class="m-lbl">Proteína</label><input class="field" id="foodProteinInp" inputmode="decimal" placeholder="g opcional"></div>
+        </div>
+
         <div class="m-grp">
           <label class="m-lbl">Observação opcional</label>
           <textarea class="n-note" id="foodNoteInp" placeholder="Ex: prato médio, comi fora, pouca quantidade, sem açúcar..."></textarea>
         </div>
-        <div class="n-meal-pick">
+
+        <div class="n-meal-pick v17">
           <button class="n-meal-btn on" onclick="pickMeal('b',this)">☀️ Café</button>
           <button class="n-meal-btn" onclick="pickMeal('l',this)">🌤 Almoço</button>
-          <button class="n-meal-btn" onclick="pickMeal('d',this)">🌙 Jantar</button>
           <button class="n-meal-btn" onclick="pickMeal('s',this)">🍎 Lanche</button>
+          <button class="n-meal-btn" onclick="pickMeal('d',this)">🌙 Jantar</button>
+          <button class="n-meal-btn" onclick="pickMeal('c',this)">🌌 Ceia</button>
         </div>
+
         <div class="n-time-row">
           <input class="field" id="foodTimeInp" type="time">
           <button class="action-btn" style="background:var(--green);width:auto;padding:12px 18px;" onclick="addDiaryFood()">Adicionar</button>
         </div>
       </div>
+
+      <div class="nutrition-panel-card">
+        <div class="n-panel-head"><strong>Favoritos</strong><span>Toque para adicionar ao dia</span></div>
+        <div id="nutritionFavorites"></div>
+      </div>
+
       <div class="meal-sec"><div class="meal-hdr"><span class="meal-nm">☀️ Café da manhã</span><span class="meal-kc" id="kcB">0 itens</span></div><div id="mB"><div class="empty" style="padding:13px;font-size:12px;">Vazio</div></div></div>
       <div class="meal-sec"><div class="meal-hdr"><span class="meal-nm">🌤 Almoço</span><span class="meal-kc" id="kcL">0 itens</span></div><div id="mL"><div class="empty" style="padding:13px;font-size:12px;">Vazio</div></div></div>
+      <div class="meal-sec"><div class="meal-hdr"><span class="meal-nm">🍎 Lanche</span><span class="meal-kc" id="kcS">0 itens</span></div><div id="mS"><div class="empty" style="padding:13px;font-size:12px;">Vazio</div></div></div>
       <div class="meal-sec"><div class="meal-hdr"><span class="meal-nm">🌙 Jantar</span><span class="meal-kc" id="kcD">0 itens</span></div><div id="mD"><div class="empty" style="padding:13px;font-size:12px;">Vazio</div></div></div>
-      <div class="meal-sec"><div class="meal-hdr"><span class="meal-nm">🍎 Lanches</span><span class="meal-kc" id="kcS">0 itens</span></div><div id="mS"><div class="empty" style="padding:13px;font-size:12px;">Vazio</div></div></div>
+      <div class="meal-sec"><div class="meal-hdr"><span class="meal-nm">🌌 Ceia</span><span class="meal-kc" id="kcC">0 itens</span></div><div id="mC"><div class="empty" style="padding:13px;font-size:12px;">Vazio</div></div></div>
+
+      <div class="nutrition-panel-card">
+        <div class="n-panel-head"><strong>Histórico semanal</strong><span>Registros, kcal e refeições frequentes</span></div>
+        <div id="nutritionHistory"></div>
+      </div>
     </div>
 
     <!-- ▓ SAÚDE ▓ -->
     <div class="panel" id="tab-health">
-      <div class="h-stats">
+      <div class="h-stats v16">
         <div class="hst"><div class="hst-val" id="hSteps" style="color:var(--green)">0</div><div class="hst-lbl">👟 Passos</div></div>
         <div class="hst"><div class="hst-val" id="hActMin" style="color:var(--purple)">0</div><div class="hst-lbl">⏱ Minutos ativos</div></div>
         <div class="hst"><div class="hst-val" id="hActN" style="color:var(--blue)">0</div><div class="hst-lbl">📓 Registros</div></div>
-        <div class="hst"><div class="hst-val" id="hIntensity" style="color:var(--orange)">—</div><div class="hst-lbl">🔥 Intensidade</div></div>
+        <div class="hst"><div class="hst-val" id="hScore" style="color:var(--orange)">0</div><div class="hst-lbl">❤️ Score</div></div>
       </div>
 
-      <div class="card">
-        <div class="sec-lbl">Passos</div>
+      <div class="health-card">
+        <div class="health-card-head">
+          <div>
+            <div class="health-title">Passos</div>
+            <div class="health-sub">Registro diário local. Use os atalhos ou informe manualmente.</div>
+          </div>
+          <div class="health-ico">👟</div>
+        </div>
         <div style="display:flex;align-items:center;gap:10px;">
           <input class="field" id="stepsInp" type="number" placeholder="0" inputmode="numeric" style="flex:1;font-size:20px;font-weight:700;color:var(--green);">
-          <button onclick="saveSteps()" style="background:var(--green);border:none;border-radius:10px;color:#fff;font-family:var(--font);font-size:13px;font-weight:600;padding:12px 15px;cursor:pointer;">Salvar</button>
+          <button onclick="saveSteps()" class="health-save-btn">Salvar</button>
         </div>
         <div class="step-btns">
           <button class="step-btn" onclick="addSteps(1000)">+1k</button>
@@ -316,14 +518,38 @@
         </div>
       </div>
 
+      <div class="health-card">
+        <div class="health-card-head">
+          <div>
+            <div class="health-title">Diário de saúde</div>
+            <div class="health-sub">Peso, humor, energia, dor/desconforto e observação do dia.</div>
+          </div>
+          <div class="health-ico">🩺</div>
+        </div>
+        <div class="health-form-grid">
+          <div class="m-grp"><label class="m-lbl">Peso</label><input class="field" id="healthWeightInp" inputmode="decimal" placeholder="kg"></div>
+          <div class="m-grp"><label class="m-lbl">Humor</label><select class="field" id="healthMoodInp"><option value="great">😄 Muito bem</option><option value="good">🙂 Bem</option><option value="neutral">😐 Normal</option><option value="tired">😴 Cansado</option><option value="bad">😔 Ruim</option></select></div>
+          <div class="m-grp"><label class="m-lbl">Energia</label><select class="field" id="healthEnergyInp"><option value="1">1 — muito baixa</option><option value="2">2 — baixa</option><option value="3" selected>3 — normal</option><option value="4">4 — boa</option><option value="5">5 — ótima</option></select></div>
+          <div class="m-grp"><label class="m-lbl">Dor/desconforto</label><select class="field" id="healthPainInp"><option value="0">0 — nenhum</option><option value="1">1 — leve</option><option value="2">2 — moderado</option><option value="3">3 — forte</option><option value="4">4 — muito forte</option><option value="5">5 — intenso</option></select></div>
+        </div>
+        <div class="m-grp">
+          <label class="m-lbl">Observação do dia</label>
+          <textarea class="h-note" id="healthDiaryNoteInp" placeholder="Ex: acordei disposto, dor lombar leve, energia boa após o treino..."></textarea>
+        </div>
+        <button class="action-btn" style="background:var(--green);" onclick="saveHealthCheckin()">Salvar diário de saúde</button>
+      </div>
+
       <div class="h-diary-card">
         <div class="h-diary-head">
           <div>
             <div class="h-diary-title">Diário de movimento</div>
-            <div class="h-diary-sub">Registre livremente treinos, esportes, caminhada, bike ou qualquer atividade do dia.</div>
+            <div class="h-diary-sub">Registre treino, esporte, caminhada, bike ou qualquer atividade do dia.</div>
           </div>
           <div class="h-diary-ico">🏃</div>
         </div>
+
+        <div class="health-activity-chips" id="healthActivityChips"></div>
+
         <div class="m-grp">
           <label class="m-lbl">Atividade</label>
           <input class="field" id="healthNameInp" type="text" placeholder="Ex: bike, caminhada, musculação, futebol..." autocomplete="off" onkeydown="if(event.key==='Enter')addHealthEntry()">
@@ -351,6 +577,17 @@
           <textarea class="h-note" id="healthNoteInp" placeholder="Ex: pedal leve na rua, treino de superiores, caminhada com subida..."></textarea>
         </div>
         <button class="action-btn" style="background:var(--orange);" onclick="addHealthEntry()">Adicionar ao diário</button>
+      </div>
+
+      <div class="health-card">
+        <div class="health-card-head">
+          <div>
+            <div class="health-title">Histórico</div>
+            <div class="health-sub">Resumo semanal, mensal e evolução simples.</div>
+          </div>
+          <div class="health-ico">📈</div>
+        </div>
+        <div id="healthHistoryBox"></div>
       </div>
 
       <div class="card">
@@ -405,13 +642,16 @@
 
     <!-- ▓ HÁBITOS ▓ -->
     <div class="panel" id="tab-habits">
-      <div class="hab-header-row">
+      <div class="hab-header-row v15">
         <div>
           <div style="font-size:16px;font-weight:700;">Seus hábitos</div>
           <div style="font-size:12px;color:var(--lbl2);margin-top:2px;" id="habSummary">0 de 0 concluídos hoje</div>
         </div>
         <button class="hab-add-btn" onclick="openModal('habModal')">+ Novo</button>
       </div>
+
+      <div class="habit-stats-grid" id="habStats"></div>
+
       <div id="habList">
         <div class="empty" id="habEmpty"><em>🔥</em>Crie seu primeiro hábito!</div>
       </div>
@@ -419,17 +659,30 @@
 
     <!-- ▓ FOCO ▓ -->
     <div class="panel" id="tab-focus">
-      <div class="sec-lbl" style="margin-bottom:8px;">Duração do foco</div>
-      <div class="focus-type-row">
-        <button class="focus-type-btn sel" id="f25" onclick="setFocusType(25,this)">🎯 25 min</button>
-        <button class="focus-type-btn" id="f50" onclick="setFocusType(50,this)">🔥 50 min</button>
+      <div class="focus-stats-grid v20">
+        <div><span>Hoje</span><strong id="focusTodayMin">0m</strong></div>
+        <div><span>Sessões</span><strong id="focusTodaySessions">0</strong></div>
+        <div><span>Semana</span><strong id="focusWeekMin">0m</strong></div>
+        <div><span>Sequência</span><strong id="focusStreak">0d</strong></div>
       </div>
-      <div class="sec-lbl" style="margin-bottom:8px;">Duração da pausa</div>
-      <div class="focus-brk-row">
-        <button class="focus-brk-btn sel" id="b5" onclick="setBreakType(5,this)">☕ 5 min</button>
-        <button class="focus-brk-btn" id="b15" onclick="setBreakType(15,this)">🌿 15 min</button>
+
+      <div class="focus-card v20">
+        <div class="focus-card-head">
+          <div>
+            <div class="focus-card-title">Presets de foco</div>
+            <div class="focus-card-sub">Escolha um ciclo pronto ou personalize duração e pausa.</div>
+          </div>
+          <div class="focus-card-ico">🎯</div>
+        </div>
+        <div class="focus-preset-box" id="focusPresetBox"></div>
+        <div class="focus-custom-grid">
+          <input class="field" id="focusCustomMin" type="number" inputmode="numeric" placeholder="Foco min" value="30">
+          <input class="field" id="focusCustomBreak" type="number" inputmode="numeric" placeholder="Pausa min" value="5">
+          <button onclick="applyCustomFocus()">Aplicar personalizado</button>
+        </div>
       </div>
-      <div class="card" style="text-align:center;padding:22px 16px;">
+
+      <div class="focus-card v20 timer-card">
         <div class="focus-timer-wrap">
           <svg width="200" height="200" viewBox="0 0 200 200">
             <circle cx="100" cy="100" r="88" fill="none" stroke="#2C2C2E" stroke-width="9"/>
@@ -442,17 +695,40 @@
             <div class="focus-mode-lbl" id="fModeLbl">Foco</div>
           </div>
         </div>
-        <div class="focus-btns">
+        <div class="focus-btns v20">
           <button class="focus-start" id="fBtn" style="background:var(--pink);" onclick="toggleFocus()">▶ Iniciar</button>
           <button class="focus-reset" onclick="resetFocus()">↺ Reset</button>
+          <button class="focus-skip" onclick="skipBreak()">Pular pausa</button>
         </div>
       </div>
-      <div class="focus-sess-card">
-        <div><div style="font-size:14px;font-weight:600;">Sessões hoje</div><div style="font-size:12px;color:var(--lbl2);margin-top:2px;">Pomodoros completos</div></div>
-        <div class="focus-sess-n" id="fSessions">0</div>
+
+      <div class="focus-card v20">
+        <div class="focus-card-head">
+          <div>
+            <div class="focus-card-title">Resumo</div>
+            <div class="focus-card-sub">Histórico semanal e média de foco das sessões de hoje.</div>
+          </div>
+          <div class="focus-card-ico">📈</div>
+        </div>
+        <div class="focus-mini-grid">
+          <div><span>Foco médio</span><strong id="focusAvgLevel">—</strong></div>
+          <div><span>Sessões hoje</span><strong id="fSessions">0</strong></div>
+        </div>
+        <div id="focusWeekBox"></div>
+      </div>
+
+      <div class="focus-card v20">
+        <div class="focus-card-head">
+          <div>
+            <div class="focus-card-title">Histórico de sessões</div>
+            <div class="focus-card-sub">Revise foco, distração e notas do que foi feito.</div>
+          </div>
+        </div>
+        <div id="focusHistory"></div>
       </div>
     </div>
-  </div><!-- /content -->
+
+</div><!-- /content -->
   <div id="tabbar"></div>
 </div>
 
@@ -460,6 +736,10 @@
 <div class="overlay off" id="goalModal">
   <div class="sheet"><div class="handle"></div><div class="m-title">Meta de hidratação</div>
   <div class="m-grp"><label class="m-lbl">Meta diária (ml)</label><input class="field" id="goalInp" type="number" placeholder="2000" inputmode="numeric"></div>
+  <div class="water-goal-suggest">
+    <div><strong>Sugestão automática</strong><span>Baseada no peso salvo em Configurações.</span></div>
+    <button onclick="applySuggestedWaterGoal()">Usar sugestão</button>
+  </div>
   <div class="m-acts"><button class="m-cancel" onclick="closeModal('goalModal')">Cancelar</button><button class="m-ok" style="background:var(--teal);" onclick="saveGoal()">Salvar</button></div></div>
 </div>
 
@@ -474,23 +754,88 @@
 </div>
 
 <div class="overlay off" id="habModal">
-  <div class="sheet"><div class="handle"></div><div class="m-title">Novo hábito</div>
+  <div class="sheet habit-sheet"><div class="handle"></div><div class="m-title">Novo hábito</div>
   <div class="m-grp"><label class="m-lbl">Nome</label><input class="field" id="habNameInp" type="text" placeholder="Ex: Beber água, Meditar…" autocomplete="off"></div>
   <div class="m-grp"><label class="m-lbl">Ícone</label>
   <div class="emoji-grid" id="habEmojiGrid"></div></div>
   <div class="m-grp"><label class="m-lbl">Frequência</label>
-  <div class="chips">
-    <button class="chip on" id="habFreqDia" onclick="habPickFreq('diario',this)">Diário</button>
-    <button class="chip" id="habFreqSem" onclick="habPickFreq('semanal',this)">Semanal</button>
+  <div class="chips habit-freq-chips">
+    <button class="chip on" data-freq="daily" onclick="habPickFreq('daily',this)">Diário</button>
+    <button class="chip" data-freq="weekdays" onclick="habPickFreq('weekdays',this)">Dias úteis</button>
+    <button class="chip" data-freq="weekend" onclick="habPickFreq('weekend',this)">Fim de semana</button>
+    <button class="chip" data-freq="specific" onclick="habPickFreq('specific',this)">Dias específicos</button>
+    <button class="chip" data-freq="weeklyTarget" onclick="habPickFreq('weeklyTarget',this)">X vezes/semana</button>
   </div></div>
+  <div class="m-grp" id="habDaysPickerWrap" style="display:none;"><label class="m-lbl">Dias da semana</label><div class="habit-days-picker" id="habDaysPicker"></div></div>
+  <div class="m-grp" id="habWeeklyTargetWrap" style="display:none;"><label class="m-lbl">Meta semanal</label><input class="field" id="habWeeklyTargetInp" type="number" min="1" max="7" value="3" inputmode="numeric"></div>
   <div class="m-acts"><button class="m-cancel" onclick="closeModal('habModal')">Cancelar</button><button class="m-ok" style="background:var(--orange);" onclick="confirmHab()">Criar</button></div></div>
 </div>
 
 <div class="overlay off" id="settingsModal">
-  <div class="sheet"><div class="handle"></div><div class="m-title">Configurações</div>
-  <div class="m-grp"><label class="m-lbl">Peso corporal (kg)</label><input class="field" id="weightInp" type="number" placeholder="70" inputmode="numeric"></div>
-  <div class="m-grp"><label class="m-lbl" style="margin-bottom:10px;">Abas na barra inferior (até 4)</label><div id="tabToggles"></div></div>
-  <div class="m-acts"><button class="m-cancel" onclick="closeModal('settingsModal')">Fechar</button><button class="m-ok" style="background:var(--blue);" onclick="saveSettings()">Salvar</button></div><button onclick="clearAllData()" style="width:100%;margin-top:10px;background:none;border:1.5px solid rgba(255,67,58,.35);border-radius:11px;color:var(--red);font-family:var(--font);font-size:14px;font-weight:500;padding:12px;cursor:pointer;">🗑 Apagar todos os dados</button></div>
+  <div class="sheet settings-sheet v22">
+    <div class="handle"></div>
+    <div class="settings-hero">
+      <div>
+        <div class="settings-kicker">Unio</div>
+        <div class="settings-title">Configurações</div>
+        <div class="settings-sub">Perfil, metas, navegação, dados e diagnóstico do aplicativo.</div>
+      </div>
+      <div class="settings-mark">U.</div>
+    </div>
+
+    <div class="settings-block">
+      <div class="settings-block-head">
+        <div><strong>Perfil</strong><span>Dados usados para metas e resumo da Home.</span></div>
+      </div>
+      <div class="settings-grid">
+        <div class="m-grp"><label class="m-lbl">Nome</label><input class="field" id="profileNameInp" type="text" placeholder="Seu nome"></div>
+        <div class="m-grp"><label class="m-lbl">Peso corporal (kg)</label><input class="field" id="weightInp" type="number" placeholder="70" inputmode="numeric"></div>
+      </div>
+    </div>
+
+    <div class="settings-block">
+      <div class="settings-block-head">
+        <div><strong>Metas principais</strong><span>Centralize as metas usadas pelos módulos.</span></div>
+      </div>
+      <div class="settings-grid">
+        <div class="m-grp"><label class="m-lbl">Água diária (ml)</label><input class="field" id="settingsWaterGoalInp" type="number" inputmode="numeric" placeholder="2000"></div>
+        <div class="m-grp"><label class="m-lbl">Sono diário (h)</label><input class="field" id="settingsSleepGoalInp" inputmode="decimal" placeholder="8"></div>
+        <div class="m-grp"><label class="m-lbl">Foco padrão (min)</label><input class="field" id="settingsFocusMinInp" type="number" inputmode="numeric" placeholder="25"></div>
+        <div class="m-grp"><label class="m-lbl">Pausa padrão (min)</label><input class="field" id="settingsBreakMinInp" type="number" inputmode="numeric" placeholder="5"></div>
+        <div class="m-grp"><label class="m-lbl">Meta de calorias</label><input class="field" id="settingsCaloriesInp" inputmode="decimal" placeholder="Opcional"></div>
+        <div class="m-grp"><label class="m-lbl">Meta de proteína (g)</label><input class="field" id="settingsProteinInp" inputmode="decimal" placeholder="Opcional"></div>
+      </div>
+      <button class="settings-secondary-btn" type="button" onclick="applySuggestedSettings()">Usar sugestões do perfil</button>
+    </div>
+
+    <div class="settings-block">
+      <div class="settings-block-head">
+        <div><strong>Barra inferior</strong><span>Escolha até 4 abas fixas. A Home sempre pode ser acessada.</span></div>
+        <span id="settingsTabCount" class="settings-count">0/4</span>
+      </div>
+      <div id="tabToggles" class="settings-tab-grid"></div>
+    </div>
+
+    <div class="settings-block data-tools-wrap v22">
+      <div class="settings-block-head">
+        <div><strong>Dados e backup</strong><span>Exporte, importe e revise o armazenamento local.</span></div>
+      </div>
+      <div id="dataToolsBox" class="data-tools-box"></div>
+      <input id="backupImportInput" type="file" accept="application/json,.json" style="display:none" onchange="handleBackupFile(this)">
+    </div>
+
+    <div class="settings-block">
+      <div class="settings-block-head">
+        <div><strong>Sobre o Unio</strong><span>Versão, schema e estado técnico atual.</span></div>
+      </div>
+      <div id="settingsAboutBox"></div>
+    </div>
+
+    <div class="m-acts settings-actions">
+      <button class="m-cancel" onclick="closeModal('settingsModal')">Fechar</button>
+      <button class="m-ok" style="background:var(--blue);" onclick="saveSettings()">Salvar tudo</button>
+    </div>
+  </div>
 </div>
 
 <script src="js/data.js"></script>
@@ -524,6 +869,8 @@
 <script src="js/app-migrations.js"></script>
 <script src="js/storage.js"></script>
 <script src="js/app-diagnostics.js"></script>
+<script src="js/app-backup.js"></script>
+<script src="js/app-polish.js"></script>
 <script src="js/app.js"></script>
 <script>
 if('serviceWorker' in navigator){

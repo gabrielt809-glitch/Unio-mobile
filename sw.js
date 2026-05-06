@@ -1,5 +1,5 @@
-/* Unio Base Organizada v10 — Service Worker */
-const CACHE_NAME='unio-v10-cache-2026-05-06';
+/* Unio Base Organizada v23 — Service Worker */
+const CACHE_NAME='unio-v23-cache-2026-05-06';
 const CORE_ASSETS=[
   './',
   './index.html',
@@ -36,6 +36,8 @@ const CORE_ASSETS=[
   './js/app-migrations.js',
   './js/storage.js',
   './js/app-diagnostics.js',
+  './js/app-backup.js',
+  './js/app-polish.js',
   './js/app.js',
   './assets/icons/favicon-32.png',
   './assets/icons/apple-touch-icon.png',

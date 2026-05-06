@@ -1,4 +1,4 @@
-/* Unio Base Organizada v23 */
+/* Unio Base Organizada v24 */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    FINANÇAS — módulo coordenador
    Este arquivo fica propositalmente leve. A implementação foi separada em:

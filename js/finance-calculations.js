@@ -1,4 +1,4 @@
-/* Unio Base Organizada v23 */
+/* Unio Base Organizada v24 */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    FINANÇAS — cálculos
    Totais pessoais, totais da casa e divisão.

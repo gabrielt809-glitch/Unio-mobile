@@ -1,4 +1,4 @@
-/* Unio Base Organizada v23 */
+/* Unio Base Organizada v24 */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    FINANÇAS — renderização
    Somente HTML/estado visual da aba.
@@ -528,5 +528,338 @@ function renderHouseProjectSubItem(projectId,item){
       <button onclick="toggleHouseProjectItemStatus(${projectId},${item.id})">${item.status==='done'?'↺':'✓'}</button>
       <button onclick="deleteHouseProjectItem(${projectId},${item.id})">×</button>
     </div>
+  </div>`;
+}
+
+
+/* ━━━━ V24 — FINANCE UX CLEANUP / FLUXOS GUIADOS ━━━━ */
+function financePanel(){
+  financeEnsureUi();
+  return S.finance.ui.panel||'overview';
+}
+function financeSetPanel(panel){
+  financeEnsureUi();
+  S.finance.ui.panel=S.finance.ui.panel===panel?'overview':panel;
+  S.finance.ui.activeAction=null;
+  S.finance.ui.actionOpen=false;
+  renderFinance();
+  saveState?.();
+}
+function financeShowAction(action,panel){
+  financeEnsureUi();
+  if(panel)S.finance.ui.panel=panel;
+  financeSelectAction(action);
+}
+function financeActionBtn(label,onclick,variant=''){
+  return `<button class="fin-manage-btn ${variant}" type="button" onclick="${onclick}">${label}</button>`;
+}
+function renderFinanceManageHub(){
+  const panel=financePanel();
+  const items=[
+    {id:'accounts',ico:'🏦',title:'Contas',sub:`${(S.finance.accounts||[]).length} cadastrada(s)`},
+    {id:'cards',ico:'💳',title:'Cartões',sub:`${(S.finance.cards||[]).length} cadastrado(s)`},
+    {id:'planning',ico:'📊',title:'Planejamento',sub:'recorrências, categorias e orçamentos'}
+  ];
+  return `<div class="fin-card fin-manage-hub">
+    <div class="fin-card-head compact">
+      <div><div class="fin-card-title">Central financeira</div><div class="fin-card-sub">Os cadastros ficam agrupados aqui para deixar a tela mais limpa.</div></div>
+    </div>
+    <div class="fin-manage-grid">
+      ${items.map(i=>`<button class="fin-manage-card ${panel===i.id?'on':''}" onclick="financeSetPanel('${i.id}')">
+        <span>${i.ico}</span><strong>${i.title}</strong><em>${i.sub}</em>
+      </button>`).join('')}
+    </div>
+  </div>`;
+}
+function renderFinancePanel(){
+  const panel=financePanel();
+  if(panel==='accounts')return renderFinanceAccounts();
+  if(panel==='cards')return renderFinanceCards();
+  if(panel==='planning')return renderFinancePlanning();
+  return '';
+}
+function renderFinancePersonal(){
+  const s=calculateFinancePersonalSummary();
+  const action=S.finance.ui?.activeAction;
+  return `
+    <div class="fin-metrics">
+      ${financeMetric('Saldo total',financeMoney(s.balance),'saldo das contas + mês','var(--green)')}
+      ${financeMetric('Receitas',financeMoney(s.income),'no mês','var(--green)')}
+      ${financeMetric('Despesas',financeMoney(s.expense),'no mês','var(--red)')}
+      ${financeMetric('Cartão',financeMoney(s.cardUsed),'utilizado','var(--pink)')}
+    </div>
+    ${renderFinanceActionLauncher('personal')}
+    ${FINANCE_PERSONAL_ACTIONS.includes(action)?renderFinanceTxForm(action):''}
+    ${renderFinanceManageHub()}
+    ${renderFinancePanel()}
+    ${renderFinanceTxList(s.txs)}
+  `;
+}
+function renderFinanceAccounts(){
+  const active=S.finance.ui?.activeAction;
+  return `<div class="fin-card fin-compact-card">
+    <div class="fin-card-head">
+      <div><div class="fin-card-title">Contas</div><div class="fin-card-sub">Saldos e contas ficam em uma área de gestão separada.</div></div>
+      ${financeActionBtn('+ Conta',"financeShowAction('accountAdd','accounts')",'green')}
+    </div>
+    ${active==='accountAdd'?renderFinanceAccountAddForm():''}
+    <div class="fin-list">${(S.finance.accounts||[]).map(a=>`<div class="fin-row fin-row-editable">
+      <div>
+        <strong>${unioEscape(a.name)}</strong>
+        <span>${unioEscape(a.type||'Conta')} · saldo ${financeMoney(a.balance)}</span>
+      </div>
+      <div class="fin-row-actions"><button class="fin-more-btn" onclick="financeAccountActions(${a.id})">Ações</button></div>
+    </div>`).join('')||'<div class="empty"><em>🏦</em>Nenhuma conta.</div>'}</div>
+  </div>`;
+}
+function renderFinanceAccountAddForm(){
+  return `<div class="fin-inline-form">
+    <input class="field" id="finAccName" placeholder="Nome da conta">
+    <input class="field" id="finAccBalance" inputmode="decimal" placeholder="Saldo atual">
+    <button onclick="addFinanceAccount()">Adicionar conta</button>
+  </div>`;
+}
+function renderFinanceCards(){
+  const active=S.finance.ui?.activeAction;
+  return `<div class="fin-card fin-compact-card">
+    <div class="fin-card-head">
+      <div><div class="fin-card-title">Cartões e faturas</div><div class="fin-card-sub">Cartões, limites, fechamento e pagamento de fatura.</div></div>
+      ${financeActionBtn('+ Cartão',"financeShowAction('cardAdd','cards')",'pink')}
+    </div>
+    ${active==='cardAdd'?renderFinanceCardAddForm():''}
+    <div class="fin-list fin-card-list">${(S.finance.cards||[]).map(c=>renderFinanceCardItem(c)).join('')||'<div class="empty"><em>💳</em>Nenhum cartão.</div>'}</div>
+  </div>`;
+}
+function renderFinanceCardAddForm(){
+  return `<div class="fin-inline-form">
+    <input class="field" id="finCardName" placeholder="Nome do cartão">
+    <input class="field" id="finCardLimit" inputmode="decimal" placeholder="Limite">
+    <button onclick="addFinanceCard()">Adicionar cartão</button>
+  </div>`;
+}
+function renderFinanceCardItem(c){
+  const inv=financeCardInvoice(c.id);
+  return `<div class="fin-card-invoice compact">
+    <div class="fin-card-invoice-head">
+      <div>
+        <strong>${unioEscape(c.name)}</strong>
+        <span>Fecha dia ${c.closingDay||'—'} · vence dia ${c.dueDay||'—'}</span>
+      </div>
+      <button class="fin-more-btn" onclick="financeCardActions(${c.id})">Ações</button>
+    </div>
+    <div class="fin-invoice-grid">
+      <div><span>Fatura</span><strong>${financeMoney(inv.used)}</strong></div>
+      <div><span>Pago</span><strong>${financeMoney(inv.paid)}</strong></div>
+      <div><span>Aberto</span><strong>${financeMoney(inv.open)}</strong></div>
+      <div><span>Disponível</span><strong>${financeMoney(inv.available)}</strong></div>
+    </div>
+  </div>`;
+}
+function renderFinancePlanning(){
+  return `<div class="fin-card fin-compact-card">
+    <div class="fin-card-head">
+      <div><div class="fin-card-title">Planejamento</div><div class="fin-card-sub">Recorrências, categorias e orçamento mensal concentrados em uma única área.</div></div>
+    </div>
+    <div class="fin-planning-grid">
+      ${renderFinanceRecurring()}
+      ${renderFinanceBudgets()}
+      ${renderFinanceCategoryManager()}
+    </div>
+  </div>`;
+}
+function renderFinanceBudgets(){
+  const categories=(S.finance.categories||[]).filter(c=>c!=='Casa');
+  const active=S.finance.ui?.activeAction;
+  return `<div class="fin-subcard">
+    <div class="fin-subcard-head">
+      <div><strong>Orçamentos</strong><span>Limites por categoria no mês.</span></div>
+      ${financeActionBtn('+ Orçamento',"financeShowAction('budgetAdd','planning')",'blue')}
+    </div>
+    ${active==='budgetAdd'?renderFinanceBudgetAddForm():''}
+    <div class="fin-budget-list">${categories.length?categories.map(c=>renderFinanceBudgetItem(c)).join(''):'<div class="empty"><em>📊</em>Sem categorias.</div>'}</div>
+  </div>`;
+}
+function renderFinanceBudgetAddForm(){
+  return `<div class="fin-inline-form">
+    <select class="field" id="finBudgetCategory">${financeCategoryOptions('Outros')}</select>
+    <input class="field" id="finBudgetAmount" inputmode="decimal" placeholder="Orçamento mensal">
+    <button onclick="setFinanceBudget()">Salvar orçamento</button>
+  </div>`;
+}
+function renderFinanceBudgetItem(category){
+  const u=financeBudgetUsage(category);
+  const pct=u.budget>0?Math.min(100,u.pct):0;
+  const tone=u.budget>0&&u.spent>u.budget?'danger':u.pct>=80?'warning':'success';
+  return `<div class="fin-budget-item compact">
+    <div class="fin-budget-head">
+      <div><strong>${unioEscape(category)}</strong><span>${financeMoney(u.spent)} usados ${u.budget>0?`de ${financeMoney(u.budget)}`:'· sem limite'}</span></div>
+      <button class="fin-more-btn" onclick="financeBudgetActions('${encodeURIComponent(category)}')">Ações</button>
+    </div>
+    <div class="fin-budget-bar"><span class="${tone}" style="width:${pct}%"></span></div>
+    <div class="fin-budget-foot">${u.budget>0?`${u.pct}% · restante ${financeMoney(u.remaining)}`:'Defina um orçamento para acompanhar melhor.'}</div>
+  </div>`;
+}
+function renderFinanceRecurring(){
+  const list=S.finance.recurring||[];
+  const active=S.finance.ui?.activeAction;
+  return `<div class="fin-subcard">
+    <div class="fin-subcard-head">
+      <div><strong>Recorrências</strong><span>Receitas e despesas fixas.</span></div>
+      ${financeActionBtn('+ Recorrência',"financeShowAction('recurringAdd','planning')",'green')}
+    </div>
+    ${active==='recurringAdd'?renderFinanceRecurringAddForm():''}
+    <div class="fin-list">
+      ${list.length?list.map(r=>renderFinanceRecurringItem(r)).join(''):'<div class="empty"><em>🔁</em>Nenhuma recorrência.</div>'}
+    </div>
+  </div>`;
+}
+function renderFinanceRecurringAddForm(){
+  return `<div class="fin-inline-form">
+    <select class="field" id="finRecType"><option value="expense">Despesa fixa</option><option value="income">Receita fixa</option></select>
+    <input class="field" id="finRecTitle" placeholder="Descrição">
+    <input class="field" id="finRecAmount" inputmode="decimal" placeholder="Valor">
+    <select class="field" id="finRecCategory">${financeCategoryOptions('Outros')}</select>
+    <button onclick="addFinanceRecurring()">Adicionar recorrência</button>
+  </div>`;
+}
+function renderFinanceRecurringItem(r){
+  return `<div class="fin-row fin-recurring-row ${r.active===false?'muted':''}">
+    <div><strong>${r.type==='income'?'⬆️':'⬇️'} ${unioEscape(r.title)}</strong><span>${financeMoney(r.amount)} · ${unioEscape(r.category||'Outros')} · desde ${financeMonthLabel(r.startMonth)}</span></div>
+    <div class="fin-row-actions"><button class="fin-more-btn" onclick="financeRecurringActions(${r.id})">Ações</button></div>
+  </div>`;
+}
+function renderFinanceCategoryManager(){
+  const active=S.finance.ui?.activeAction;
+  return `<div class="fin-subcard">
+    <div class="fin-subcard-head">
+      <div><strong>Categorias</strong><span>Usadas em lançamentos e orçamentos.</span></div>
+      ${financeActionBtn('+ Categoria',"financeShowAction('categoryAdd','planning')",'brand')}
+    </div>
+    ${active==='categoryAdd'?renderFinanceCategoryAddForm():''}
+    <div class="fin-category-grid">
+      ${(S.finance.categories||[]).map(c=>`<span class="fin-category-chip compact">${unioEscape(c)}<button onclick="financeCategoryActions('${encodeURIComponent(c)}')">Ações</button></span>`).join('')}
+    </div>
+  </div>`;
+}
+function renderFinanceCategoryAddForm(){
+  return `<div class="fin-inline-form">
+    <input class="field" id="finNewCategory" placeholder="Nova categoria">
+    <button onclick="addFinanceCategory()">Adicionar categoria</button>
+  </div>`;
+}
+function renderFinanceTxList(txs){
+  return `<div class="fin-card">
+    <div class="fin-card-head"><div><div class="fin-card-title">Últimos lançamentos</div><div class="fin-card-sub">${txs.length} no mês selecionado</div></div></div>
+    <div class="fin-list fin-tx-list">${txs.length?txs.map(t=>financeTxItem(t)).join(''):'<div class="empty"><em>💰</em>Nenhum lançamento neste mês.</div>'}</div>
+  </div>`;
+}
+function financeTxItem(t){
+  if(t.recurringVirtual){
+    return `<div class="fin-tx recurring ${t.type==='income'?'income':'expense'}">
+      <div><strong>${unioEscape(t.title)} · recorrente</strong><span>${financeDateLabel(t.date)} · ${unioEscape(t.category||'Outros')} · ${financeAccountName(t.accountId)}</span></div>
+      <div class="fin-tx-side"><b>${t.type==='income'?'+':'-'} ${financeMoney(t.amount)}</b><button class="fin-more-btn" onclick="financeRecurringActions(${t.recurringId})">Ações</button></div>
+    </div>`;
+  }
+  const sign=t.type==='income'?'+':t.type==='transfer'?'↔':'-';
+  const cls=t.type==='income'?'income':t.type==='transfer'?'transfer':'expense';
+  const meta=t.type==='card'?financeCardName(t.cardId):t.cardPayment?`Pagamento ${financeCardName(t.cardId)}`:t.type==='transfer'?`${financeAccountName(t.fromAccountId)} → ${financeAccountName(t.toAccountId)}`:financeAccountName(t.accountId);
+  const parcel=financeCardInvoiceLabel(t);
+  return `<div class="fin-tx ${cls}">
+    <div><strong>${unioEscape(t.title)}${parcel}</strong><span>${financeDateLabel(t.date)} · ${unioEscape(t.category||'Outros')} · ${unioEscape(meta)}</span></div>
+    <div class="fin-tx-side"><b>${sign} ${financeMoney(t.amount)}</b><button class="fin-more-btn" onclick="financeTxActions(${t.id})">Ações</button></div>
+  </div>`;
+}
+function renderFinanceHouse(){
+  const s=calculateFinanceHouseSummary();
+  return `
+    <div class="fin-metrics">
+      ${financeMetric('Casa',financeMoney(s.total),'despesas do mês','var(--green)')}
+      ${financeMetric('Pago',financeMoney(s.paid),'já quitado','var(--blue)')}
+      ${financeMetric('Pendente',financeMoney(s.pending),'a pagar','var(--orange)')}
+      ${financeMetric('Projetos',financeMoney(s.projectsSummary.planned),'planejado','var(--brand)')}
+    </div>
+    ${renderHouseSummary(s)}
+    ${renderFinanceActionLauncher('house')}
+    ${S.finance.ui?.activeAction==='houseConfig'?renderHouseConfig():''}
+    ${S.finance.ui?.activeAction==='houseBill'?renderHouseBillForm():''}
+    ${renderHouseBillList(s.bills,s.split)}
+    ${renderHouseProjects(s.projectsSummary)}
+  `;
+}
+function renderHouseSummary(summary){
+  const p=S.finance.house.people||[];
+  const mode=S.finance.house.splitMode==='income'?'Proporcional por renda':'50/50';
+  return `<div class="fin-card house-summary-card">
+    <div class="fin-card-head">
+      <div><div class="fin-card-title">Resumo da casa</div><div class="fin-card-sub">${mode} · ${p[0]?.name||'Pessoa 1'} ${financeMoney(summary.split.a)} · ${p[1]?.name||'Pessoa 2'} ${financeMoney(summary.split.b)}</div></div>
+      <button class="fin-more-btn" onclick="financeHouseSummaryActions()">Ações</button>
+    </div>
+    <div class="house-mini-grid">
+      <div><span>Projetos pagos</span><strong>${financeMoney(summary.projectsSummary.paid)}</strong></div>
+      <div><span>Itens planejados</span><strong>${summary.projectsSummary.items}</strong></div>
+    </div>
+  </div>`;
+}
+function renderHouseBillList(bills,split){
+  const p=S.finance.house.people||[];
+  return `<div class="fin-card">
+    <div class="fin-card-head"><div><div class="fin-card-title">Contas da casa</div><div class="fin-card-sub">${p[0]?.name||'Gabriel'}: ${financeMoney(split.a)} · ${p[1]?.name||'Giulianna'}: ${financeMoney(split.b)}</div></div></div>
+    <div class="fin-list">${bills.length?bills.map(b=>`<div class="fin-tx ${b.paid?'income':'expense'}">
+      <div><strong>${unioEscape(b.title)}</strong><span>${financeDateLabel(b.date)} · ${unioEscape(b.category)} · ${financeHouseProjectName(b.projectId)} · ${b.paid?'Pago':'Pendente'}</span></div>
+      <div class="fin-tx-side"><b>${financeMoney(b.amount)}</b><button class="fin-more-btn" onclick="financeHouseBillActions(${b.id})">Ações</button></div>
+    </div>`).join(''):'<div class="empty"><em>🏠</em>Nenhuma conta da casa neste mês.</div>'}</div>
+  </div>`;
+}
+function renderHouseProjects(projectsSummary=financeHouseProjectsSummary()){
+  return `<div class="fin-card house-projects-card">
+    <div class="fin-card-head">
+      <div><div class="fin-card-title">Projetos da casa</div><div class="fin-card-sub">Reforma, compras, sonhos e reserva organizados sem campos fixos na tela.</div></div>
+      ${financeActionBtn('+ Projeto',"financeShowAction('houseProjectAdd','houseProjects')",'green')}
+    </div>
+    ${S.finance.ui?.activeAction==='houseProjectAdd'?renderHouseProjectAddForm():''}
+    <div class="house-project-list">
+      ${projectsSummary.summaries.map(s=>renderHouseProjectItem(s.project,s)).join('')}
+    </div>
+  </div>`;
+}
+function renderHouseProjectAddForm(){
+  return `<div class="fin-inline-form house-project-add compact">
+    <input class="field" id="houseProjectEmoji" placeholder="Emoji" maxlength="3">
+    <input class="field" id="houseProjectName" placeholder="Novo projeto">
+    <input class="field" id="houseProjectGoal" inputmode="decimal" placeholder="Meta/planejado">
+    <button onclick="addHouseProject()">Adicionar projeto</button>
+  </div>`;
+}
+function renderHouseProjectItem(project,summary){
+  const tone=summary.pct>=100?'success':summary.pct>=70?'warning':'';
+  const showAdd=String(S.finance.ui?.houseItemProjectId||'')===String(project.id);
+  return `<div class="house-project compact">
+    <div class="house-project-head">
+      <div>
+        <strong>${unioEscape(project.emoji||'🏠')} ${unioEscape(project.name)}</strong>
+        <span>${financeMoney(summary.paid)} pago de ${financeMoney(summary.planned)} planejado</span>
+      </div>
+      <button class="fin-more-btn" onclick="financeHouseProjectActions(${project.id})">Ações</button>
+    </div>
+    <div class="fin-budget-bar"><span class="${tone}" style="width:${summary.pct}%"></span></div>
+    <div class="house-project-foot">${summary.pct}% concluído · restante ${financeMoney(summary.remaining)}</div>
+    <div class="house-project-items">
+      ${(project.items||[]).length?(project.items||[]).map(item=>renderHouseProjectSubItem(project.id,item)).join(''):'<div class="house-project-empty">Nenhum item planejado.</div>'}
+    </div>
+    ${showAdd?renderHouseProjectItemAddForm(project.id):''}
+  </div>`;
+}
+function renderHouseProjectItemAddForm(projectId){
+  return `<div class="fin-inline-form house-item-add compact">
+    <input class="field" id="houseItemTitle_${projectId}" placeholder="Item">
+    <input class="field" id="houseItemEstimated_${projectId}" inputmode="decimal" placeholder="Estimado">
+    <input class="field" id="houseItemPaid_${projectId}" inputmode="decimal" placeholder="Pago">
+    <button onclick="addHouseProjectItem(${projectId})">Adicionar item</button>
+  </div>`;
+}
+function renderHouseProjectSubItem(projectId,item){
+  return `<div class="house-subitem ${item.status==='done'||item.status==='paid'?'done':''}">
+    <div><strong>${unioEscape(item.title)}</strong><span>${financeHouseProjectStatusLabel(item.status)} · estimado ${financeMoney(item.estimated)} · pago ${financeMoney(item.paid)}</span></div>
+    <div class="fin-row-actions compact"><button class="fin-more-btn" onclick="financeHouseProjectItemActions(${projectId},${item.id})">Ações</button></div>
   </div>`;
 }

@@ -1,4 +1,4 @@
-/* Unio Base Organizada v23 */
+/* Unio Base Organizada v24 */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    FINANÇAS — validações e fábricas
    Responsável por manter dados financeiros consistentes antes de salvar.

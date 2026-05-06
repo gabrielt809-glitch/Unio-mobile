@@ -1,4 +1,4 @@
-/* Unio Base Organizada v23 */
+/* Unio Base Organizada v24 */
 /* ━━━━ HOME INTELIGENTE ━━━━
    Score local, próximas ações, alertas e painel priorizado
 */

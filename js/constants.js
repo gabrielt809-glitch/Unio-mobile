@@ -1,8 +1,8 @@
-/* Unio Base Organizada v23 */
+/* Unio Base Organizada v24 */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    CONSTANTS — versões, defaults e chaves estáveis
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-var APP_SCHEMA_VERSION=23;
+var APP_SCHEMA_VERSION=24;
 var FINANCE_SCHEMA_VERSION=6;
 var DEFAULT_PINNED_TABS=['home','finance','water','habits'];
 var DEFAULT_FINANCE_CATEGORIES=['Alimentação','Transporte','Casa','Lazer','Saúde','Educação','Compras','Assinaturas','Investimentos','Outros'];
@@ -89,5 +89,5 @@ var DEFAULT_FOCUS_LEVELS=[
 ];
 
 
-var APP_PUBLIC_VERSION='v23';
-var APP_CACHE_LABEL='unio-v23-cache-2026-05-06';
+var APP_PUBLIC_VERSION='v24';
+var APP_CACHE_LABEL='unio-v24-cache-2026-05-06';

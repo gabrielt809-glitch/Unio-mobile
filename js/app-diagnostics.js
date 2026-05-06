@@ -1,4 +1,4 @@
-/* Unio Base Organizada v23 */
+/* Unio Base Organizada v24 */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    APP DIAGNOSTICS — diagnóstico local para futuras telas de backup/suporte
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
@@ -13,7 +13,8 @@ function getAppDiagnostics(){
     water:{goal:S.water?.goal||0,amount:S.water?.amt||0,logs:Array.isArray(S.water?.log)?S.water.log.length:0,history:S.water?.history?Object.keys(S.water.history).length:0,presets:Array.isArray(S.water?.presets)?S.water.presets.length:0},
     financeSchemaVersion:S.finance?.schemaVersion||null,
     profileName:(typeof S_name!=='undefined'?S_name:''),
-    visualPolishVersion:'v23',
+    visualPolishVersion:'v24',
+    uxValidationVersion:'v24',
     activeTab:S.curTab,
     pinnedTabs:Array.isArray(S.pinnedTabs)?S.pinnedTabs.slice():[],
     tasks:Array.isArray(S.tasks)?S.tasks.length:0,

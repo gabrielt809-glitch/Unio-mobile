@@ -1,4 +1,4 @@
-/* Unio Base Organizada v23 */
+/* Unio Base Organizada v24 */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    FINANÇAS — ações
    Mutação do estado, commit, edição e exclusão.
@@ -90,6 +90,7 @@ function addFinanceAccount(){
   const validation=validateFinanceAccountPayload(payload);
   if(!validation.ok){showToast(validation.message);return;}
   S.finance.accounts.push(createFinanceAccount(payload));
+  if(S.finance?.ui)S.finance.ui.activeAction=null;
   commitFinance();
 }
 function editFinanceAccount(id){
@@ -124,6 +125,7 @@ function addFinanceCard(){
   const validation=validateFinanceCardPayload(payload);
   if(!validation.ok){showToast(validation.message);return;}
   S.finance.cards.push(createFinanceCard(payload));
+  if(S.finance?.ui)S.finance.ui.activeAction=null;
   commitFinance();
 }
 function editFinanceCard(id){
@@ -264,6 +266,7 @@ function addFinanceCategory(){
   if(!validation.ok){showToast(validation.message);return;}
   S.finance.categories.push(validation.data);
   S.finance.categories.sort((a,b)=>a.localeCompare(b,'pt-BR'));
+  if(S.finance?.ui)S.finance.ui.activeAction=null;
   showToast('Categoria adicionada');
   commitFinance();
 }
@@ -281,6 +284,7 @@ function setFinanceBudget(){
   if(amount<0){showToast('Informe um valor válido');return;}
   if(!S.finance.budgets)S.finance.budgets={};
   S.finance.budgets[category]=amount;
+  if(S.finance?.ui)S.finance.ui.activeAction=null;
   showToast('Orçamento salvo');
   commitFinance();
 }
@@ -314,6 +318,7 @@ function addFinanceRecurring(){
   if(!validation.ok){showToast(validation.message);return;}
   if(!Array.isArray(S.finance.recurring))S.finance.recurring=[];
   S.finance.recurring.unshift(createFinanceRecurring(payload));
+  if(S.finance?.ui)S.finance.ui.activeAction=null;
   showToast('Recorrência adicionada');
   commitFinance();
 }
@@ -368,6 +373,7 @@ function addHouseProject(){
   const validation=validateHouseProjectPayload(payload);
   if(!validation.ok){showToast(validation.message);return;}
   financeHouseProjects().push(createHouseProject(payload));
+  if(S.finance?.ui)S.finance.ui.activeAction=null;
   showToast('Projeto adicionado');
   commitFinance();
 }
@@ -414,6 +420,7 @@ function addHouseProjectItem(projectId){
   if(!Array.isArray(project.items))project.items=[];
   project.items.push(createHouseProjectItem(payload));
   project.updatedAt=Date.now();
+  if(S.finance?.ui)S.finance.ui.houseItemProjectId=null;
   showToast('Item adicionado ao projeto');
   commitFinance();
 }
@@ -464,4 +471,125 @@ function deleteHouseProjectItem(projectId,itemId){
   project.items=(project.items||[]).filter(i=>String(i.id)!==String(itemId));
   project.updatedAt=Date.now();
   commitFinance();
+}
+
+
+/* ━━━━ V24 — FINANCE ACTION MENUS / AÇÕES CONTEXTUAIS ━━━━ */
+function financeOpenActionSheet(title,actions=[]){
+  financeCloseActionSheet();
+  window.__unioFinanceActions=actions;
+  const overlay=document.createElement('div');
+  overlay.className='finance-action-modal';
+  overlay.id='financeActionModal';
+  overlay.onclick=(ev)=>{if(ev.target===overlay)financeCloseActionSheet();};
+  overlay.innerHTML=`<div class="finance-action-card">
+    <div class="finance-action-head">
+      <div><strong>${unioEscape(title)}</strong><span>Escolha uma ação</span></div>
+      <button onclick="financeCloseActionSheet()">×</button>
+    </div>
+    <div class="finance-action-list">
+      ${actions.map((a,i)=>`<button class="${a.tone||''}" onclick="financeRunAction(${i})"><span>${a.ico||'•'}</span><div><strong>${unioEscape(a.label)}</strong>${a.sub?`<em>${unioEscape(a.sub)}</em>`:''}</div></button>`).join('')}
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+}
+function financeRunAction(index){
+  const action=window.__unioFinanceActions?.[index];
+  financeCloseActionSheet();
+  if(action&&typeof action.run==='function')action.run();
+}
+function financeCloseActionSheet(){
+  const old=document.getElementById('financeActionModal');
+  if(old)old.remove();
+  window.__unioFinanceActions=null;
+}
+function financeTxActions(id){
+  const t=(S.finance.transactions||[]).find(x=>String(x.id)===String(id));
+  financeOpenActionSheet(t?.title||'Lançamento',[
+    {ico:'✏️',label:'Editar lançamento',run:()=>editFinanceTx(id)},
+    {ico:'🗑️',label:'Excluir lançamento',tone:'danger',run:()=>deleteFinanceTx(id)}
+  ]);
+}
+function financeAccountActions(id){
+  const a=financeAccountById(id);
+  financeOpenActionSheet(a?.name||'Conta',[
+    {ico:'✏️',label:'Editar conta',sub:'Nome, tipo e saldo',run:()=>editFinanceAccount(id)},
+    {ico:'🗑️',label:'Excluir conta',tone:'danger',run:()=>deleteFinanceAccount(id)}
+  ]);
+}
+function financeCardActions(id){
+  const c=financeCardById(id);
+  const inv=financeCardInvoice(id);
+  const actions=[
+    {ico:'💳',label:'Pagar fatura',sub:inv.open>0?financeMoney(inv.open):'Sem fatura aberta',run:()=>payCardInvoice(id)},
+    {ico:'✏️',label:'Editar cartão',sub:'Limite, fechamento e vencimento',run:()=>editFinanceCard(id)},
+    {ico:'🗑️',label:'Excluir cartão',tone:'danger',run:()=>deleteFinanceCard(id)}
+  ];
+  financeOpenActionSheet(c?.name||'Cartão',actions);
+}
+function financeRecurringActions(id){
+  const r=financeRecurringById(id);
+  financeOpenActionSheet(r?.title||'Recorrência',[
+    {ico:'✏️',label:'Editar recorrência',run:()=>editFinanceRecurring(id)},
+    {ico:r?.active===false?'↻':'✓',label:r?.active===false?'Reativar':'Pausar',run:()=>toggleFinanceRecurring(id)},
+    {ico:'🗑️',label:'Excluir recorrência',tone:'danger',run:()=>deleteFinanceRecurring(id)}
+  ]);
+}
+function financeBudgetActions(encodedCategory){
+  const category=decodeURIComponent(encodedCategory);
+  financeOpenActionSheet(category,[
+    {ico:'✏️',label:'Editar orçamento',run:()=>editFinanceBudget(encodedCategory)},
+    {ico:'🧹',label:'Remover limite',tone:'danger',run:()=>clearFinanceBudget(encodedCategory)}
+  ]);
+}
+function clearFinanceBudget(encodedCategory){
+  const category=decodeURIComponent(encodedCategory);
+  if(!confirm(`Remover orçamento de "${category}"?`))return;
+  if(S.finance.budgets)delete S.finance.budgets[category];
+  commitFinance();
+}
+function financeCategoryActions(encodedCategory){
+  const category=decodeURIComponent(encodedCategory);
+  financeOpenActionSheet(category,[
+    {ico:'🗑️',label:'Excluir categoria',tone:'danger',run:()=>deleteFinanceCategory(encodedCategory)}
+  ]);
+}
+function financeHouseSummaryActions(){
+  financeOpenActionSheet('Resumo da casa',[
+    {ico:'👥',label:'Editar divisão da casa',sub:'Nomes, rendas e modo de divisão',run:()=>financeSelectAction('houseConfig')},
+    {ico:'🏠',label:'Nova conta da casa',run:()=>financeSelectAction('houseBill')}
+  ]);
+}
+function financeHouseBillActions(id){
+  const b=(S.finance.house?.bills||[]).find(x=>String(x.id)===String(id));
+  financeOpenActionSheet(b?.title||'Conta da casa',[
+    {ico:'✏️',label:'Editar conta',run:()=>editHouseBill(id)},
+    {ico:b?.paid?'↺':'✓',label:b?.paid?'Marcar como pendente':'Marcar como paga',run:()=>toggleHouseBillPaid(id)},
+    {ico:'🗑️',label:'Excluir conta',tone:'danger',run:()=>deleteHouseBill(id)}
+  ]);
+}
+function financeHouseProjectActions(id){
+  const project=financeHouseProjectById(id);
+  financeOpenActionSheet(project?.name||'Projeto',[
+    {ico:'➕',label:'Adicionar item',sub:'Abrir formulário só neste projeto',run:()=>financeToggleHouseProjectItemForm(id)},
+    {ico:'✏️',label:'Editar projeto',run:()=>editHouseProject(id)},
+    {ico:'🗑️',label:'Excluir projeto',tone:'danger',run:()=>deleteHouseProject(id)}
+  ]);
+}
+function financeToggleHouseProjectItemForm(id){
+  financeEnsureUi();
+  S.finance.ui.houseItemProjectId=String(S.finance.ui.houseItemProjectId||'')===String(id)?null:id;
+  S.finance.ui.activeAction=null;
+  renderFinance();
+  setTimeout(()=>{
+    const field=document.getElementById(`houseItemTitle_${id}`);
+    if(field)field.focus();
+  },120);
+}
+function financeHouseProjectItemActions(projectId,itemId){
+  financeOpenActionSheet('Item do projeto',[
+    {ico:'✏️',label:'Editar item',run:()=>editHouseProjectItem(projectId,itemId)},
+    {ico:'✓',label:'Alternar status',run:()=>toggleHouseProjectItemStatus(projectId,itemId)},
+    {ico:'🗑️',label:'Excluir item',tone:'danger',run:()=>deleteHouseProjectItem(projectId,itemId)}
+  ]);
 }

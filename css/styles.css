@@ -1,4 +1,4 @@
-/* Unio Base Organizada v9.1 — estilos globais */
+/* Unio Base Organizada v9.4 — estilos globais */
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 :root{
   --bg:#000;--bg2:#1C1C1E;--bg3:#2C2C2E;--bg4:#3A3A3C;
@@ -235,6 +235,17 @@ html{height:100%;height:-webkit-fill-available;background:#000;}body{height:100%
 .dr-name{font-size:14px;font-weight:500;}
 .dr-info{font-size:11px;color:var(--lbl2);margin-top:1px;}
 .dr-add{border:none;border-radius:8px;color:#fff;font-family:var(--font);font-size:12px;font-weight:600;padding:6px 12px;cursor:pointer;flex-shrink:0;}
+
+
+/* ── UI COMPONENTS v9.4 ── */
+.ui-empty span{display:block;font-size:12px;color:var(--lbl3);line-height:1.35;margin-top:5px;}
+.ui-section-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px;}
+.ui-section-title{font-size:15px;font-weight:900;letter-spacing:-.2px;}
+.ui-section-sub{font-size:12px;color:var(--lbl2);line-height:1.35;margin-top:3px;}
+.ui-pill{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:rgba(255,255,255,.07);color:var(--lbl2);font-size:11px;font-weight:800;padding:6px 9px;white-space:nowrap;}
+.ui-pill.success{background:rgba(52,199,89,.14);color:var(--green);}
+.ui-pill.warning{background:rgba(255,159,10,.14);color:var(--orange);}
+.ui-pill.danger{background:rgba(255,67,58,.14);color:var(--red);}
 
 /* ── HOME ── */
 .home-hero{position:relative;overflow:hidden;background:linear-gradient(145deg,rgba(255,255,255,.11),rgba(255,255,255,.045));border:1px solid var(--stroke);border-radius:24px;padding:18px 18px 20px;margin-bottom:12px;box-shadow:0 18px 44px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.08);}
@@ -556,6 +567,7 @@ html{height:100%;height:-webkit-fill-available;background:#000;}body{height:100%
 
 /* ── FINANÇAS v9.1 — validação UX ── */
 .finance-shell{display:flex;flex-direction:column;gap:10px;min-width:0;}
+/* ── FINANCE — estrutura v9.3: layout, ações, formulários e listas ── */
 .fin-hero{position:relative;overflow:hidden;background:linear-gradient(145deg,rgba(52,199,89,.14),rgba(142,167,255,.07));border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:18px;display:flex;justify-content:space-between;gap:14px;box-shadow:0 18px 40px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.08);min-width:0;}
 .fin-hero::after{content:"";position:absolute;right:-50px;top:-70px;width:170px;height:170px;border-radius:50%;background:radial-gradient(circle,rgba(52,199,89,.18),transparent 66%);pointer-events:none;}
 .fin-kicker{font-size:10px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--green);margin-bottom:6px;}
@@ -620,3 +632,161 @@ html{height:100%;height:-webkit-fill-available;background:#000;}body{height:100%
 .fin-tx.transfer .fin-tx-side b{color:var(--blue);}
 @media (max-width:370px){.fin-topbar{flex-direction:column;}.fin-month-nav{justify-content:space-between;width:100%;}.fin-seg{width:100%;}.fin-seg-btn{flex:1;padding-left:8px;padding-right:8px;}.fin-metric-value{font-size:18px;}.fin-tx{grid-template-columns:minmax(0,1fr);}.fin-tx-side{width:100%;max-width:none;justify-content:space-between;}}
 @media (min-width:390px){.fin-two-col{grid-template-columns:minmax(0,1fr) minmax(0,1fr);}.fin-metric-value{font-size:21px;}}
+
+
+/* ── FINANCE v9.2 — ação única e edição rápida ── */
+.fin-add-zone{position:relative;margin:0;min-width:0;}
+.fin-plus-main{
+  width:100%;
+  min-height:48px;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:17px;
+  background:linear-gradient(135deg,rgba(52,199,89,.20),rgba(142,167,255,.10));
+  color:#fff;
+  font-family:var(--font);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  cursor:pointer;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+  transition:transform .13s ease,opacity .13s ease;
+}
+.fin-plus-main:active{transform:scale(.98);opacity:.86;}
+.fin-plus-main span{
+  width:27px;
+  height:27px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  background:rgba(255,255,255,.14);
+  font-size:19px;
+  font-weight:800;
+  line-height:1;
+}
+.fin-plus-main strong{font-size:14px;font-weight:900;letter-spacing:-.1px;}
+.fin-action-sheet{
+  margin-top:9px;
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:8px;
+  padding:10px;
+  border-radius:18px;
+  background:rgba(255,255,255,.055);
+  border:1px solid rgba(255,255,255,.07);
+  animation:fadeUp .18s ease both;
+}
+.fin-action-option{
+  width:100%;
+  border:0;
+  border-radius:14px;
+  background:rgba(255,255,255,.055);
+  color:#fff;
+  font-family:var(--font);
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  align-items:center;
+  gap:11px;
+  padding:12px;
+  text-align:left;
+  cursor:pointer;
+  transition:transform .12s ease,background .12s ease;
+}
+.fin-action-option:active{transform:scale(.98);background:rgba(255,255,255,.08);}
+.fin-action-option .fin-action-ico{
+  width:34px;
+  height:34px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(255,255,255,.07);
+  font-size:17px;
+}
+.fin-action-option strong{
+  display:block;
+  font-size:14px;
+  font-weight:900;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.fin-action-option em{
+  display:block;
+  margin-top:2px;
+  color:var(--lbl2);
+  font-size:11px;
+  line-height:1.25;
+  font-style:normal;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.fin-action-option.income .fin-action-ico{background:rgba(52,199,89,.18);}
+.fin-action-option.expense .fin-action-ico{background:rgba(255,67,58,.16);}
+.fin-action-option.transfer .fin-action-ico{background:rgba(0,122,255,.16);}
+.fin-action-option.card .fin-action-ico{background:rgba(255,55,95,.16);}
+.fin-action-option.houseBill .fin-action-ico{background:rgba(52,199,89,.16);}
+.fin-action-option.houseConfig .fin-action-ico{background:rgba(142,167,255,.16);}
+.fin-close-btn{
+  width:30px;
+  height:30px;
+  border:0;
+  border-radius:10px;
+  background:rgba(255,255,255,.07);
+  color:var(--lbl2);
+  font-family:var(--font);
+  font-size:20px;
+  line-height:1;
+  cursor:pointer;
+  flex-shrink:0;
+}
+.fin-head-btn{
+  align-self:flex-start;
+  flex-shrink:0;
+}
+.fin-row-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:6px;
+  flex-shrink:0;
+}
+.fin-row .fin-edit-btn,
+.fin-tx-side .fin-edit-btn,
+.fin-head-btn{
+  width:auto;
+  min-width:54px;
+  height:28px;
+  padding:0 9px;
+  border:0;
+  border-radius:9px;
+  background:rgba(142,167,255,.12);
+  color:var(--brand);
+  font-family:var(--font);
+  font-size:11px;
+  font-weight:850;
+  cursor:pointer;
+}
+.fin-tx-side{
+  max-width:186px;
+}
+.fin-tx-side .fin-edit-btn{min-width:48px;font-size:10.5px;}
+.fin-account-add,.fin-card-add{
+  grid-template-columns:minmax(0,1fr) minmax(86px,.55fr) auto;
+}
+.fin-form-card{
+  animation:fadeUp .18s ease both;
+}
+.fin-form-card .fin-card-title{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+@media (max-width:370px){
+  .fin-account-add,.fin-card-add{grid-template-columns:minmax(0,1fr);}
+  .fin-mini-form button{min-height:40px;}
+  .fin-action-option em{white-space:normal;}
+  .fin-tx-side .fin-edit-btn{min-width:56px;}
+}

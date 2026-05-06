@@ -1,4 +1,4 @@
-/* Unio Base Organizada v8.4 */
+/* Unio Base Organizada v8.8 */
 /* Bibliotecas internas removidas.
    Nutrição e Saúde agora funcionam como diários livres, sem listas fixas de alimentos/atividades. */
 const FDB=[];

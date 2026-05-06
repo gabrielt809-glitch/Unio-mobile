@@ -1,4 +1,4 @@
-/* Unio Base Organizada v8.5 */
+/* Unio Base Organizada v8.8 */
 /* ━━━━ SPLASH ━━━━ */
 function startApp(){
   const willOnboard=!localStorage.getItem(STORE_KEY+'_onboarded');
@@ -23,13 +23,14 @@ function buildTabBar(){
   const bar=$('tabbar');
   const pinned=S.pinnedTabs&&S.pinnedTabs.length?S.pinnedTabs:['home','water','habits','focus'];
   bar.style.setProperty('--tab-count',pinned.length);
-  bar.setAttribute('role','tablist');
+  bar.setAttribute('role','navigation');
   bar.setAttribute('aria-label','Navegação principal');
-  bar.innerHTML=pinned.map(id=>{
+  const tabs=pinned.map(id=>{
     const t=ALL_TABS.find(x=>x.id===id)||ALL_TABS[0];
     const active=S.curTab===id;
     return`<button type="button" class="tab${active?' active':''}" onclick="switchTabById('${id}')" aria-label="${t.lbl}" aria-current="${active?'page':'false'}"><span class="tab-ico" aria-hidden="true">${t.ico}</span><span class="tab-lbl">${t.lbl}</span></button>`;
   }).join('');
+  bar.innerHTML=`<div class="tabbar-inner" role="tablist">${tabs}</div>`;
 }
 function switchTabById(id){
   ensureDailyState?.({silent:true});

@@ -1,4 +1,4 @@
-/* Unio Base Organizada v8.4 */
+/* Unio Base Organizada v8.8 */
 /* ━━━━ TASKS ━━━━ */
 function taskDateObjFromKey(k){return keyToDate(k);}
 function taskDayLabel(k){

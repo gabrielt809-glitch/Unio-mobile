@@ -1,4 +1,4 @@
-/* Unio Base Organizada v8.5 */
+/* Unio Base Organizada v8.8 */
 /* ━━━━ INIT ━━━━ */
 loadState();
 ensureDailyState({silent:true});

@@ -180,3 +180,40 @@ Versão técnica antes da v10, sem grandes funcionalidades novas.
 ### Objetivo
 
 Deixar o app inteiro mais preparado para crescer sem acúmulo de dívida técnica, antes da v10.
+
+
+## v9.5 — Hardening final antes da v10
+
+Versão técnica para deixar a base mais sólida antes de fatura, parcelamentos e mês a mês.
+
+### Melhorias principais
+
+- Criado `js/app-forms.js` com helpers para formulários:
+  - `formValue()`
+  - `formNumber()`
+  - `formDate()`
+  - `isDateInputValue()`
+  - `formatDateBR()`
+  - `getMonthKeyFromDate()`
+  - `isSameMonthKey()`
+- Criado `js/app-errors.js` com:
+  - `safeRun()`
+  - `handleAppError()`
+  - `safeJsonParse()`
+- Criado `js/app-diagnostics.js` com:
+  - `getAppDiagnostics()`
+  - `logAppDiagnostics()`
+- `ui-components.js` recebeu um modal interno reutilizável:
+  - `openEditModal()`
+  - `closeEditModal()`
+  - `saveEditModal()`
+  - `collectEditModalValues()`
+- Edição de conta, cartão, lançamento e conta da casa deixou de usar `prompt()` e passou a usar o modal interno.
+- `APP_SCHEMA_VERSION` atualizado para `5`.
+- `app-core.js` passou a usar execução segura via `safeRun()`.
+- `styles.css` recebeu a base visual do modal interno.
+- `sw.js` atualizado para cachear os novos arquivos.
+
+### Objetivo
+
+Substituir pontos frágeis de UX/código, criar base de diagnóstico e padronizar formulários antes da v10.

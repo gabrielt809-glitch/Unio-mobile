@@ -1,4 +1,4 @@
-/* Unio Base Organizada v9.5 */
+/* Unio Base Organizada v9.5.1 */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    FINANÇAS — renderização
    Somente HTML/estado visual da aba.
@@ -123,7 +123,7 @@ function renderFinanceTxForm(activeType='expense'){
     <input type="hidden" id="finTxType" value="${activeType}">
     <div class="fin-form-grid">
       <div class="m-grp"><label class="m-lbl">Valor</label><input class="field" id="finTxAmount" type="text" inputmode="decimal" placeholder="0,00"></div>
-      <div class="m-grp fin-date-grp"><label class="m-lbl">Data</label><input class="field fin-date-field" id="finTxDate" type="date" value="${financeDateToday()}"></div>
+      <div class="m-grp fin-date-grp"><label class="m-lbl">Data</label><input class="field fin-date-field" id="finTxDate" type="date" value="${financeDefaultDate()}"></div>
       <div class="m-grp fin-wide"><label class="m-lbl">Descrição</label><input class="field" id="finTxTitle" type="text" placeholder="Ex: Mercado, salário, Uber" autocomplete="off"></div>
       <div class="m-grp" data-fin-type="expense,income"><label class="m-lbl">Conta</label><select class="field" id="finTxAccount">${financeAccountOptions(acc)}</select></div>
       <div class="m-grp" data-fin-type="transfer"><label class="m-lbl">De</label><select class="field" id="finTxFrom">${financeAccountOptions(acc)}</select></div>
@@ -255,7 +255,7 @@ function renderHouseBillForm(){
     <div class="fin-form-grid">
       <div class="m-grp fin-wide"><label class="m-lbl">Descrição</label><input class="field" id="houseBillTitle" placeholder="Ex: Internet, mercado, reforma"></div>
       <div class="m-grp"><label class="m-lbl">Valor</label><input class="field" id="houseBillAmount" type="text" inputmode="decimal" placeholder="0,00"></div>
-      <div class="m-grp fin-date-grp"><label class="m-lbl">Data</label><input class="field fin-date-field" id="houseBillDate" type="date" value="${financeDateToday()}"></div>
+      <div class="m-grp fin-date-grp"><label class="m-lbl">Data</label><input class="field fin-date-field" id="houseBillDate" type="date" value="${financeDefaultDate()}"></div>
       <div class="m-grp"><label class="m-lbl">Categoria</label><select class="field" id="houseBillCategory">${financeCategoryOptions('Casa')}</select></div>
       <div class="m-grp"><label class="m-lbl">Quem pagou</label><select class="field" id="houseBillPaidBy"><option value="gabriel">${unioEscape(S.finance.house.people?.[0]?.name||'Gabriel')}</option><option value="giulianna">${unioEscape(S.finance.house.people?.[1]?.name||'Giulianna')}</option><option value="none">Ninguém ainda</option></select></div>
     </div>

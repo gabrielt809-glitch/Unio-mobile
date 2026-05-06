@@ -1,4 +1,4 @@
-/* Unio Base Organizada v9.5 */
+/* Unio Base Organizada v9.5.1 */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    FINANÇAS — core/helpers
    Funções puras, formatação e acesso básico ao estado.
@@ -21,6 +21,11 @@ function financeParseAmount(value){
   return Number.isFinite(n)?n:0;
 }
 function financeDateToday(){return new Date().toISOString().slice(0,10);}
+function financeDefaultDate(){
+  const selected=financeCurrentMonth();
+  const today=financeDateToday();
+  return today.slice(0,7)===selected?today:`${selected}-01`;
+}
 function financeEnsureUi(){
   if(!S.finance.ui)S.finance.ui={actionOpen:false,activeAction:null};
   if(typeof S.finance.ui.actionOpen!=='boolean')S.finance.ui.actionOpen=false;

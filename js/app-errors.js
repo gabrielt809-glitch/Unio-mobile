@@ -1,4 +1,4 @@
-/* Unio Base Organizada v9.5 */
+/* Unio Base Organizada v9.5.1 */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    APP ERRORS — execução segura e diagnóstico simples de erros
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */

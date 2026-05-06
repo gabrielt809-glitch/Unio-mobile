@@ -1,16 +1,17 @@
-/* Unio Base Organizada v9.5 */
+/* Unio Base Organizada v9.5.1 */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    FINANÇAS — ações
    Mutação do estado, commit, edição e exclusão.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 function commitFinance(opts={}){
-  if(typeof commitModule==='function'){
-    commitModule('finance',{home:opts.home});
-    return;
+  try{
+    if(typeof saveState==='function')saveState();
+    if(opts.render!==false&&typeof renderFinance==='function')renderFinance();
+    if(opts.home!==false&&typeof renderHome==='function')renderHome();
+  }catch(error){
+    handleAppError?.(error,'Não foi possível atualizar Finanças.');
+    console.warn('Unio finance commit error',error);
   }
-  if(typeof saveState==='function')saveState();
-  if(opts.render!==false&&typeof renderFinance==='function')renderFinance();
-  if(opts.home!==false&&typeof renderHome==='function')renderHome();
 }
 /* ━━━━ ACTIONS — PERSONAL ━━━━ */
 function addFinanceTx(){
@@ -19,7 +20,7 @@ function addFinanceTx(){
     type,
     amount:financeNum('finTxAmount'),
     title:financeVal('finTxTitle')||financeActionLabel(type),
-    date:financeVal('finTxDate')||financeDateToday(),
+    date:financeVal('finTxDate')||financeDefaultDate(),
     category:financeVal('finTxCategory')||'Outros',
     accountId:financeVal('finTxAccount'),
     fromAccountId:financeVal('finTxFrom'),
@@ -28,6 +29,7 @@ function addFinanceTx(){
   };
   const validation=validateFinanceTransactionPayload(payload);
   if(!validation.ok){showToast(validation.message);return;}
+  S.finance.month=payload.date.slice(0,7);
   S.finance.transactions.unshift(createFinanceTransaction(payload));
   if(S.finance.ui)S.finance.ui.activeAction=null;
   showToast('Lançamento adicionado');
@@ -148,12 +150,13 @@ function addHouseBill(){
   const payload={
     title:financeVal('houseBillTitle')||'Conta da casa',
     amount:financeNum('houseBillAmount'),
-    date:financeVal('houseBillDate')||financeDateToday(),
+    date:financeVal('houseBillDate')||financeDefaultDate(),
     category:financeVal('houseBillCategory')||'Casa',
     paidBy:financeVal('houseBillPaidBy')||'none'
   };
   const validation=validateHouseBillPayload(payload);
   if(!validation.ok){showToast(validation.message);return;}
+  S.finance.month=payload.date.slice(0,7);
   S.finance.house.bills.unshift(createHouseBill(payload));
   if(S.finance.ui)S.finance.ui.activeAction=null;
   showToast('Conta da casa adicionada');

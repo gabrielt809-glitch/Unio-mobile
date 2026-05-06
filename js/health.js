@@ -1,4 +1,4 @@
-/* Unio Base Organizada v9.5 */
+/* Unio Base Organizada v9.5.1 */
 /* ━━━━ HEALTH — diário livre ━━━━ */
 let healthIntensity='moderada';
 

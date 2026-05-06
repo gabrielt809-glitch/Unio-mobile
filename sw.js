@@ -1,5 +1,5 @@
-/* Unio Base Organizada v23 — Service Worker */
-const CACHE_NAME='unio-v23-cache-2026-05-06';
+/* Unio Base Organizada v24 — Service Worker */
+const CACHE_NAME='unio-v24-cache-2026-05-06';
 const CORE_ASSETS=[
   './',
   './index.html',

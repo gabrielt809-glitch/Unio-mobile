@@ -1095,3 +1095,89 @@ A v23 não adiciona um módulo novo. Ela é uma versão de acabamento visual e c
 8. Verificar se textos longos quebram corretamente.
 9. Testar em iPhone pequeno e iPhone maior.
 10. Confirmar que o app continua salvando dados normalmente.
+
+
+## v24 — Finanças limpa e validação UX global
+
+### Objetivo
+
+A v24 corrige uma dor importante da experiência: a aba Finanças estava ficando visualmente poluída, com muitos campos de preenchimento e botões de edição/exclusão aparecendo ao mesmo tempo.
+
+### Principais mudanças em Finanças
+
+- Nova **Central financeira** na visão Pessoal:
+  - Contas;
+  - Cartões;
+  - Planejamento.
+- Formulários deixam de ficar expostos o tempo todo.
+- Cadastros agora aparecem por ação:
+  - + Conta;
+  - + Cartão;
+  - + Recorrência;
+  - + Orçamento;
+  - + Categoria.
+- Lançamentos usam botão **Ações** em vez de mostrar Editar/Excluir sempre.
+- Contas, cartões, recorrências, orçamentos e categorias também usam ações contextuais.
+- Na visão Casa:
+  - contas da casa usam botão Ações;
+  - projetos usam botão Ações;
+  - itens de projeto usam botão Ações;
+  - formulário de item aparece só quando solicitado.
+- Novo menu contextual visual para ações financeiras.
+
+### Validação UX global
+
+Foi adicionado o arquivo:
+
+- `UX_VALIDATION_v24.md`
+
+Ele documenta a revisão de UX por módulo:
+
+- Home;
+- Água;
+- Tarefas;
+- Sono;
+- Nutrição;
+- Saúde;
+- Finanças;
+- Hábitos;
+- Foco;
+- Configurações.
+
+### Arquivos principais alterados
+
+- `js/finance-render.js`
+- `js/finance-actions.js`
+- `css/styles.css`
+- `js/constants.js`
+- `js/app-diagnostics.js`
+- `sw.js`
+- `README.md`
+
+### Arquivo novo
+
+- `UX_VALIDATION_v24.md`
+
+### Versões de dados
+
+- `APP_SCHEMA_VERSION = 24`
+- `FINANCE_SCHEMA_VERSION = 6`
+- cache: `unio-v24-cache-2026-05-06`
+
+### Checklist recomendado
+
+1. Abrir Finanças > Pessoal.
+2. Validar Central financeira.
+3. Adicionar conta.
+4. Adicionar cartão.
+5. Adicionar recorrência.
+6. Adicionar orçamento.
+7. Adicionar categoria.
+8. Criar lançamento.
+9. Usar botão Ações em lançamento.
+10. Abrir Finanças > Casa.
+11. Criar conta da casa.
+12. Criar projeto.
+13. Adicionar item por botão Ações.
+14. Validar se os formulários não ficam expostos desnecessariamente.
+15. Navegar por todas as abas e validar UX geral.

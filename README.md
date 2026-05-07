@@ -1242,7 +1242,7 @@ Correção visual importante:
 
 - `APP_SCHEMA_VERSION = 25`
 - `FINANCE_SCHEMA_VERSION = 6`
-- cache: `unio-v25-cache-2026-05-06`
+- cache: `unio-v26-cache-2026-05-06`
 
 ### Checklist recomendado
 
@@ -1256,3 +1256,73 @@ Correção visual importante:
 8. Abrir Água.
 9. Validar copos rápidos limpos.
 10. Gerenciar copos rápidos.
+
+
+## v26 — Extratos separados + correção de modal + auditoria UX de Finanças
+
+### Objetivo
+
+A v26 corrige dois problemas importantes observados no uso real da aba Finanças:
+
+1. O extrato estava único, misturando conta e cartão.
+2. O modal de editar lançamento estava quebrando visualmente dentro do container.
+
+Além disso, foi adicionada uma auditoria pesada de UX da aba Finanças.
+
+### Correções aplicadas
+
+#### Extratos separados
+
+O extrato agora é dividido em:
+
+- Extratos por conta;
+- Extratos por cartão.
+
+A ideia é evitar que saldo de conta, fatura de cartão, transferência e pagamento de fatura fiquem misturados no mesmo bloco.
+
+#### Modal corrigido
+
+O modal de edição recebeu correção forte de layout:
+
+- título não corta mais na borda;
+- campos respeitam o container;
+- labels e inputs têm espaçamento melhor;
+- botão de fechar fica alinhado;
+- botões inferiores ficam mais estáveis;
+- melhor responsividade em iPhone/PWA.
+
+### Arquivo novo
+
+- `FINANCE_UX_AUDIT_v26.md`
+
+### Arquivos principais alterados
+
+- `js/finance-render.js`
+- `css/styles.css`
+- `js/constants.js`
+- `js/app-diagnostics.js`
+- `js/settings.js`
+- `sw.js`
+- `README.md`
+- `FINANCE_UX_AUDIT_v26.md`
+
+### Versões de dados
+
+- `APP_SCHEMA_VERSION = 26`
+- `FINANCE_SCHEMA_VERSION = 6`
+- cache: `unio-v26-cache-2026-05-06`
+
+### Checklist recomendado
+
+1. Abrir Finanças > Pessoal.
+2. Criar receita vinculada a uma conta.
+3. Criar despesa vinculada a uma conta.
+4. Criar despesa cartão.
+5. Verificar Extratos por conta.
+6. Verificar Extratos por cartão.
+7. Usar busca.
+8. Editar lançamento.
+9. Conferir se modal não corta título.
+10. Conferir se campos ficam dentro do container.
+11. Abrir Finanças > Casa.
+12. Testar com teclado aberto no iPhone/PWA.

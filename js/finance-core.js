@@ -1,4 +1,4 @@
-/* Unio Base Organizada v25 */
+/* Unio Base Organizada v26 */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    FINANÇAS — core/helpers
    Funções puras, formatação e acesso básico ao estado.

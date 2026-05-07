@@ -1,4 +1,4 @@
-/* Unio Base Organizada v25 */
+/* Unio Base Organizada v26 */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    FINANÇAS — renderização
    Somente HTML/estado visual da aba.
@@ -1146,5 +1146,128 @@ function renderFinanceSearch(){
     <span>📊</span>
     <input value="${unioEscape(value)}" onchange="financeSearchCommit(this.value)" onkeydown="if(event.key==='Enter')financeSearchCommit(this.value)" placeholder="Pesquisar no Unio Finanças">
     <button onclick="financeSearchCommit('')">${value?'×':'🔍'}</button>
+  </div>`;
+}
+
+
+/* ━━━━ V26 — EXTRATOS SEPARADOS POR CONTA E CARTÃO ━━━━ */
+function financeTxMatchesSearch(t,q){
+  if(!q)return true;
+  const hay=[
+    t.title,
+    t.category,
+    financeAccountName(t.accountId),
+    financeAccountName(t.fromAccountId),
+    financeAccountName(t.toAccountId),
+    financeCardName(t.cardId)
+  ].join(' ').toLowerCase();
+  return hay.includes(String(q).toLowerCase());
+}
+function financeTxBelongsToAccount(t,accountId){
+  return String(t.accountId||'')===String(accountId)
+    || String(t.fromAccountId||'')===String(accountId)
+    || String(t.toAccountId||'')===String(accountId);
+}
+function financeTxBelongsToCard(t,cardId){
+  return String(t.cardId||'')===String(cardId) && (t.type==='card'||t.cardPayment||t.installmentGroupId);
+}
+function financeTxSignedAmountForAccount(t,accountId){
+  const v=Number(t.amount)||0;
+  if(t.type==='income')return v;
+  if(t.type==='expense')return -v;
+  if(t.type==='transfer'){
+    if(String(t.fromAccountId||'')===String(accountId))return -v;
+    if(String(t.toAccountId||'')===String(accountId))return v;
+  }
+  if(t.cardPayment)return -v;
+  return 0;
+}
+function financeTxSignedAmountForCard(t){
+  const v=Number(t.amount)||0;
+  if(t.cardPayment)return -v;
+  return v;
+}
+function financeGroupTxByDate(txs){
+  const grouped={};
+  txs.forEach(t=>{
+    const key=t.date||financeDefaultDate();
+    if(!grouped[key])grouped[key]=[];
+    grouped[key].push(t);
+  });
+  return Object.keys(grouped).sort((a,b)=>String(b).localeCompare(String(a))).map(k=>({date:k,items:grouped[k]}));
+}
+function financeExtractEmpty(title,sub,icon='💰'){
+  return `<div class="mf-extract-section empty-section">
+    <div class="mf-extract-section-head">
+      <div><span>${icon}</span><div><strong>${unioEscape(title)}</strong><em>${unioEscape(sub)}</em></div></div>
+    </div>
+    <div class="empty"><em>${icon}</em>Nenhum lançamento neste extrato.</div>
+  </div>`;
+}
+function renderFinanceExtractSection({kind,id,title,subtitle,icon,txs,total}){
+  const groups=financeGroupTxByDate(txs);
+  return `<div class="mf-extract-section ${kind}">
+    <div class="mf-extract-section-head" onclick="${kind==='account'?`financeAccountActions(${id})`:`financeCardActions(${id})`}">
+      <div><span>${icon}</span><div><strong>${unioEscape(title)}</strong><em>${unioEscape(subtitle)}</em></div></div>
+      <b class="${total<0?'negative':'positive'}">${financeMoney(Math.abs(total))}</b>
+    </div>
+    ${groups.length?groups.map(g=>`<div class="mf-date-group compact">
+      <div class="mf-date-label">${financeDateLongLabel(g.date)}</div>
+      <div class="mf-timeline">${g.items.map(t=>financeTxItem(t)).join('')}</div>
+    </div>`).join(''):'<div class="empty"><em>💰</em>Nenhum lançamento neste extrato.</div>'}
+  </div>`;
+}
+function renderFinanceAccountExtracts(txs,q){
+  const accounts=S.finance.accounts||[];
+  const sections=accounts.map(a=>{
+    const list=txs.filter(t=>financeTxBelongsToAccount(t,a.id)&&financeTxMatchesSearch(t,q));
+    const total=list.reduce((sum,t)=>sum+financeTxSignedAmountForAccount(t,a.id),0);
+    return {
+      kind:'account',
+      id:a.id,
+      title:a.name,
+      subtitle:`${a.type||'Conta'} · ${list.length} lançamento(s)`,
+      icon:financeAccountIcon(a),
+      txs:list,
+      total
+    };
+  }).filter(s=>s.txs.length);
+  return `<div class="mf-extract-block">
+    <div class="mf-extract-title"><h3>Extratos por conta</h3><span>${sections.length} conta(s)</span></div>
+    ${sections.length?sections.map(renderFinanceExtractSection).join(''):financeExtractEmpty('Nenhuma conta com lançamentos','Crie receitas, despesas ou transferências vinculadas a uma conta.','🏦')}
+  </div>`;
+}
+function renderFinanceCardExtracts(txs,q){
+  const cards=S.finance.cards||[];
+  const sections=cards.map(c=>{
+    const list=txs.filter(t=>financeTxBelongsToCard(t,c.id)&&financeTxMatchesSearch(t,q));
+    const total=list.reduce((sum,t)=>sum+financeTxSignedAmountForCard(t),0);
+    const inv=financeCardInvoice(c.id);
+    return {
+      kind:'card',
+      id:c.id,
+      title:c.name,
+      subtitle:`Fatura aberta ${financeMoney(inv.open)} · ${list.length} lançamento(s)`,
+      icon:financeCardIcon(c),
+      txs:list,
+      total
+    };
+  }).filter(s=>s.txs.length);
+  return `<div class="mf-extract-block">
+    <div class="mf-extract-title"><h3>Extratos por cartão</h3><span>${sections.length} cartão(ões)</span></div>
+    ${sections.length?sections.map(renderFinanceExtractSection).join(''):financeExtractEmpty('Nenhum cartão com lançamentos','Crie despesas cartão para ver o extrato separado por fatura/cartão.','💳')}
+  </div>`;
+}
+function renderFinanceTxList(txs){
+  const q=financeSearchValue().trim();
+  const searched=q?txs.filter(t=>financeTxMatchesSearch(t,q)):txs;
+  return `<div class="mf-extract-card split">
+    <div class="mf-card-head">
+      <h3>Extratos</h3>
+      <span>${searched.length} lançamento(s)</span>
+    </div>
+    <div class="mf-extract-helper">Separado por conta e por cartão para evitar misturar carteira, banco e fatura.</div>
+    ${renderFinanceAccountExtracts(txs,q)}
+    ${renderFinanceCardExtracts(txs,q)}
   </div>`;
 }

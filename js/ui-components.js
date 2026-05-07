@@ -1,4 +1,4 @@
-/* Unio Base Organizada v25 */
+/* Unio Base Organizada v26 */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    UI COMPONENTS — helpers HTML reutilizáveis
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */

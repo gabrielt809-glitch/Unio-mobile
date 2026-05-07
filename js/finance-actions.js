@@ -1,4 +1,4 @@
-/* Unio Base Organizada v25 */
+/* Unio Base Organizada v26 */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    FINANÇAS — ações
    Mutação do estado, commit, edição e exclusão.

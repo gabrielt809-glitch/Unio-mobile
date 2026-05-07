@@ -1181,3 +1181,78 @@ Ele documenta a revisão de UX por módulo:
 13. Adicionar item por botão Ações.
 14. Validar se os formulários não ficam expostos desnecessariamente.
 15. Navegar por todas as abas e validar UX geral.
+
+
+## v25 — Experiência inspirada no app Minhas Finanças
+
+### Objetivo
+
+A v25 reorganiza a experiência de uso, usando como inspiração o app Minhas Finanças enviado nos anexos.
+
+A ideia não é copiar visualmente, mas aplicar o mesmo princípio:
+
+- tela mais amigável;
+- menos campos expostos;
+- cards mais claros;
+- ação principal por botão;
+- formulários somente quando necessários;
+- menus contextuais.
+
+### Finanças
+
+A aba Finanças recebeu uma nova experiência:
+
+- alternância visível entre Pessoal e Casa;
+- resumo mensal em destaque;
+- busca de lançamentos;
+- card de Contas;
+- card de Cartões de crédito;
+- extrato agrupado por data;
+- botão flutuante de adicionar;
+- menu rápido com:
+  - Transferência;
+  - Receita;
+  - Despesa;
+  - Despesa cartão.
+- ações contextuais em contas, cartões e lançamentos.
+
+### Água
+
+Correção visual importante:
+
+- os botões de copos rápidos não mostram mais editar/excluir o tempo todo;
+- edição/exclusão fica em “Gerenciar copos rápidos”;
+- registros usam botão Ações.
+
+### Arquivo novo
+
+- `UX_DIRECTION_v25.md`
+
+### Arquivos principais alterados
+
+- `js/finance-render.js`
+- `js/water.js`
+- `css/styles.css`
+- `js/constants.js`
+- `js/app-diagnostics.js`
+- `sw.js`
+- `README.md`
+
+### Versões de dados
+
+- `APP_SCHEMA_VERSION = 25`
+- `FINANCE_SCHEMA_VERSION = 6`
+- cache: `unio-v25-cache-2026-05-06`
+
+### Checklist recomendado
+
+1. Abrir Finanças.
+2. Alternar entre Pessoal e Casa.
+3. Usar o botão flutuante.
+4. Criar receita.
+5. Criar despesa.
+6. Criar despesa cartão.
+7. Validar extrato por data.
+8. Abrir Água.
+9. Validar copos rápidos limpos.
+10. Gerenciar copos rápidos.

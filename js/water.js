@@ -1,4 +1,4 @@
-/* Unio Base Organizada v24 */
+/* Unio Base Organizada v25 */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    WATER — hidratação completa
    - meta personalizada e sugestão por peso
@@ -286,6 +286,114 @@ function renderWaterLog(){
     const hh=String(tm.getHours()).padStart(2,'0'),mm=String(tm.getMinutes()).padStart(2,'0');
     d.innerHTML=`<div style="display:flex;align-items:center;min-width:0;"><div class="w-dot"></div><span style="font-size:15px;font-weight:700;">${it.ml}ml</span></div>
     <div class="water-log-actions"><span>${hh}:${mm}</span><button onclick="editWaterLog(${globalIndex})">Editar</button><button class="w-del" onclick="removeWater(${globalIndex})">×</button></div>`;
+    logEl.appendChild(d);
+  });
+}
+
+
+/* ━━━━ V25 — WATER UX CLEANUP / PRESETS LIMPOS ━━━━ */
+function waterEnsureUi(){
+  if(!S.water.ui)S.water.ui={managePresets:false};
+}
+function toggleWaterPresetManager(){
+  normalizeWaterStateSoft();
+  waterEnsureUi();
+  S.water.ui.managePresets=!S.water.ui.managePresets;
+  renderWaterPresetsManager();
+  saveState?.();
+}
+function waterOpenActionSheet(title,actions=[]){
+  waterCloseActionSheet();
+  window.__unioWaterActions=actions;
+  const overlay=document.createElement('div');
+  overlay.className='finance-action-modal water-action-modal';
+  overlay.id='waterActionModal';
+  overlay.onclick=ev=>{if(ev.target===overlay)waterCloseActionSheet();};
+  overlay.innerHTML=`<div class="finance-action-card">
+    <div class="finance-action-head">
+      <div><strong>${unioEscape(title)}</strong><span>Escolha uma ação</span></div>
+      <button onclick="waterCloseActionSheet()">×</button>
+    </div>
+    <div class="finance-action-list">
+      ${actions.map((a,i)=>`<button class="${a.tone||''}" onclick="waterRunAction(${i})"><span>${a.ico||'💧'}</span><div><strong>${unioEscape(a.label)}</strong>${a.sub?`<em>${unioEscape(a.sub)}</em>`:''}</div></button>`).join('')}
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+}
+function waterRunAction(i){
+  const action=window.__unioWaterActions?.[i];
+  waterCloseActionSheet();
+  if(action&&typeof action.run==='function')action.run();
+}
+function waterCloseActionSheet(){
+  document.getElementById('waterActionModal')?.remove();
+  window.__unioWaterActions=null;
+}
+function waterPresetActions(i){
+  const ml=S.water.presets[i];
+  waterOpenActionSheet(`${ml}ml`,[
+    {ico:'💧',label:`Adicionar ${ml}ml`,run:()=>addWP(i)},
+    {ico:'✏️',label:'Editar copo rápido',run:()=>editWaterPreset(i)},
+    {ico:'🗑️',label:'Excluir copo rápido',tone:'danger',run:()=>removeWaterPreset(i)}
+  ]);
+}
+function waterLogActions(globalIndex){
+  const item=S.water.log?.[globalIndex];
+  waterOpenActionSheet(item?`${item.ml}ml`:'Registro',[
+    {ico:'✏️',label:'Editar registro',run:()=>editWaterLog(globalIndex)},
+    {ico:'🗑️',label:'Excluir registro',tone:'danger',run:()=>removeWater(globalIndex)}
+  ]);
+}
+function renderWater(){
+  normalizeWaterState();
+  waterEnsureUi();
+  const{amt,goal}=S.water;
+  const pct=waterPct(),col=pct>=100?'#34C759':'#5AC8FA';
+  const wAmt=$('wAmt'); if(wAmt)wAmt.textContent=amt;
+  const wGoalT=$('wGoalT'); if(wGoalT)wGoalT.textContent='de '+goal+'ml';
+  const wGoalD=$('wGoalD'); if(wGoalD)wGoalD.textContent=goal+' ml';
+  const wPct=$('wPct'); if(wPct)wPct.textContent=pct+'%';
+  const wNeed=$('wNeed'); if(wNeed)wNeed.textContent=waterNeed()+'ml';
+  const wStreak=$('wStreak'); if(wStreak)wStreak.textContent=waterStreak();
+  const r=$('wRing');
+  if(r){r.style.strokeDashoffset=490*(1-Math.min(pct/100,1));r.style.stroke=col;}
+  if(wAmt)wAmt.style.color=col;
+  const suggested=waterSuggestedGoal();
+  const sug=$('waterSuggestedGoal'); if(sug)sug.textContent=`Sugestão pelo peso atual: ${suggested}ml`;
+  const row=$('waterPresetRow');
+  if(row){
+    row.innerHTML=S.water.presets.map((ml,i)=>`<button class="water-chip-v25" onclick="addWP(${i})" oncontextmenu="event.preventDefault();waterPresetActions(${i})">+${ml}ml</button>`).join('');
+  }
+  renderWaterWeek();
+  renderWaterPresetsManager();
+  renderWaterLog();
+}
+function renderWaterPresetsManager(){
+  const box=$('waterPresetManager');
+  if(!box)return;
+  waterEnsureUi();
+  const opened=!!S.water.ui.managePresets;
+  box.innerHTML=`<button class="water-manage-toggle" onclick="toggleWaterPresetManager()">${opened?'Fechar ajustes':'Gerenciar copos rápidos'}</button>
+  ${opened?`<div class="water-manage-panel">
+    <div class="water-preset-list">${S.water.presets.map((ml,i)=>`<span>${ml}ml <button onclick="waterPresetActions(${i})">Ações</button></span>`).join('')}</div>
+    <div class="water-preset-add"><input class="field" id="waterPresetInp" inputmode="numeric" placeholder="Novo copo em ml"><button onclick="addWaterPreset()">Adicionar</button></div>
+  </div>`:''}`;
+}
+function renderWaterLog(){
+  const logEl=$('wLog'),em=$('wEmpty');
+  if(!logEl||!em)return;
+  logEl.querySelectorAll('.w-log-item').forEach(e=>e.remove());
+  const today=waterTodayKey();
+  const todayLog=(S.water.log||[]).filter(it=>(it.date||today)===today);
+  em.style.display=todayLog.length?'none':'block';
+  todayLog.forEach((it)=>{
+    const globalIndex=S.water.log.findIndex(x=>x.id===it.id);
+    const d=document.createElement('div');
+    d.className='w-log-item v25';
+    const tm=it.time instanceof Date?it.time:new Date(it.time);
+    const hh=String(tm.getHours()).padStart(2,'0'),mm=String(tm.getMinutes()).padStart(2,'0');
+    d.innerHTML=`<div style="display:flex;align-items:center;min-width:0;"><div class="w-dot"></div><span style="font-size:15px;font-weight:700;">${it.ml}ml</span></div>
+    <div class="water-log-actions"><span>${hh}:${mm}</span><button onclick="waterLogActions(${globalIndex})">Ações</button></div>`;
     logEl.appendChild(d);
   });
 }

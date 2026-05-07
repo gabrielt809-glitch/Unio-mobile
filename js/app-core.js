@@ -1,4 +1,4 @@
-/* Unio Base Organizada v24 */
+/* Unio Base Organizada v25 */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    APP CORE — commit global e renderização controlada
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */

@@ -1,4 +1,4 @@
-/* Unio Base Organizada v24 */
+/* Unio Base Organizada v25 */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    FINANÇAS — renderização
    Somente HTML/estado visual da aba.
@@ -823,7 +823,7 @@ function renderHouseProjects(projectsSummary=financeHouseProjectsSummary()){
   </div>`;
 }
 function renderHouseProjectAddForm(){
-  return `<div class="fin-inline-form house-project-add compact">
+  return `<div class="fin-inline-form house-project-add compact" id="financeActiveForm">
     <input class="field" id="houseProjectEmoji" placeholder="Emoji" maxlength="3">
     <input class="field" id="houseProjectName" placeholder="Novo projeto">
     <input class="field" id="houseProjectGoal" inputmode="decimal" placeholder="Meta/planejado">
@@ -861,5 +861,290 @@ function renderHouseProjectSubItem(projectId,item){
   return `<div class="house-subitem ${item.status==='done'||item.status==='paid'?'done':''}">
     <div><strong>${unioEscape(item.title)}</strong><span>${financeHouseProjectStatusLabel(item.status)} · estimado ${financeMoney(item.estimated)} · pago ${financeMoney(item.paid)}</span></div>
     <div class="fin-row-actions compact"><button class="fin-more-btn" onclick="financeHouseProjectItemActions(${projectId},${item.id})">Ações</button></div>
+  </div>`;
+}
+
+
+/* ━━━━ V25 — FINANCE EXPERIENCE / INSPIRAÇÃO MINHAS FINANÇAS ━━━━ */
+function financeSetSearch(value){
+  financeEnsureUi();
+  S.finance.ui.search=String(value||'');
+  renderFinance();
+}
+function financeSearchValue(){
+  financeEnsureUi();
+  return String(S.finance.ui.search||'');
+}
+function financeAccountIcon(account){
+  const name=String(account?.name||'').toLowerCase();
+  if(name.includes('nubank'))return 'nu';
+  if(name.includes('itaú')||name.includes('itau'))return 'itaú';
+  if(name.includes('mercado'))return 'mp';
+  if(name.includes('dinheiro'))return 'R$';
+  return '🏦';
+}
+function financeCardIcon(card){
+  const name=String(card?.name||'').toLowerCase();
+  if(name.includes('nubank'))return 'nu';
+  if(name.includes('itaú')||name.includes('itau'))return 'it';
+  return '💳';
+}
+function renderFinanceMonthHero(summary){
+  const initial=summary.accountsTotal||0;
+  const current=summary.balance||0;
+  const predicted=current;
+  return `<div class="mf-hero">
+    <div class="mf-month-row">
+      <button onclick="shiftFinanceMonth(-1)">‹</button>
+      <strong>${financeMonthLabel(S.finance.month)}</strong>
+      <button onclick="shiftFinanceMonth(1)">›</button>
+    </div>
+    <div class="mf-balance-track">
+      <div><span>Inicial</span><strong>${financeMoney(initial)}</strong></div>
+      <div class="current"><span>Saldo atual</span><strong>${financeMoney(current)}</strong></div>
+      <div><span>Previsto</span><strong>${financeMoney(predicted)}</strong></div>
+    </div>
+  </div>`;
+}
+function renderFinanceSearch(){
+  const value=financeSearchValue();
+  return `<div class="mf-search">
+    <span>📊</span>
+    <input value="${unioEscape(value)}" oninput="financeSetSearch(this.value)" placeholder="Pesquisar no Unio Finanças">
+    <button onclick="financeSetSearch('')">${value?'×':'🔍'}</button>
+  </div>`;
+}
+function renderFinancePersonal(){
+  const s=calculateFinancePersonalSummary();
+  const action=S.finance.ui?.activeAction;
+  return `
+    ${renderFinanceMonthHero(s)}
+    ${renderFinanceSearch()}
+    ${FINANCE_PERSONAL_ACTIONS.includes(action)?renderFinanceTxForm(action):''}
+    ${renderFinanceAccountsHome(s)}
+    ${renderFinanceCardsHome(s)}
+    ${renderFinanceManageHubV25()}
+    ${renderFinancePanel()}
+    ${renderFinanceTxList(s.txs)}
+    ${renderFinanceFab('personal')}
+  `;
+}
+function renderFinanceAccountsHome(summary){
+  const accounts=S.finance.accounts||[];
+  const total=accounts.reduce((a,x)=>a+Number(x.balance||0),0);
+  return `<div class="mf-card">
+    <div class="mf-card-head">
+      <h3>Contas</h3>
+      <div class="mf-head-actions">
+        <button onclick="financeSetPanel('accounts')">↗</button>
+        <button onclick="financeOpenAccountsMenu()">•••</button>
+      </div>
+    </div>
+    <div class="mf-list">
+      ${accounts.length?accounts.slice(0,4).map(a=>`<div class="mf-row" onclick="financeAccountActions(${a.id})">
+        <div class="mf-left"><span class="mf-logo">${financeAccountIcon(a)}</span><div><strong>${unioEscape(a.name)}</strong><em>${unioEscape(a.type||'Conta')}</em></div></div>
+        <div class="mf-right"><strong>${financeMoney(a.balance)}</strong><em>Atual</em></div>
+      </div>`).join(''):'<div class="empty"><em>🏦</em>Nenhuma conta cadastrada.</div>'}
+    </div>
+    <div class="mf-total"><span>Total</span><strong>${financeMoney(total)}</strong></div>
+  </div>`;
+}
+function renderFinanceCardsHome(summary){
+  const cards=S.finance.cards||[];
+  const totalOpen=cards.reduce((a,c)=>a+Number(financeCardInvoice(c.id).open||0),0);
+  return `<div class="mf-card">
+    <div class="mf-card-head">
+      <h3>Cartões de crédito</h3>
+      <div class="mf-head-actions">
+        <button onclick="financeSetPanel('cards')">↗</button>
+        <button onclick="financeOpenCardsMenu()">•••</button>
+      </div>
+    </div>
+    <div class="mf-list">
+      ${cards.length?cards.slice(0,4).map(c=>{
+        const inv=financeCardInvoice(c.id);
+        return `<div class="mf-row" onclick="financeCardActions(${c.id})">
+          <div class="mf-left"><span class="mf-logo card">${financeCardIcon(c)}</span><div><strong>💳 ${unioEscape(c.name)}</strong><em>Fechamento ${c.closingDay||'—'} · Venc. ${c.dueDay||'—'}</em></div></div>
+          <div class="mf-right"><strong>${financeMoney(inv.used)}</strong><em>${financeMoney(inv.open)} aberto</em></div>
+        </div>`;
+      }).join(''):'<div class="empty"><em>💳</em>Nenhum cartão cadastrado.</div>'}
+    </div>
+    <div class="mf-total"><span>Total aberto</span><strong>${financeMoney(totalOpen)}</strong></div>
+  </div>`;
+}
+function renderFinanceManageHubV25(){
+  const panel=financePanel();
+  return `<div class="mf-manage-strip">
+    <button class="${panel==='accounts'?'on':''}" onclick="financeSetPanel('accounts')">🏦 Contas</button>
+    <button class="${panel==='cards'?'on':''}" onclick="financeSetPanel('cards')">💳 Cartões</button>
+    <button class="${panel==='planning'?'on':''}" onclick="financeSetPanel('planning')">📊 Planejamento</button>
+  </div>`;
+}
+function renderFinanceFab(scope='personal'){
+  const isHouse=scope==='house';
+  return `<button class="mf-fab" onclick="financeToggleActionMenu()">＋</button>
+    ${S.finance.ui?.actionOpen?renderFinanceFloatingMenu(isHouse):''}`;
+}
+function renderFinanceFloatingMenu(isHouse=false){
+  const opts=isHouse
+    ?[
+      {type:'houseBill',title:'Conta da casa',ico:'🏠'},
+      {type:'houseProjectAdd',title:'Projeto',ico:'🛠️'},
+      {type:'houseConfig',title:'Editar divisão',ico:'👥'}
+    ]
+    :[
+      {type:'transfer',title:'Transferência',ico:'↕️'},
+      {type:'income',title:'Receita',ico:'+'},
+      {type:'expense',title:'Despesa',ico:'−'},
+      {type:'card',title:'Despesa cartão',ico:'▭'}
+    ];
+  return `<div class="mf-fab-backdrop" onclick="financeCloseActionMenu()"></div>
+    <div class="mf-fab-menu">
+      ${opts.map(o=>`<button onclick="financeSelectAction('${o.type}')"><span>${o.ico}</span><strong>${o.title}</strong></button>`).join('')}
+    </div>`;
+}
+function renderFinanceTxList(txs){
+  const q=financeSearchValue().trim().toLowerCase();
+  const filtered=q?txs.filter(t=>{
+    const hay=[t.title,t.category,financeAccountName(t.accountId),financeCardName(t.cardId)].join(' ').toLowerCase();
+    return hay.includes(q);
+  }):txs;
+  const grouped={};
+  filtered.forEach(t=>{
+    const key=t.date||financeDefaultDate();
+    if(!grouped[key])grouped[key]=[];
+    grouped[key].push(t);
+  });
+  const keys=Object.keys(grouped).sort((a,b)=>String(b).localeCompare(String(a)));
+  return `<div class="mf-extract-card">
+    <div class="mf-card-head"><h3>Extrato</h3><span>${filtered.length} lançamento(s)</span></div>
+    ${keys.length?keys.map(k=>`<div class="mf-date-group">
+      <div class="mf-date-label">${financeDateLongLabel(k)}</div>
+      <div class="mf-timeline">${grouped[k].map(t=>financeTxItem(t)).join('')}</div>
+    </div>`).join(''):'<div class="empty"><em>💰</em>Nenhum lançamento encontrado.</div>'}
+  </div>`;
+}
+function financeDateLongLabel(date){
+  const d=new Date(date+'T12:00:00');
+  const day=String(d.getDate()).padStart(2,'0');
+  const month=String(d.getMonth()+1).padStart(2,'0');
+  const year=d.getFullYear();
+  return `${day}/${month}/${year} · ${DL[d.getDay()]||''}`;
+}
+function financeTxCategoryIcon(t){
+  if(t.type==='income')return '💵';
+  if(t.type==='transfer')return '↕️';
+  if(t.type==='card')return '💳';
+  const cat=String(t.category||'').toLowerCase();
+  if(cat.includes('aliment'))return '🍽️';
+  if(cat.includes('casa'))return '🏠';
+  if(cat.includes('trans'))return '🚗';
+  if(cat.includes('saúde'))return '🏥';
+  if(cat.includes('assin'))return '📄';
+  return '•';
+}
+function financeTxItem(t){
+  if(t.recurringVirtual){
+    return `<div class="mf-tx recurring ${t.type==='income'?'income':'expense'}" onclick="financeRecurringActions(${t.recurringId})">
+      <span class="mf-tx-ico">🔁</span>
+      <div class="mf-tx-main"><strong>${unioEscape(t.title)}</strong><em>${unioEscape(t.category||'Outros')} · recorrente</em></div>
+      <div class="mf-tx-value ${t.type==='income'?'income':'expense'}">${t.type==='income'?'+':'-'} ${financeMoney(t.amount)}</div>
+    </div>`;
+  }
+  const sign=t.type==='income'?'+':t.type==='transfer'?'↔':'-';
+  const cls=t.type==='income'?'income':t.type==='transfer'?'transfer':'expense';
+  const meta=t.type==='card'?financeCardName(t.cardId):t.cardPayment?`Pagamento ${financeCardName(t.cardId)}`:t.type==='transfer'?`${financeAccountName(t.fromAccountId)} → ${financeAccountName(t.toAccountId)}`:financeAccountName(t.accountId);
+  const parcel=financeCardInvoiceLabel(t);
+  return `<div class="mf-tx ${cls}" onclick="financeTxActions(${t.id})">
+    <span class="mf-tx-ico">${financeTxCategoryIcon(t)}</span>
+    <div class="mf-tx-main"><strong>${unioEscape(t.title)}${parcel}</strong><em>${unioEscape(meta)} · ${unioEscape(t.category||'Outros')}</em></div>
+    <div class="mf-tx-value ${cls}">${sign} ${financeMoney(t.amount)}</div>
+  </div>`;
+}
+function renderFinanceHouse(){
+  const s=calculateFinanceHouseSummary();
+  return `
+    <div class="mf-house-hero">
+      <div><span>Total da casa</span><strong>${financeMoney(s.total)}</strong><em>${financeMoney(s.pending)} pendente</em></div>
+      <div><span>Pago</span><strong>${financeMoney(s.paid)}</strong><em>${s.bills.length} conta(s)</em></div>
+    </div>
+    ${renderHouseSummary(s)}
+    ${S.finance.ui?.activeAction==='houseConfig'?renderHouseConfig():''}
+    ${S.finance.ui?.activeAction==='houseBill'?renderHouseBillForm():''}
+    ${S.finance.ui?.activeAction==='houseProjectAdd'?renderHouseProjectAddForm():''}
+    ${renderHouseBillList(s.bills,s.split)}
+    ${renderHouseProjects(s.projectsSummary)}
+    ${renderFinanceFab('house')}
+  `;
+}
+function financeOpenAccountsMenu(){
+  financeOpenActionSheet('Contas',[
+    {ico:'➕',label:'Adicionar conta',run:()=>financeShowAction('accountAdd','accounts')},
+    {ico:'↗',label:'Abrir gestão de contas',run:()=>financeSetPanel('accounts')}
+  ]);
+}
+function financeOpenCardsMenu(){
+  financeOpenActionSheet('Cartões',[
+    {ico:'➕',label:'Adicionar cartão',run:()=>financeShowAction('cardAdd','cards')},
+    {ico:'↗',label:'Abrir gestão de cartões',run:()=>financeSetPanel('cards')}
+  ]);
+}
+
+
+/* ━━━━ V25.1 — FINANCE VIEW SWITCH VISÍVEL ━━━━ */
+function renderFinanceViewSwitch(){
+  const view=S.finance.view||'personal';
+  return `<div class="mf-view-switch">
+    <button class="${view==='personal'?'on':''}" onclick="setFinanceView('personal')">Pessoal</button>
+    <button class="${view==='house'?'on':''}" onclick="setFinanceView('house')">Casa</button>
+  </div>`;
+}
+function renderFinancePersonal(){
+  const s=calculateFinancePersonalSummary();
+  const action=S.finance.ui?.activeAction;
+  return `
+    ${renderFinanceViewSwitch()}
+    ${renderFinanceMonthHero(s)}
+    ${renderFinanceSearch()}
+    ${FINANCE_PERSONAL_ACTIONS.includes(action)?renderFinanceTxForm(action):''}
+    ${renderFinanceAccountsHome(s)}
+    ${renderFinanceCardsHome(s)}
+    ${renderFinanceManageHubV25()}
+    ${renderFinancePanel()}
+    ${renderFinanceTxList(s.txs)}
+    ${renderFinanceFab('personal')}
+  `;
+}
+function renderFinanceHouse(){
+  const s=calculateFinanceHouseSummary();
+  return `
+    ${renderFinanceViewSwitch()}
+    <div class="mf-house-hero">
+      <div><span>Total da casa</span><strong>${financeMoney(s.total)}</strong><em>${financeMoney(s.pending)} pendente</em></div>
+      <div><span>Pago</span><strong>${financeMoney(s.paid)}</strong><em>${s.bills.length} conta(s)</em></div>
+    </div>
+    ${renderHouseSummary(s)}
+    ${S.finance.ui?.activeAction==='houseConfig'?renderHouseConfig():''}
+    ${S.finance.ui?.activeAction==='houseBill'?renderHouseBillForm():''}
+    ${S.finance.ui?.activeAction==='houseProjectAdd'?renderHouseProjectAddForm():''}
+    ${renderHouseBillList(s.bills,s.split)}
+    ${renderHouseProjects(s.projectsSummary)}
+    ${renderFinanceFab('house')}
+  `;
+}
+
+
+/* ━━━━ V25.2 — BUSCA SEM PERDA DE FOCO ━━━━ */
+function financeSearchCommit(value){
+  financeEnsureUi();
+  S.finance.ui.search=String(value||'');
+  renderFinance();
+}
+function renderFinanceSearch(){
+  const value=financeSearchValue();
+  return `<div class="mf-search">
+    <span>📊</span>
+    <input value="${unioEscape(value)}" onchange="financeSearchCommit(this.value)" onkeydown="if(event.key==='Enter')financeSearchCommit(this.value)" placeholder="Pesquisar no Unio Finanças">
+    <button onclick="financeSearchCommit('')">${value?'×':'🔍'}</button>
   </div>`;
 }

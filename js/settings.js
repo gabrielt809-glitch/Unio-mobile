@@ -1,4 +1,4 @@
-/* Unio Base Organizada v24 */
+/* Unio Base Organizada v25 */
 /* ━━━━ SETTINGS PREMIUM ━━━━ */
 function settingsNumber(value,fallback=0){
   const raw=String(value??'').replace(/\./g,'').replace(',','.');
@@ -117,8 +117,8 @@ function renderSettingsAbout(){
   const box=document.getElementById('settingsAboutBox');
   if(!box)return;
   const d=typeof getAppDiagnostics==='function'?getAppDiagnostics():{};
-  const version=typeof APP_PUBLIC_VERSION!=='undefined'?APP_PUBLIC_VERSION:'v24';
-  const cache=typeof APP_CACHE_LABEL!=='undefined'?APP_CACHE_LABEL:'unio-v24-cache-2026-05-06';
+  const version=typeof APP_PUBLIC_VERSION!=='undefined'?APP_PUBLIC_VERSION:'v25';
+  const cache=typeof APP_CACHE_LABEL!=='undefined'?APP_CACHE_LABEL:'unio-v25-cache-2026-05-06';
   box.innerHTML=`
     <div class="settings-about-grid">
       <div><span>Versão</span><strong>${version}</strong></div>

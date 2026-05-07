@@ -1,4 +1,4 @@
-/* Unio Base Organizada v25 — estilos globais */
+/* Unio Base Organizada v26 — estilos globais */
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 :root{
   --bg:#000;--bg2:#1C1C1E;--bg3:#2C2C2E;--bg4:#3A3A3C;
@@ -4720,4 +4720,232 @@ body.keyboard-open .tabbar{
 .mf-view-switch button.on{
   color:#fff;
   background:rgba(142,167,255,.18);
+}
+
+
+/* ── FINANCE UX v26 — extratos separados + modal corrigido ── */
+
+/* Correção forte do modal de edição: título e campos não podem encostar/cortar na borda */
+.edit-modal{
+  align-items:flex-end;
+  justify-content:center;
+  padding:12px!important;
+  padding-bottom:calc(12px + env(safe-area-inset-bottom,0px))!important;
+}
+.edit-modal-card{
+  width:min(100%,430px)!important;
+  max-width:430px!important;
+  max-height:min(86vh,calc(var(--vh,1vh) * 86))!important;
+  border-radius:24px 24px 20px 20px!important;
+  padding:0!important;
+  overflow:hidden!important;
+}
+.edit-modal-card .modal-head{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 42px!important;
+  gap:10px!important;
+  align-items:start!important;
+  padding:18px 18px 12px!important;
+  min-width:0!important;
+}
+.edit-modal-card .modal-title{
+  font-size:21px!important;
+  line-height:1.08!important;
+  font-weight:950!important;
+  letter-spacing:-.45px!important;
+  white-space:normal!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  word-break:normal!important;
+}
+.edit-modal-card .modal-sub{
+  margin-top:5px!important;
+  font-size:12.5px!important;
+  line-height:1.35!important;
+  color:var(--lbl2)!important;
+  overflow-wrap:anywhere!important;
+}
+.edit-modal-card .modal-x{
+  width:38px!important;
+  height:38px!important;
+  border-radius:14px!important;
+  align-self:start!important;
+}
+.edit-modal-body{
+  padding:0 18px 10px!important;
+  gap:12px!important;
+}
+.edit-modal-body .m-grp{
+  margin:0!important;
+  min-width:0!important;
+}
+.edit-modal-body .m-lbl{
+  display:block!important;
+  margin:0 0 7px!important;
+  padding:0!important;
+  font-size:12px!important;
+  line-height:1.25!important;
+}
+.edit-modal-body .field,
+.edit-modal-body input,
+.edit-modal-body select{
+  width:100%!important;
+  max-width:100%!important;
+  min-height:52px!important;
+  border-radius:15px!important;
+  box-sizing:border-box!important;
+  font-size:16px!important;
+}
+.edit-modal-actions{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  gap:10px!important;
+  padding:12px 18px 18px!important;
+  background:linear-gradient(180deg,rgba(14,14,20,0),rgba(14,14,20,.98) 30%)!important;
+}
+.edit-modal-cancel,
+.edit-modal-save{
+  min-height:50px!important;
+  border-radius:16px!important;
+  font-size:15px!important;
+}
+
+/* Extratos separados */
+.mf-extract-card.split{
+  padding:0;
+  overflow:hidden;
+}
+.mf-extract-card.split>.mf-card-head{
+  padding:15px 15px 6px;
+  margin:0;
+}
+.mf-extract-helper{
+  color:var(--lbl2);
+  font-size:12px;
+  line-height:1.35;
+  padding:0 15px 13px;
+  border-bottom:1px solid rgba(255,255,255,.055);
+}
+.mf-extract-block{
+  padding:12px;
+  border-top:1px solid rgba(255,255,255,.045);
+}
+.mf-extract-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+.mf-extract-title h3{
+  margin:0;
+  font-size:16px;
+  font-weight:950;
+  letter-spacing:-.25px;
+}
+.mf-extract-title span{
+  color:var(--lbl2);
+  font-size:11px;
+  font-weight:850;
+}
+.mf-extract-section{
+  background:rgba(255,255,255,.035);
+  border:1px solid rgba(255,255,255,.055);
+  border-radius:18px;
+  overflow:hidden;
+  margin-bottom:10px;
+}
+.mf-extract-section:last-child{
+  margin-bottom:0;
+}
+.mf-extract-section-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  min-height:62px;
+  padding:11px 12px;
+  cursor:pointer;
+  background:rgba(255,255,255,.035);
+}
+.mf-extract-section-head>div{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+}
+.mf-extract-section-head>div>span{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  background:linear-gradient(145deg,rgba(142,167,255,.22),rgba(142,167,255,.08));
+  color:#fff;
+  font-size:13px;
+  font-weight:950;
+}
+.mf-extract-section.card .mf-extract-section-head>div>span{
+  background:linear-gradient(145deg,#8a00ff,#57009e);
+}
+.mf-extract-section-head strong{
+  display:block;
+  color:var(--lbl);
+  font-size:14px;
+  font-weight:950;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.mf-extract-section-head em{
+  display:block;
+  color:var(--lbl2);
+  font-size:11px;
+  line-height:1.3;
+  font-style:normal;
+  margin-top:2px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.mf-extract-section-head>b{
+  font-size:13px;
+  font-weight:950;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+.mf-extract-section-head>b.positive{color:var(--green);}
+.mf-extract-section-head>b.negative{color:#ff8ea0;}
+.mf-date-group.compact .mf-date-label{
+  font-size:12px;
+  padding:9px 12px;
+}
+.mf-date-group.compact .mf-timeline{
+  padding:4px 10px 8px;
+}
+.mf-extract-section.empty-section{
+  padding-bottom:10px;
+}
+@media (max-width:370px){
+  .edit-modal-card .modal-head{
+    padding:16px 14px 10px!important;
+  }
+  .edit-modal-body{
+    padding:0 14px 10px!important;
+  }
+  .edit-modal-actions{
+    padding:12px 14px 16px!important;
+  }
+  .edit-modal-card .modal-title{
+    font-size:19px!important;
+  }
+  .mf-extract-section-head{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+  .mf-extract-section-head>b{
+    padding-left:50px;
+  }
 }

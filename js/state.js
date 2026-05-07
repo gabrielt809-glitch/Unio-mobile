@@ -1,4 +1,4 @@
-/* Unio Base Organizada v26 */
+/* Unio Base Organizada v8.4 */
 /* ━━━━ TABS ━━━━ */
 const ALL_TABS=[
   {id:'home',ico:'🏠',lbl:'Início',color:'var(--blue)',title:'Início',sub:''},
@@ -7,7 +7,8 @@ const ALL_TABS=[
   {id:'sleep',ico:'🌙',lbl:'Sono',color:'var(--purple)',title:'Sono',sub:'Histórico de sono'},
   {id:'nutrition',ico:'🥗',lbl:'Nutrição',color:'var(--green)',title:'Nutrição',sub:'Diário alimentar'},
   {id:'health',ico:'🏃',lbl:'Saúde',color:'var(--orange)',title:'Saúde',sub:'Atividade física'},
-  {id:'finance',ico:'💰',lbl:'Finanças',color:'var(--green)',title:'Finanças',sub:'Pessoal e Casa'},
   {id:'habits',ico:'🔥',lbl:'Hábitos',color:'var(--orange)',title:'Hábitos',sub:'Consistência e streaks'},
   {id:'focus',ico:'🎯',lbl:'Foco',color:'var(--pink)',title:'Foco',sub:'Pomodoro'},
+  // Placeholder Finanças tab. Leaving content empty for next versions.
+  {id:'finance',ico:'💰',lbl:'Finanças',color:'var(--yellow, var(--green))',title:'Finanças',sub:'Em breve'}
 ];

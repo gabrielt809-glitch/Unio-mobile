@@ -1,4 +1,4 @@
-/* Unio Base Organizada v26 */
+/* Unio Base Organizada v8.4 */
 /* ━━━━ STATE ━━━━ */
 const DS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 const MS=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
@@ -11,48 +11,21 @@ function weekKeys(anchor){
 }
 
 const S={
-  schemaVersion:APP_SCHEMA_VERSION,
   activeDay:dayKey(new Date()),
-  water:{amt:0,goal:DEFAULT_WATER_GOAL,log:[],history:{},presets:DEFAULT_WATER_PRESETS.slice()},
+  water:{amt:0,goal:2000,log:[],presets:[150,250,350,500]},
   tasks:[],
-  taskCategories:DEFAULT_TASK_CATEGORIES.slice(),
-  taskView:'today',
   sleep:[],
-  sleepGoal:DEFAULT_SLEEP_GOAL,
-  nutr:{b:[],l:[],s:[],d:[],c:[],favorites:[],goals:{...DEFAULT_NUTRITION_GOALS}},
-  health:{steps:0,stepsLog:{},acts:[],diary:[],weightLog:[],breathSessions:[]},
+  nutr:{b:[],l:[],d:[],s:[]},
+  health:{steps:0,acts:[]},
   habits:[],
   selDay:dayKey(new Date()),
   taskWeekAnchor:dayKey(new Date()),
   tNoDate:false,
   weight:70,
-  pinnedTabs:DEFAULT_PINNED_TABS.slice(),
+  pinnedTabs:['home','water','habits','focus'],
   curTab:'home',
-  focus:{type:25,brkType:5,running:false,onBreak:false,remaining:25*60,sessions:0,iv:null,preset:'pomodoro',logs:[],startedAt:null,currentStartedAt:null,custom:{focus:30,break:5}},
-  finance:{
-    schemaVersion:FINANCE_SCHEMA_VERSION,
-    view:'personal',
-    month:null,
-    ui:{actionOpen:false,activeAction:null},
-    accounts:[
-      {id:1,name:'Itaú',type:'Conta corrente',balance:0},
-      {id:2,name:'Nubank',type:'Conta pagamento',balance:0},
-      {id:3,name:'Mercado Pago',type:'Carteira digital',balance:0},
-      {id:4,name:'Dinheiro',type:'Dinheiro físico',balance:0}
-    ],
-    cards:[{id:1,name:'Nubank',limit:0,closingDay:20,dueDay:27}],
-    categories:DEFAULT_FINANCE_CATEGORIES.slice(),
-    transactions:[],
-    recurring:[],
-    budgets:{},
-    house:{
-      splitMode:'fifty',
-      people:[{id:'gabriel',name:'Gabriel',income:0},{id:'giulianna',name:'Giulianna',income:0}],
-      bills:[],
-      projects:JSON.parse(JSON.stringify(DEFAULT_HOUSE_PROJECTS))
-    }
-  },
+  focus:{type:25,brkType:5,running:false,onBreak:false,remaining:25*60,sessions:0,iv:null},
   breathMode:'box',
 };
-let tId=0,habId=0,financeTxId=0,financeAccountId=4,financeCardId=1,financeBillId=0,selFood=null,selMeal='b',selAct=null,habFreq='daily',habEmoji='💪',breathTimer=null,breathPhaseIdx=0;
+let tId=0,habId=0,selFood=null,selMeal='b',selAct=null,habFreq='diario',habEmoji='💪',breathTimer=null,breathPhaseIdx=0;
 const HAB_EMOJIS=['💧','🏃','📚','🧘','💪','🥗','😴','✍️','🎯','🧹','🚶','🌅','🎸','📖','💊','🥤','🍎','🌿','🧠','⚡','🔥','🎨','🏊','🚴','🤸'];

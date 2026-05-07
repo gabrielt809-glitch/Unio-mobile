@@ -1,4 +1,4 @@
-/* Unio Base Organizada v26 */
+/* Unio Base Organizada v8.4 */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    UTILS — segurança, datas e rotina diária
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
@@ -38,48 +38,32 @@ function ensureDailyState(opts={}){
   if(!S.activeDay){S.activeDay=today;changed=true;}
   if(!S.taskWeekAnchor){S.taskWeekAnchor=S.selDay||today;changed=true;}
   if(S.activeDay!==today){
-    const previousDay=S.activeDay;
-    if(typeof waterArchiveDay==='function')waterArchiveDay(previousDay);
     S.activeDay=today;
     S.selDay=today;
     S.taskWeekAnchor=today;
-    if(!S.water)S.water={amt:0,goal:DEFAULT_WATER_GOAL,log:[],history:{},presets:DEFAULT_WATER_PRESETS.slice()};
-    if(!S.water.history)S.water.history={};
     S.water.amt=0;
-    S.water.log=(S.water.log||[]).filter(it=>it.date&&it.date===today);
-    /* Nutrição v17 mantém histórico por data; não zerar arrays. */
-    if(!S.health)S.health={steps:0,stepsLog:{},acts:[],diary:[],weightLog:[],breathSessions:[]};
-    if(!S.health.stepsLog)S.health.stepsLog={};
-    S.health.stepsLog[previousDay]=S.health.steps||0;
+    S.water.log=[];
+    S.nutr={b:[],l:[],d:[],s:[]};
+    if(!S.health)S.health={steps:0,acts:[]};
     S.health.steps=0;
-    if(S.focus){S.focus.sessions=0;S.focus.startedAt=null;S.focus.currentStartedAt=null;S.focus.running=false;S.focus.iv=null;}
+    if(S.focus){S.focus.sessions=0;}
     changed=true;
     if(!opts.silent)showToast?.('Novo dia iniciado. Registros diários zerados.','🌅',2600);
   }
-  if(!S.nutr)S.nutr={b:[],l:[],s:[],d:[],c:[],favorites:[],goals:{...DEFAULT_NUTRITION_GOALS}};
-  ['b','l','s','d','c'].forEach(k=>{if(!Array.isArray(S.nutr[k]))S.nutr[k]=[];});
-  if(!Array.isArray(S.nutr.favorites))S.nutr.favorites=[];
-  if(!S.nutr.goals)S.nutr.goals={...DEFAULT_NUTRITION_GOALS};
-  if(!S.water)S.water={amt:0,goal:DEFAULT_WATER_GOAL,log:[],history:{},presets:DEFAULT_WATER_PRESETS.slice()};
+  if(!S.nutr)S.nutr={b:[],l:[],d:[],s:[]};
+  ['b','l','d','s'].forEach(k=>{if(!Array.isArray(S.nutr[k]))S.nutr[k]=[];});
+  if(!S.water)S.water={amt:0,goal:2000,log:[],presets:[150,250,350,500]};
   if(!Array.isArray(S.water.log))S.water.log=[];
-  if(!S.water.history||typeof S.water.history!=='object')S.water.history={};
-  if(!Array.isArray(S.water.presets)||!S.water.presets.length)S.water.presets=DEFAULT_WATER_PRESETS.slice();
-  if(!S.health)S.health={steps:0,stepsLog:{},acts:[],diary:[],weightLog:[],breathSessions:[]};
-  if(!S.health.stepsLog||typeof S.health.stepsLog!=='object')S.health.stepsLog={};
+  if(!Array.isArray(S.water.presets)||!S.water.presets.length)S.water.presets=[150,250,350,500];
+  if(!S.health)S.health={steps:0,acts:[]};
   if(!Array.isArray(S.health.acts))S.health.acts=[];
-  if(!Array.isArray(S.health.diary))S.health.diary=[];
-  if(!Array.isArray(S.health.weightLog))S.health.weightLog=[];
-  if(!Array.isArray(S.health.breathSessions))S.health.breathSessions=[];
   if(!Array.isArray(S.tasks))S.tasks=[];
-  if(!S.sleepGoal)S.sleepGoal=DEFAULT_SLEEP_GOAL;
   if(!Array.isArray(S.habits))S.habits=[];
-  if(!S.focus)S.focus={type:25,brkType:5,running:false,onBreak:false,remaining:25*60,sessions:0,iv:null,preset:'pomodoro',logs:[],startedAt:null,currentStartedAt:null,custom:{focus:30,break:5}};
-  if(!Array.isArray(S.focus.logs))S.focus.logs=[];
   if(changed && typeof saveState==='function')saveState();
   return changed;
 }
 function refreshAll(){
   try{
-    renderWeekStrip?.();renderTasks?.();renderWater?.();renderNutr?.();renderSleep?.();renderSleepChart?.();renderHealth?.();renderBreathMode?.();renderHabits?.();renderFocusTimer?.();renderFinance?.();renderHome?.();buildTabBar?.();
+    renderWeekStrip?.();renderTasks?.();renderWater?.();renderNutr?.();renderSleep?.();renderSleepChart?.();renderHealth?.();renderBreathMode?.();renderHabits?.();renderFocusTimer?.();renderHome?.();buildTabBar?.();
   }catch(e){console.warn('Unio refresh error',e);}
 }

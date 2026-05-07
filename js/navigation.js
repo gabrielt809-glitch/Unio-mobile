@@ -1,4 +1,4 @@
-/* Unio Base Organizada v26 */
+/* Unio Base Organizada v8.5 */
 /* ━━━━ SPLASH ━━━━ */
 function startApp(){
   const willOnboard=!localStorage.getItem(STORE_KEY+'_onboarded');
@@ -23,14 +23,13 @@ function buildTabBar(){
   const bar=$('tabbar');
   const pinned=S.pinnedTabs&&S.pinnedTabs.length?S.pinnedTabs:['home','water','habits','focus'];
   bar.style.setProperty('--tab-count',pinned.length);
-  bar.setAttribute('role','navigation');
+  bar.setAttribute('role','tablist');
   bar.setAttribute('aria-label','Navegação principal');
-  const tabs=pinned.map(id=>{
+  bar.innerHTML=pinned.map(id=>{
     const t=ALL_TABS.find(x=>x.id===id)||ALL_TABS[0];
     const active=S.curTab===id;
     return`<button type="button" class="tab${active?' active':''}" onclick="switchTabById('${id}')" aria-label="${t.lbl}" aria-current="${active?'page':'false'}"><span class="tab-ico" aria-hidden="true">${t.ico}</span><span class="tab-lbl">${t.lbl}</span></button>`;
   }).join('');
-  bar.innerHTML=`<div class="tabbar-inner" role="tablist">${tabs}</div>`;
 }
 function switchTabById(id){
   ensureDailyState?.({silent:true});
@@ -63,18 +62,27 @@ function renderCurrentTab(){
   if(S.curTab==='sleep'){renderSleep();renderSleepChart();}
   if(S.curTab==='nutrition')renderNutr();
   if(S.curTab==='health')renderHealth();
-  if(S.curTab==='finance')renderFinance();
   if(S.curTab==='habits')renderHabits();
   if(S.curTab==='focus')renderFocusTimer();
+
+  // Placeholder: handle Finanças tab but no content yet. Avoid errors when switching.
+  if(S.curTab==='finance'){
+    // no rendering logic yet for finance module; intentionally left blank
+    return;
+  }
 }
 
 /* ━━━━ MODALS ━━━━ */
 function openModal(id){
-  if(id==='goalModal'){$('goalInp').value=S.water.goal||DEFAULT_WATER_GOAL;}
+  if(id==='goalModal'){$('goalInp').value=S.water.goal||2000;}
   if(id==='customWater'){$('cwInp').value='';}
-  if(id==='settingsModal'){renderSettingsPremium?.();}
+  if(id==='settingsModal'){$('weightInp').value=S.weight;renderTabToggles();}
   if(id==='habModal'){
-    prepareHabitModal?.();
+    $('habNameInp').value='';
+    habEmoji='💪';habFreq='diario';
+    const eg=$('habEmojiGrid');
+    eg.innerHTML=HAB_EMOJIS.map(e=>`<button class="eg-btn${e===habEmoji?' sel':''}" onclick="pickHabEmoji('${e}',this)">${e}</button>`).join('');
+    document.querySelectorAll('#habModal .chip').forEach((c,i)=>c.classList.toggle('on',i===0));
   }
   $(id).classList.remove('off');
 }
